@@ -11,12 +11,13 @@ jobs:
     steps:
       - name: Notify PR Opened
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
-            📢 **새 Pull Request**  
-            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`  
-            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`  
+            📢 **새 Pull Request**
+            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`
+            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`
             🔗 {{ EVENT_PAYLOAD.pull_request.html_url }}
 
   notify-merged:
@@ -25,12 +26,13 @@ jobs:
     steps:
       - name: Notify PR Merged
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
-            ✅ **Pull Request가 머지되었습니다!**  
-            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`  
-            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`  
+            ✅ **Pull Request가 머지되었습니다!**
+            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`
+            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`
             🔗 {{ EVENT_PAYLOAD.pull_request.html_url }}
 
   notify-closed-unmerged:
@@ -39,10 +41,11 @@ jobs:
     steps:
       - name: Notify PR Closed without Merge
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           args: |
-            ❌ **Pull Request가 머지되지 않고 닫혔습니다.**  
-            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`  
-            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`  
+            ❌ **Pull Request가 머지되지 않고 닫혔습니다.**
+            제목: `{{ EVENT_PAYLOAD.pull_request.title }}`
+            작성자: `{{ EVENT_PAYLOAD.pull_request.user.login }}`
             🔗 {{ EVENT_PAYLOAD.pull_request.html_url }}
