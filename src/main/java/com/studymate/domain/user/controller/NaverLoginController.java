@@ -31,7 +31,7 @@ public class NaverLoginController {
     }
 
     @GetMapping("/login/oauth2/code/naver")
-    public String callback(
+    public TokenResponse callback(
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ){
@@ -39,30 +39,6 @@ public class NaverLoginController {
     }
 
 
-    @GetMapping("/login/tokens")
-    public ResponseEntity<TokenResponse> getTokens(
-            @RequestParam("identity") String identity
-    ) {
-        TokenResponse tokens = naverLoginService.generateTokens(identity);
-        return ResponseEntity.ok(tokens);
-    }
-//    @GetMapping("/login/token")
-//    public String getLoginToken(
-//            @RequestParam("identity") String identity
-//    ) {
-//        return naverLoginService.generateLoginToken(identity);
-//    }
-
-
-
-    @PostMapping("/auth/refresh")
-    public ResponseEntity<TokenResponse> refreshTokens(
-            @RequestHeader("Authorization") String authorization
-    ) {
-        String refreshToken = authorization.replace("Bearer ", "");
-        TokenResponse newTokens = naverLoginService.refreshToken(refreshToken);
-        return ResponseEntity.ok(newTokens);
-    }
 
 
 

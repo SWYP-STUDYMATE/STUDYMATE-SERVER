@@ -54,6 +54,9 @@ public class User {
 
 
 
+
+
+
     public void updateNaverProfile(String name, String birthday,String gender,String birthyear){
         this.name = name;
         this.birthday = birthday;
