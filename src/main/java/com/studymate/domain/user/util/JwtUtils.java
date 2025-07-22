@@ -24,6 +24,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .claim("uuid",loginTokenResponse.uuid())
                 .expiration(new Date(System.currentTimeMillis() + 3600000))
+//                .expiration(new Date(System.currentTimeMillis() + 30000)) // 테스트  30초
                 .signWith(secretKey)
                 .compact();
 

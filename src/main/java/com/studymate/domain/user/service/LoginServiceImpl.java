@@ -11,12 +11,14 @@ import com.studymate.domain.user.util.JwtUtils;
 import com.studymate.exception.LoginExpirationException;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class LoginServiceImpl implements LoginService {
     private final NaverApi naverApi;
     private final JwtUtils jwtUtils;
     private final UserDao userDao;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public String getLoginUrl(String state, String clientId, String redirectUri) {
@@ -37,7 +40,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String getLoginTokenCallback(String code, String state) {
+    public TokenResponse getLoginTokenCallback(String code, String state) {
         NaverTokenResponse token = naverApi.getToken(code, state);
         NaverUserInfoResponse userInfo = naverApi.getUserInfo(token.access_token());
         Optional<User> OptionalUser = userDao.findByUserIdentity(userInfo.id());
@@ -58,40 +61,12 @@ public class LoginServiceImpl implements LoginService {
         }
 
         userDao.save(user);
-        return jwtUtils.createLoginToken(new LoginTokenResponse(user.getUserId()));
-
-    }
-
-    @Override
-    public TokenResponse generateTokens(String identity) {
-        User user = userDao.findByUserId(UUID.fromString(identity))
-                .orElseThrow(() -> new NotFoundException("USER NOT FOUND"));
-
         LoginTokenResponse loginTokenResponse = new LoginTokenResponse(user.getUserId());
         String accessToken = jwtUtils.createLoginToken(loginTokenResponse);
         String refreshToken = jwtUtils.createRefreshToken(loginTokenResponse);
-
-        return TokenResponse.of(accessToken,refreshToken);
-    }
-    @Override
-    public String generateLoginToken(String identity){
-        User user = userDao.findByUserIdentity(identity)
-                .orElseThrow(() -> new NotFoundException("USER NOT FOUND"));
-        LoginTokenResponse loginTokenResponse = new LoginTokenResponse(user.getUserId());
-        return jwtUtils.createLoginToken(loginTokenResponse);
-    }
-
-    @Override
-    public TokenResponse refreshToken(String refreshToken) {
-        if(jwtUtils.isTokenExpired(refreshToken)) {
-            throw new LoginExpirationException();
-        }
-        LoginTokenResponse loginTokenResponse = jwtUtils.parseRefreshToken(refreshToken);
-
-        String newAccessToken = jwtUtils.createLoginToken(loginTokenResponse);
-        String newRefreshToken = jwtUtils.createRefreshToken(loginTokenResponse);
-        return TokenResponse.of(newAccessToken,newRefreshToken);
-
+        String key = "refresh_token:" + user.getUserId();
+        redisTemplate.opsForValue().set(key, refreshToken, 7, TimeUnit.DAYS);
+        return TokenResponse.of(accessToken, refreshToken);
 
     }
 
