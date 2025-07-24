@@ -1,19 +1,17 @@
 package com.studymate.domain.chat.entity;
 
+import com.studymate.common.entity.BaseTimeEntity;
 import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "CHAT_MESSAGE")
-public class ChatMessage {
+public class ChatMessage extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
@@ -29,15 +27,4 @@ public class ChatMessage {
 
     @Column(name = "message", nullable = false, length = 1000)
     private String message;
-
-    @Column(name = "sent_at", updatable = false)
-    private LocalDateTime sentAt;
-
-    @Builder
-    public ChatMessage(ChatRoom chatRoom, User sender, String message) {
-        this.chatRoom = chatRoom;
-        this.sender = sender;
-        this.message = message;
-        this.sentAt = LocalDateTime.now();
-    }
 }
