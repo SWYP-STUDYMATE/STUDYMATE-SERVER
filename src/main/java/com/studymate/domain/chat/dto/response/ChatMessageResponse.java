@@ -17,7 +17,7 @@ public record ChatMessageResponse(
                 .messageId(chatMessage.getId())
                 .senderName(chatMessage.getSender().getName())
                 .message(chatMessage.getMessage())
-                .sentAt(chatMessage.getSentAt())
+                .sentAt(chatMessage.getCreatedAt())
                 .build();
     }
 }

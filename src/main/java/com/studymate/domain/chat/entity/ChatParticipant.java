@@ -2,7 +2,11 @@ package com.studymate.domain.chat.entity;
 
 import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -23,4 +27,11 @@ public class ChatParticipant {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(name = "last_read_message_id")
+    private Long lastReadMessageId;
+
+    public void updateLastReadMessageId(Long messageId) {
+        this.lastReadMessageId = messageId;
+    }
 }
