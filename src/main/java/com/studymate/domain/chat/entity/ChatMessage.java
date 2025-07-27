@@ -1,7 +1,6 @@
 package com.studymate.domain.chat.entity;
 
 import com.studymate.common.entity.BaseTimeEntity;
-import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,9 +20,8 @@ public class ChatMessage extends BaseTimeEntity {
     @JoinColumn(name = "room_id", nullable = false)
     private ChatRoom chatRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User sender;
+    @Column(name = "sender_nickname", nullable = false)
+    private String senderNickname;
 
     @Column(name = "message", nullable = false, length = 1000)
     private String message;
