@@ -8,8 +8,6 @@ import com.studymate.domain.user.domain.dto.response.NaverUserInfoResponse;
 import com.studymate.domain.user.domain.dto.response.TokenResponse;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.util.JwtUtils;
-import com.studymate.exception.LoginExpirationException;
-import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -56,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
                     .birthday(userInfo.birthday())
                     .gender(userInfo.gender())
                     .birthyear(userInfo.birthyear())
-                    .userDisable(true)
+                    .userDisable(false)
                     .build();
         }
 
