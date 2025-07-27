@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat/rooms")
@@ -18,10 +16,9 @@ public class ChatRoomController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<ChatRoomResponse>> createChatRoom(
-            @RequestBody ChatRoomCreateRequest request,
-            Principal principal
+            @RequestBody ChatRoomCreateRequest request
     ) {
-        ChatRoomResponse response = chatService.createChatRoom(principal, request);
+        ChatRoomResponse response = chatService.createChatRoom(request);
         return ResponseEntity.ok(ResponseDto.of(response, "채팅방이 성공적으로 생성되었습니다."));
     }
 }

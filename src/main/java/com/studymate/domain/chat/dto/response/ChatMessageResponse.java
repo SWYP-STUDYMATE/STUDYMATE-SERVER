@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Builder
 public record ChatMessageResponse(
     Long messageId,
-    String senderName,
+    String senderNickname,
     String message,
     LocalDateTime sentAt
 ) {
     public static ChatMessageResponse from(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
                 .messageId(chatMessage.getId())
-                .senderName(chatMessage.getSender().getName())
+                .senderNickname(chatMessage.getSenderNickname())
                 .message(chatMessage.getMessage())
                 .sentAt(chatMessage.getCreatedAt())
                 .build();

@@ -1,11 +1,9 @@
 package com.studymate.domain.chat.entity;
 
 import com.studymate.common.entity.BaseTimeEntity;
-import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +21,4 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Column(name = "room_name", nullable = false)
     private String roomName;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatParticipant> participants = new ArrayList<>();
 }
