@@ -1,0 +1,108 @@
+name: Deploy to NCP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ${{ secrets.NCP_REGISTRY }}
+  IMAGE_NAME: studymate-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build -x test
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+    - name: Login to NCP Container Registry
+      run: |
+        echo ${{ secrets.NCP_SECRET_KEY }} | docker login ${{ env.REGISTRY }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+
+    - name: Push Docker image
+      run: |
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+    - name: Deploy to NCP Server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.NCP_SERVER_HOST }}
+        username: ${{ secrets.NCP_SERVER_USER }}
+        key: ${{ secrets.NCP_SERVER_SSH_KEY }}
+        port: 22
+        script: |
+          # 환경 변수 설정
+          export DOCKER_REGISTRY=${{ env.REGISTRY }}
+          export APP_IMAGE_VERSION=${{ github.sha }}
+          export DB_HOST=${{ secrets.DB_HOST }}
+          export DB_PORT=${{ secrets.DB_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export DB_USER=${{ secrets.DB_USER }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export REDIS_HOST=${{ secrets.REDIS_HOST }}
+          export REDIS_PORT=${{ secrets.REDIS_PORT }}
+          export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          export NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
+          export NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
+          
+          # 애플리케이션 디렉토리로 이동
+          cd /app/studymate
+          
+          # 컨테이너 레지스트리 로그인
+          echo ${{ secrets.NCP_SECRET_KEY }} | sudo docker login ${{ env.REGISTRY }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+          
+          # 최신 이미지 Pull
+          sudo docker-compose -f docker-compose.prod.yml pull
+          
+          # 기존 컨테이너 중지 및 새 컨테이너 시작
+          sudo docker-compose -f docker-compose.prod.yml down
+          sudo docker-compose -f docker-compose.prod.yml up -d
+          
+          # 사용하지 않는 이미지 정리
+          sudo docker system prune -f
+          
+          # 배포 완료 확인
+          sleep 30
+          curl -f http://localhost:8080/actuator/health || exit 1
+          
+          echo "✅ 배포가 성공적으로 완료되었습니다!"
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "🎉 배포 성공: ${{ github.sha }}"
+        else
+          echo "❌ 배포 실패: ${{ github.sha }}"
+        fi
