@@ -24,9 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     @Override
-    public void saveEnglishName(EnglishNameRequest req) {
-        UUID userId = req.userId();
-
+    public void saveEnglishName(UUID userId,EnglishNameRequest req) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
         user.setEnglishName(req.englishName());
@@ -34,9 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveProfileImage(ProfileImageRequest req){
-        UUID userId = req.userId();
-
+    public void saveProfileImage(UUID userId,ProfileImageRequest req){
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
         user.setProfileImage(req.profileImage());
@@ -44,9 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveSelfBio(SelfBioRequest req){
-        UUID userId = req.userId();
-
+    public void saveSelfBio(UUID userId,SelfBioRequest req){
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
         user.setSelfBio(req.selfBio());
@@ -54,8 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveLocation(LocationRequest req) {
-        UUID userId = req.userId();
+    public void saveLocation(UUID userId,LocationRequest req) {
         int locationId = req.locationId();
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));

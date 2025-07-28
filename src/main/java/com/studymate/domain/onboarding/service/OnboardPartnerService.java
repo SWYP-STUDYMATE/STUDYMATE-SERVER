@@ -7,10 +7,11 @@ import com.studymate.domain.onboarding.domain.dto.response.PartnerPersonalityRes
 import com.studymate.domain.onboarding.domain.type.PartnerGenderType;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OnboardPartnerService {
-    void savePartnerGender (PartnerGenderRequest req);
-    void savePartnerPersonality (PartnerRequest req);
+    void savePartnerGender (UUID userId,PartnerGenderRequest req);
+    void savePartnerPersonality (UUID userId,PartnerRequest req);
     List<PartnerGenderResponse> getAllPartnerGenderType();
     List<PartnerPersonalityResponse> getAllPartnerPersonality();
 }

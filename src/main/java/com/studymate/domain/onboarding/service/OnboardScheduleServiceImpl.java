@@ -14,6 +14,7 @@ import com.studymate.domain.onboarding.entity.OnboardScheduleId;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OnboardScheduleServiceImpl implements OnboardScheduleService{
 
@@ -30,19 +32,16 @@ public class OnboardScheduleServiceImpl implements OnboardScheduleService{
     private final UserRepository userRepository;
 
     @Override
-    public void saveOnboardSchedules(OnboardScheduleRequests req) {
-        UUID userId = req.schedules().get(0).userId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException("USER NOT FOUND"));
+    public void saveOnboardSchedules(UUID userId,OnboardScheduleRequests req) {
 
         List<OnboardSchedule> schedules = req.schedules().stream()
-                .map(this::createSchedule)
+                .map(s ->createSchedule(userId,s))
                 .collect(Collectors.toList());
         onboardScheduleRepository.saveAll(schedules);
     }
-    private OnboardSchedule createSchedule (OnboardScheduleRequest req) {
+    private OnboardSchedule createSchedule (UUID userId,OnboardScheduleRequest req) {
         OnboardScheduleId scheduleId = new OnboardScheduleId();
-        scheduleId.setUserId(req.userId());
+        scheduleId.setUserId(userId);
         scheduleId.setDayOfWeek(req.dayOfWeek());
         scheduleId.setClassTime(req.classTime());
         return OnboardSchedule.builder()
@@ -51,8 +50,7 @@ public class OnboardScheduleServiceImpl implements OnboardScheduleService{
     }
 
     @Override
-    public void saveDailyMinute(DailyMinuteRequest req) {
-        UUID userId = req.userId();
+    public void saveDailyMinute(UUID userId,DailyMinuteRequest req) {
         DailyMinuteType dailyMinutesType = req.dailyMinutesType();
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("USER NOT FOUND"));
@@ -61,13 +59,14 @@ public class OnboardScheduleServiceImpl implements OnboardScheduleService{
     }
 
     @Override
-    public void saveCommunicationMethod(CommunicationMethodRequest req) {
-        UUID userId = req.userId();
+    public void saveCommunicationMethod(UUID userId,CommunicationMethodRequest req) {
         CommunicationMethodType communicationMethodType = req.communicationMethodType();
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("USER NOT FOUND"));
         user.setCommunicationMethodType(communicationMethodType);
         userRepository.save(user);
+        System.out.println("saved user: " + user.getCommunicationMethodType());
+
 
 
     }

@@ -10,11 +10,12 @@ import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
 import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OnboardScheduleService {
-    void saveOnboardSchedules(OnboardScheduleRequests req);
-    void saveDailyMinute(DailyMinuteRequest req);
-    void saveCommunicationMethod(CommunicationMethodRequest req);
+    void saveOnboardSchedules(UUID userId,OnboardScheduleRequests req);
+    void saveDailyMinute(UUID userId,DailyMinuteRequest req);
+    void saveCommunicationMethod(UUID userId,CommunicationMethodRequest req);
     List<CommunicationMethodResponse> getAllCommunication();
     List<DailyMinuteResponse> getAllDailyMethod();
 }

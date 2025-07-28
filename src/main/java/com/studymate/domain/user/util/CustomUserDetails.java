@@ -15,9 +15,12 @@ public class CustomUserDetails implements UserDetails {
         this.uuid = uuid;
         this.name = name;
     }
-    @Override
+
     public String getUsername() {
         return uuid.toString();
+    }
+    public UUID getUuid() {
+        return uuid;
     }
     public String getName() {
         return name;

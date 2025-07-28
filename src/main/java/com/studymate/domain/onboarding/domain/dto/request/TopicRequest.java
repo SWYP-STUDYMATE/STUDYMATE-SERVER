@@ -7,7 +7,6 @@ import java.util.UUID;
 
 
 public record TopicRequest(
-        UUID userId,
         List<Integer> topicIds
 ) {
 

@@ -8,7 +8,9 @@ import com.studymate.domain.user.domain.dto.response.LocationResponse;
 import com.studymate.domain.user.domain.dto.response.UserNameResponse;
 import com.studymate.domain.user.service.UserService;
 import com.studymate.domain.user.service.UserServiceImpl;
+import com.studymate.domain.user.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,30 +24,43 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/english-name")
-    public void saveEnglishName (@RequestBody EnglishNameRequest req) {
-        userService.saveEnglishName(req);
+    public void saveEnglishName (@AuthenticationPrincipal CustomUserDetails principal,
+                                 @RequestBody EnglishNameRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveEnglishName(userId,req);
     }
 
     @PostMapping("/profile-image")
-    public void saveProfileImage (@RequestBody ProfileImageRequest req) {
-        userService.saveProfileImage(req);
+    public void saveProfileImage (@AuthenticationPrincipal CustomUserDetails principal,
+                                  @RequestBody ProfileImageRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveProfileImage(userId,req);
     }
 
     @PostMapping("/self-bio")
-    public void saveSelfBio (@RequestBody SelfBioRequest req) {
-        userService.saveSelfBio(req);
+    public void saveSelfBio (@AuthenticationPrincipal CustomUserDetails principal,
+                             @RequestBody SelfBioRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveSelfBio(userId,req);
     }
 
     @PostMapping  ("/location")
-    public void saveLocation (@RequestBody LocationRequest req) {
-        userService.saveLocation(req);
+    public void saveLocation (@AuthenticationPrincipal CustomUserDetails principal,
+                              @RequestBody LocationRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveLocation(userId,req);
     }
     @GetMapping("/locations")
     public List<LocationResponse> getAllLocation() {
         return userService.getAllLocation();
     }
-    @GetMapping("/{userId}/name")
-    public UserNameResponse getUserName(@PathVariable UUID userId) {
+    @GetMapping("/name")
+    public UserNameResponse getUserName(@AuthenticationPrincipal CustomUserDetails principal) {
+        UUID userId = principal.getUuid();
         return userService.getUserName(userId);
     }
 }
