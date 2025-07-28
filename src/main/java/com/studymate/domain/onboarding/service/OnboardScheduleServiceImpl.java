@@ -10,6 +10,7 @@ import com.studymate.domain.onboarding.domain.repository.OnboardScheduleReposito
 import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
 import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.entity.OnboardSchedule;
+import com.studymate.domain.onboarding.entity.OnboardScheduleId;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
@@ -40,10 +41,12 @@ public class OnboardScheduleServiceImpl implements OnboardScheduleService{
         onboardScheduleRepository.saveAll(schedules);
     }
     private OnboardSchedule createSchedule (OnboardScheduleRequest req) {
+        OnboardScheduleId scheduleId = new OnboardScheduleId();
+        scheduleId.setUserId(req.userId());
+        scheduleId.setDayOfWeek(req.dayOfWeek());
+        scheduleId.setClassTime(req.classTime());
         return OnboardSchedule.builder()
-                .userId(req.userId())
-                .dayOfWeek(req.dayOfWeek())
-                .classTime(req.classTime())
+                .id(scheduleId)
                 .build();
     }
 
