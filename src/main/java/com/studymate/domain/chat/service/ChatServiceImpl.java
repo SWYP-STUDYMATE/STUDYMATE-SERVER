@@ -3,10 +3,14 @@ package com.studymate.domain.chat.service;
 import com.studymate.common.exception.StudymateExceptionType;
 import com.studymate.domain.chat.dto.request.ChatRoomCreateRequest;
 import com.studymate.domain.chat.dto.response.ChatMessageResponse;
+import com.studymate.domain.chat.dto.response.ChatRoomListResponse;
 import com.studymate.domain.chat.dto.response.ChatRoomResponse;
+import com.studymate.domain.chat.dto.response.ParticipantDto;
 import com.studymate.domain.chat.entity.ChatMessage;
 import com.studymate.domain.chat.entity.ChatRoom;
+import com.studymate.domain.chat.entity.ChatRoomParticipant;
 import com.studymate.domain.chat.repository.ChatMessageRepository;
+import com.studymate.domain.chat.repository.ChatRoomParticipantRepository;
 import com.studymate.domain.chat.repository.ChatRoomRepository;
 import com.studymate.domain.user.domain.repository.UserRepository; // 수정: UserRepository import
 import com.studymate.domain.user.entity.User;                   // 수정: User import
@@ -15,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,8 +29,9 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRoomRepository roomRepo;
     private final ChatMessageRepository msgRepo;
-    private final UserRepository userRepo;                   // 수정: UserRepository 주입
+    private final UserRepository userRepo;
     private final SimpMessagingTemplate template;
+    private final ChatRoomParticipantRepository participantRepo;
 
     @Override
     public ChatRoomResponse createChatRoom(UUID creatorId, ChatRoomCreateRequest req) {
@@ -76,5 +82,41 @@ public class ChatServiceImpl implements ChatService {
         // 5) 브로드캐스트
         ChatMessageResponse resp = ChatMessageResponse.from(msg);
         template.convertAndSend("/sub/chat/room/" + roomId, resp);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ChatRoomListResponse> listChatRooms(UUID userId) {
+        // 1) 사용자가 속한 방 목록 조회
+        List<ChatRoomParticipant> parts = participantRepo.findByUserUserId(userId);
+
+        return parts.stream()
+                .map(p -> {
+                    ChatRoom room = p.getRoom();
+                    // 2) 마지막 메시지 조회
+                    ChatMessage last = msgRepo
+                            .findTopByChatRoomOrderByCreatedAtDesc(room)
+                            .orElse(null);
+
+                    return new ChatRoomListResponse(
+                            room.getId(),
+                            room.getRoomName(),
+                            room.getParticipants().stream()
+                                    .map(cp -> toParticipantDto(cp.getUser()))
+                                    .toList(),
+                            last != null ? last.getMessage() : "",
+                            last != null ? last.getCreatedAt() : room.getCreatedAt()
+                    );
+                })
+                .toList();
+    }
+
+    // ParticipantDto 매핑 헬퍼
+    private ParticipantDto toParticipantDto(User user) {
+        return new ParticipantDto() {
+            @Override public UUID getUserId() { return user.getUserId(); }
+            @Override public String getName() { return user.getName(); }
+            @Override public String getProfileImage() { return user.getProfileImage(); }
+        };
     }
 }
