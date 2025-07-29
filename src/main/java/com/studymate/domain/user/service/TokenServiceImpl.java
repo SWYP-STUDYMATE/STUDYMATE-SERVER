@@ -25,37 +25,27 @@ public class TokenServiceImpl implements TokenService {
 
 
     @Override
-    public TokenResponse refreshToken(String refreshtoken) {
-
-            LoginTokenResponse loginTokenResponse = jwtUtils.parseRefreshToken(refreshtoken);
-            String userId = loginTokenResponse.uuid().toString();
-
-            String key = "refresh_token:" + userId;
-            String storedRefreshToken = redisTemplate.opsForValue().get(key);
-
-            if (storedRefreshToken == null) {
-                throw new LoginExpirationException();
-            }
-
-            if (jwtUtils.isTokenExpired(storedRefreshToken)) {
-                redisTemplate.delete(key);
-                throw new LoginExpirationException();
-            }
-
-            String newAccessToken = jwtUtils.createLoginToken(loginTokenResponse);
-
-            return TokenResponse.of(newAccessToken, null);
+    public TokenResponse refreshToken(String refreshToken) {
+        // 1) 유효성 검사
+        if (!jwtUtils.validateToken(refreshToken)) {
+            throw new LoginExpirationException();
+        }
+        // 2) 토큰에서 userId 추출
+        UUID userId = jwtUtils.getUserIdFromToken(refreshToken);
+        // 3) Redis 에 저장된 리프레시 토큰과 비교
+        String stored = redisTemplate.opsForValue().get("refresh_token:" + userId);
+        if (stored == null || !stored.equals(refreshToken)) {
+            throw new LoginExpirationException();
+        }
+        // 4) 새 Access Token 발급
+        String newAccessToken = jwtUtils.generateAccessToken(userId);
+        return TokenResponse.of(newAccessToken, null);
     }
-
 
     @Override
     public void logout(String accessToken) {
-            LoginTokenResponse loginTokenResponse = jwtUtils.parseLoginToken(accessToken);
-            String userId = loginTokenResponse.uuid().toString();
-
-            String key = "refresh_token:" + userId;
-            redisTemplate.delete(key);
-
-
+        if (!jwtUtils.validateToken(accessToken)) return;
+        UUID userId = jwtUtils.getUserIdFromToken(accessToken);
+        redisTemplate.delete("refresh_token:" + userId);
     }
 }
