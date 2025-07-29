@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  app:
+    image: ${DOCKER_REGISTRY}/studymate-app:${APP_IMAGE_VERSION}
+    container_name: studymate-app-prod
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # NCP Cloud DB for MySQL 연결 정보
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=true&requireSSL=true&verifyServerCertificate=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      # NCP Cloud DB for Redis 연결 정보
+      - SPRING_DATA_REDIS_HOST=${REDIS_HOST}
+      - SPRING_DATA_REDIS_PORT=${REDIS_PORT}
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD}
+      - SPRING_DATA_REDIS_TIMEOUT=10000ms
+      # 애플리케이션 설정
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+      - TZ=Asia/Seoul
+      # JVM 설정 (메모리 최적화)
+      - JAVA_OPTS=-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport
+      # 로깅 설정
+      - LOGGING_LEVEL_ROOT=INFO
+      - LOGGING_LEVEL_COM_STUDYMATE=DEBUG
+      - LOGGING_FILE_NAME=/app/logs/application.log
+      # 애플리케이션 설정
+      - SERVER_PORT=8080
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
+      - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+    volumes:
+      - ./logs:/app/logs
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    networks:
+      - studymate-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+networks:
+  studymate-network:
+    driver: bridge
