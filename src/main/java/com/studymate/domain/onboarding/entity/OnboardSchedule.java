@@ -18,15 +18,8 @@ import java.util.UUID;
 @Table(name = "ONBOARD_SCHEDULE")
 public class OnboardSchedule {
 
-    @Id
-    @Column(name = "USER_ID")
-    private UUID userId;
-
-    @Column(name = "DAY_OF_WEEK")
-    private DayOfWeekType dayOfWeek;
-
-    @Column(name = "CLASS_TIME")
-    private LocalTime classTime;
+    @EmbeddedId
+    private OnboardScheduleId id;
 
 
 

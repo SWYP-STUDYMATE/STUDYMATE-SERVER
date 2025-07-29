@@ -34,8 +34,7 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
     private final OnboardLangLevelRepository onboardLangLevelRepository;
 
     @Override
-    public void saveNativeLanguage(NativeLanguageRequest req) {
-        UUID userId = req.userId();
+    public void saveNativeLanguage(UUID userId,NativeLanguageRequest req) {
         int nativeLangId = req.languageId();
 
         User user = userRepository.findById(userId)
@@ -48,8 +47,7 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
     }
 
     @Override
-    public void saveLanguageLevel(LanguageLevelRequest req) {
-        UUID userId = req.userId();
+    public void saveLanguageLevel(UUID userId,LanguageLevelRequest req) {
         Set<Integer> langLevelTypeIds = req.languages().stream()
                 .map(LanguageLevelRequest.LanguageLevelDto::langLevelTypeId)
                 .collect(Collectors.toSet());
@@ -73,32 +71,6 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
 
     }
 
-//    @Override
-//    public void saveLearningLanguageLevel(LanguageLevelRequest req) {
-//            UUID userId = req.userId();
-//            Set<Integer> langLevelTypeIds = req.languages().stream()
-//                    .map(LanguageLevelRequest.LanguageLevelDto::langLevelTypeId)
-//                    .collect(Collectors.toSet());
-//            Map<Integer, LangLevelType> langLevelTypeMap = langLevelTypeRepository
-//                    .findAllById(langLevelTypeIds)
-//                    .stream()
-//                    .collect(Collectors.toMap(LangLevelType::getLangLevelId, Function.identity()));
-//
-//            for (LanguageLevelRequest.LanguageLevelDto dto : req.languages()) {
-//                OnboardLangLevelId id = new OnboardLangLevelId(userId, dto.languageId());
-//                LangLevelType langLevelType = langLevelTypeMap.get(dto.langLevelTypeId());
-//                if (langLevelType == null) {
-//                    throw new NotFoundException("LANGUAGE LEVEL NOT FOUND: ");
-//                }
-//                OnboardLangLevel onboardLangLevel = OnboardLangLevel.builder()
-//                        .id(id)
-//                        .langLevelType(langLevelType)
-//                        .build();
-//        }
-//
-//        onboardLangLevelRepository.save(onboardLangLevel);
-//
-//    }
 
     @Override
     public List<LanguageResponse> getAllLanguages() {

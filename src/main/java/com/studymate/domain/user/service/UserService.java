@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    void saveEnglishName(EnglishNameRequest req);
-    void saveProfileImage(ProfileImageRequest req);
-    void saveSelfBio(SelfBioRequest req);
-    void saveLocation(LocationRequest req);
+    void saveEnglishName(UUID userId,EnglishNameRequest req);
+    void saveProfileImage(UUID userId,ProfileImageRequest req);
+    void saveSelfBio(UUID userId,SelfBioRequest req);
+    void saveLocation(UUID userId,LocationRequest req);
     List<LocationResponse> getAllLocation();
     UserNameResponse getUserName(UUID userId);
 

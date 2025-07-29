@@ -31,8 +31,7 @@ public class OnboardPartnerServiceImpl implements OnboardPartnerService {
     private final PartnerPersonalityRepository partnerPersonalityRepository;
 
     @Override
-    public void savePartnerPersonality(PartnerRequest req){
-        UUID userId = req.userId();
+    public void savePartnerPersonality(UUID userId,PartnerRequest req){
         List<Integer> partnerPersonalityIds = req.personalPartnerIds();
         List<OnboardPartner> onboardPartners = partnerPersonalityIds.stream()
                 .map(partnerPersonalityId-> OnboardPartner.builder()
@@ -44,8 +43,7 @@ public class OnboardPartnerServiceImpl implements OnboardPartnerService {
     }
 
     @Override
-    public void savePartnerGender(PartnerGenderRequest req) {
-        UUID userId = req.userId();
+    public void savePartnerGender(UUID userId,PartnerGenderRequest req) {
         PartnerGenderType partnerGenderType = req.partnerGenderType();
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new NotFoundException("USER NOT FOUND"));

@@ -8,10 +8,15 @@ import com.studymate.domain.onboarding.domain.dto.response.DailyMinuteResponse;
 import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
 import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.service.OnboardScheduleService;
+import com.studymate.domain.user.util.CustomUserDetails;
+import com.studymate.domain.user.util.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,20 +24,31 @@ import java.util.List;
 public class OnboardScheduleContoller {
 
     private final OnboardScheduleService onboardScheduleService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/communication-method")
-    public void saveCommunicationMethod(@RequestBody CommunicationMethodRequest req) {
-        onboardScheduleService.saveCommunicationMethod(req);
+    public void saveCommunicationMethod(@AuthenticationPrincipal CustomUserDetails principal,
+                                        @RequestBody CommunicationMethodRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        onboardScheduleService.saveCommunicationMethod(userId,req);
+        System.out.println("saveCommunicationMethod 진입, userId = " + userId);
     }
 
     @PostMapping("/daily-minute")
-    public void saveDailyMinute (@RequestBody DailyMinuteRequest req) {
-        onboardScheduleService.saveDailyMinute(req);
+    public void saveDailyMinute (@AuthenticationPrincipal CustomUserDetails principal,
+                                 @RequestBody DailyMinuteRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        onboardScheduleService.saveDailyMinute(userId,req);
     }
 
     @PostMapping
-    public void saveOnboardSchedules(@RequestBody OnboardScheduleRequests req) {
-        onboardScheduleService.saveOnboardSchedules(req);
+    public void saveOnboardSchedules(@AuthenticationPrincipal CustomUserDetails principal,
+                                     @RequestBody OnboardScheduleRequests req
+    ) {
+        UUID userId = principal.getUuid();
+        onboardScheduleService.saveOnboardSchedules(userId,req);
 
     }
 

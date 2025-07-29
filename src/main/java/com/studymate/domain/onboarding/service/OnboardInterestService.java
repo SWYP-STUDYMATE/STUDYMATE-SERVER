@@ -10,16 +10,16 @@ import com.studymate.domain.onboarding.domain.dto.response.MotivationResponse;
 import com.studymate.domain.onboarding.domain.dto.response.TopicResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OnboardInterestService {
-    void saveMotivation(MotivationRequest req);
-    void saveTopic(TopicRequest req);
-    void saveLearningStyle(LearningStyleRequest req);
-    void saveLearningExpectation(LearningExceptionRequest req);
+    void saveMotivation(UUID userId,MotivationRequest req);
+    void saveTopic(UUID userId,TopicRequest req);
+    void saveLearningStyle(UUID userId,LearningStyleRequest req);
+    void saveLearningExpectation(UUID userId,LearningExceptionRequest req);
     List<MotivationResponse> getAllMotivation();
     List<TopicResponse> getAllTopic();
     List<LearningStyleResponse> getAllLearningStyle();
     List<LearningExpectationResponse> getAllLearningExpectationType();
-//    LearningExpectionType[] getAllLearningExpectationType();
 
 }

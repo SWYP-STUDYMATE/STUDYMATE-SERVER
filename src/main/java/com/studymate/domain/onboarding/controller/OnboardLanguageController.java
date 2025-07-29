@@ -5,10 +5,15 @@ import com.studymate.domain.onboarding.domain.dto.request.NativeLanguageRequest;
 import com.studymate.domain.onboarding.domain.dto.response.LangLevelTypeResponse;
 import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
 import com.studymate.domain.onboarding.service.OnboardLanguageService;
+import com.studymate.domain.user.util.CustomUserDetails;
+import com.studymate.domain.user.util.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,21 +21,25 @@ import java.util.List;
 public class OnboardLanguageController {
 
     private final OnboardLanguageService onboardLanguageService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/native-language")
-    public void saveNativeLanguage(@RequestBody NativeLanguageRequest req){
-        onboardLanguageService.saveNativeLanguage(req);
+    public void saveNativeLanguage(@AuthenticationPrincipal CustomUserDetails principal,
+                                   @RequestBody NativeLanguageRequest req
+
+    ){
+        UUID userId = principal.getUuid();
+        onboardLanguageService.saveNativeLanguage(userId,req);
     }
 
     @PostMapping("/language-level")
-    public void saveLanguageLevel(@RequestBody LanguageLevelRequest req){
-        onboardLanguageService.saveLanguageLevel(req);
+    public void saveLanguageLevel(@AuthenticationPrincipal CustomUserDetails principal,
+                                  @RequestBody LanguageLevelRequest req
+    ){
+        UUID userId = principal.getUuid();
+        onboardLanguageService.saveLanguageLevel(userId,req);
     }
 
-//    @PostMapping("/learning-language-level")
-//    public void saveLearningLanguageLevel(@RequestBody LanguageLevelRequest req) {
-//        onboardLanguageService.saveLearningLanguageLevel(req);
-//    }
 
     @GetMapping("/languages")
     public List<LanguageResponse> getAllLanguages() {

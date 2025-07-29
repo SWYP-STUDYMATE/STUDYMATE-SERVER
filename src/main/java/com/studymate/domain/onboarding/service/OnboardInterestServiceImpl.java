@@ -37,8 +37,7 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
     @Override
     @Transactional
-    public void saveMotivation(MotivationRequest req){
-        UUID userId = req.userId();
+    public void saveMotivation(UUID userId,MotivationRequest req){
         List<Integer> motivationIds = req.motivationIds();
         List<OnboardMotivation> onboardMotivations = motivationIds.stream()
                 .map(motivationId -> OnboardMotivation.builder()
@@ -51,8 +50,7 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
     @Override
     @Transactional
-    public void saveTopic(TopicRequest req){
-        UUID userId = req.userId();
+    public void saveTopic(UUID userId,TopicRequest req){
         List<Integer> topicIds = req.topicIds();
         List<OnboardTopic> onboardTopics = topicIds.stream()
                 .map(topicId -> OnboardTopic.builder()
@@ -65,8 +63,7 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
     @Override
     @Transactional
-    public void saveLearningStyle(LearningStyleRequest req) {
-        UUID userId = req.userId();
+    public void saveLearningStyle(UUID userId,LearningStyleRequest req) {
         List<Integer> learningStyleIds = req.learningStyleIds();
         List<OnboardLearningStyle> onboardLearningStyles = learningStyleIds.stream()
                 .map(learningStyleId -> OnboardLearningStyle.builder()
@@ -78,8 +75,7 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
     @Override
     @Transactional
-    public void saveLearningExpectation(LearningExceptionRequest req) {
-        UUID userId = req.userId();
+    public void saveLearningExpectation(UUID userId,LearningExceptionRequest req) {
         LearningExpectionType learningExpectionType = req.learningExpectionType();
         User user = userRepository.findById(userId)
                         .orElseThrow(()->new NotFoundException("USER NOT FOUND"));

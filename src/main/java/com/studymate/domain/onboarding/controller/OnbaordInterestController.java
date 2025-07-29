@@ -9,10 +9,15 @@ import com.studymate.domain.onboarding.domain.dto.response.LearningStyleResponse
 import com.studymate.domain.onboarding.domain.dto.response.MotivationResponse;
 import com.studymate.domain.onboarding.domain.dto.response.TopicResponse;
 import com.studymate.domain.onboarding.service.OnboardInterestService;
+import com.studymate.domain.user.util.CustomUserDetails;
+import com.studymate.domain.user.util.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,25 +25,38 @@ import java.util.List;
 public class OnbaordInterestController {
 
     private final OnboardInterestService onboardInterestService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/motivation")
-    public void saveMotivation(@RequestBody MotivationRequest req){
-        onboardInterestService.saveMotivation(req);
+    public void saveMotivation(@AuthenticationPrincipal CustomUserDetails principal,
+                               @RequestBody MotivationRequest req
+    ){
+        UUID userId = principal.getUuid();
+        onboardInterestService.saveMotivation(userId,req);
     }
 
     @PostMapping("/topic")
-    public void saveTopic(@RequestBody TopicRequest req){
-        onboardInterestService.saveTopic(req);
+    public void saveTopic(@AuthenticationPrincipal CustomUserDetails principal,
+                          @RequestBody TopicRequest req
+    ){
+        UUID userId = principal.getUuid();
+        onboardInterestService.saveTopic(userId,req);
     }
 
     @PostMapping("/learning-style")
-    public void saveLearningStyle(@RequestBody LearningStyleRequest req){
-        onboardInterestService.saveLearningStyle(req);
+    public void saveLearningStyle(@AuthenticationPrincipal CustomUserDetails principal,
+                                  @RequestBody LearningStyleRequest req
+    ){
+        UUID userId = principal.getUuid();
+        onboardInterestService.saveLearningStyle(userId,req);
     }
 
     @PostMapping("/learning-expectation")
-    public void saveLearningExpectation(@RequestBody LearningExceptionRequest req){
-        onboardInterestService.saveLearningExpectation(req);
+    public void saveLearningExpectation(@AuthenticationPrincipal CustomUserDetails principal,
+                                        @RequestBody LearningExceptionRequest req
+    ){
+        UUID userId = principal.getUuid();
+        onboardInterestService.saveLearningExpectation(userId,req);
     }
 
     @GetMapping("/motivations")
