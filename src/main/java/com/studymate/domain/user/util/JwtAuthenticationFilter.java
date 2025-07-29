@@ -1,63 +1,75 @@
 package com.studymate.domain.user.util;
 
-import com.studymate.domain.user.domain.dto.response.LoginTokenResponse;
+import com.studymate.domain.user.domain.dao.UserDao;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
-import io.jsonwebtoken.lang.Arrays;
-import io.jsonwebtoken.lang.Collections;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.UUID;
 
+// JwtAuthenticationFilter.java
+
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final UserRepository userRepository;
+    private final UserDao userDao;    // ← UserRepository → UserDao
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils,UserRepository userRepository){
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDao userDao) {
         this.jwtUtils = jwtUtils;
-        this.userRepository = userRepository;
+        this.userDao = userDao;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-    throws ServletException, IOException {
-
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        String path = request.getRequestURI();
         String token = jwtUtils.resolveToken(request);
+        log.info("▶ JWT Filter: [{}] token={}", path, token);
 
-        if (token != null && !jwtUtils.isTokenExpired(token)){
-            LoginTokenResponse loginTokenResponse = jwtUtils.parseLoginToken(token);
-            User user = userRepository.findById(loginTokenResponse.uuid())
-                    .orElseThrow(()-> new NotFoundException("USER NOT FOUND"));
-            CustomUserDetails userDetails = new CustomUserDetails(user.getUserId(), user.getName());
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("USER"));
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            authorities);
+        if (token != null && jwtUtils.validateToken(token)) {
+            try {
+                UUID userId = jwtUtils.getUserIdFromToken(token);
+                User user = userDao.findByUserId(userId)
+                        .orElseThrow(() -> new NotFoundException("USER NOT FOUND"));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                CustomUserDetails userDetails =
+                        new CustomUserDetails(user.getUserId(), user.getName());
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (Exception ex) {
+                // 인증 실패 → 즉시 401 Unauthorized 응답
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT");
+                return;
+            }
         }
-        filterChain.doFilter(request,response);
 
-
-
+        filterChain.doFilter(request, response);
     }
 
 
 
-
-
-
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/login") || path.startsWith("/auth");
+    }
 }
+
