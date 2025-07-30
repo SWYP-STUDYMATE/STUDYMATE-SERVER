@@ -1,12 +1,16 @@
 package com.studymate.config;
 
+import com.studymate.domain.user.domain.dao.UserDao;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.service.UserServiceImpl;
 import com.studymate.domain.user.util.JwtAuthenticationFilter;
 import com.studymate.domain.user.util.JwtUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,23 +20,43 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http, JwtUtils jwtUtils,  UserRepository userRepository) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtUtils jwtUtils,
+            UserDao userDao
+    ) throws Exception {
         http
-                .csrf().disable()
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
+                .anonymous(withDefaults())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) ->
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers( "/login/**", "/auth/**").permitAll()
+                        // 1) OPTIONS, 로그인/토큰 엔드포인트
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/login/**", "/auth/**").permitAll()
+                        // 2) SockJS/WebSocket 핸드셰이크 경로
+                        .requestMatchers("/ws/**").permitAll()
+                        // 3) 나머지 API
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtils,userRepository), UsernamePasswordAuthenticationFilter.class);
+                // JWT 필터는 WebSocket 핸드셰이크 이후 CONNECT 프레임 처리용
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtUtils, userDao),
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
-
 }

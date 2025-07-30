@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -40,13 +41,10 @@ public class LoginServiceImpl implements LoginService {
     public TokenResponse getLoginTokenCallback(String code, String state) {
         NaverTokenResponse token = naverApi.getToken(code, state);
         NaverUserInfoResponse userInfo = naverApi.getUserInfo(token.access_token());
-        Optional<User> OptionalUser = userDao.findByUserIdentity(userInfo.id());
-        User user;
-        if (OptionalUser.isPresent()) {
-            user = OptionalUser.get();
-            user.updateNaverProfile(userInfo.name(), userInfo.birthday(), userInfo.birthyear(), userInfo.gender());
-        } else {
-            user = User.builder()
+
+        Optional<User> optUser = userDao.findByUserIdentity(userInfo.id());
+        User user = optUser.orElseGet(() -> {
+            User u = User.builder()
                     .userIdentity(userInfo.id())
                     .userCreatedAt(LocalDateTime.now())
                     .name(userInfo.name())
@@ -55,19 +53,16 @@ public class LoginServiceImpl implements LoginService {
                     .birthyear(userInfo.birthyear())
                     .userDisable(false)
                     .build();
-        }
-
+            return u;
+        });
         userDao.save(user);
-        LoginTokenResponse loginTokenResponse = new LoginTokenResponse(user.getUserId());
-        String accessToken = jwtUtils.createLoginToken(loginTokenResponse);
-        String refreshToken = jwtUtils.createRefreshToken(loginTokenResponse);
-        String key = "refresh_token:" + user.getUserId();
-        redisTemplate.opsForValue().set(key, refreshToken, 7, TimeUnit.DAYS);
+
+        UUID userId = user.getUserId();
+        String accessToken = jwtUtils.generateAccessToken(userId);
+        String refreshToken = jwtUtils.generateRefreshToken(userId);
+        redisTemplate.opsForValue()
+                .set("refresh_token:" + userId, refreshToken, 7, TimeUnit.DAYS);
+
         return TokenResponse.of(accessToken, refreshToken);
-
     }
-
-
-
-
 }

@@ -5,7 +5,6 @@ import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +24,26 @@ public class ChatRoom extends BaseTimeEntity {
     private String roomName;
 
     @Builder.Default
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatParticipant> participants = new ArrayList<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoomParticipant> participants = new ArrayList<>();
+
+    public void addParticipant(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User must not be null");
+        }
+        if (this.id == null) {
+            throw new IllegalStateException("ChatRoom must be persisted first");
+        }
+        if (participants.stream().anyMatch(p -> p.getUser().getUserId().equals(user.getUserId()))) {
+            throw new IllegalStateException("User already joined");
+        }
+        if (participants.size() >= 4) {
+            throw new IllegalStateException("최대 4명까지 참여 가능합니다.");
+        }
+        participants.add(ChatRoomParticipant.builder()
+                .id(new ChatRoomParticipantId(id, user.getUserId()))
+                .room(this)
+                .user(user)
+                .build());
+    }
 }

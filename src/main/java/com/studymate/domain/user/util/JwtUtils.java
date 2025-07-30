@@ -1,88 +1,74 @@
 package com.studymate.domain.user.util;
 
-import com.studymate.domain.user.domain.dto.response.LoginTokenResponse;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
 @Component
 public class JwtUtils {
-
     private final SecretKey secretKey;
+    private static final long ACCESS_TOKEN_VALIDITY  = 1000L * 60 * 60;          // 1시간
+    private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 7;  // 7일
 
-    public JwtUtils(
-            @Value("${jwt.secret_key}") String secret){
-                this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    public JwtUtils(@Value("${jwt.secret_key}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-
-    public String createLoginToken(LoginTokenResponse loginTokenResponse){
+    // Access Token 생성
+    public String generateAccessToken(UUID userId) {
         return Jwts.builder()
-                .claim("uuid",loginTokenResponse.uuid())
-                .expiration(new Date(System.currentTimeMillis() + 3600000))
-//                .expiration(new Date(System.currentTimeMillis() + 30000)) // 테스트  30초
-                .signWith(secretKey)
-                .compact();
-
-    }
-
-    public LoginTokenResponse parseLoginToken(String loginToken){
-        Claims claims = (Claims) Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parse(loginToken)
-                .getPayload();
-        return LoginTokenResponse.from(claims);
-    }
-
-    public String createRefreshToken(LoginTokenResponse loginTokenResponse){
-        return Jwts.builder()
-                .claim("uuid",loginTokenResponse.uuid())
-                .claim("type","refresh")
-                .expiration(new Date(System.currentTimeMillis() + 7 * 24 *3600000))
-                .signWith(secretKey)
+                .setSubject(userId.toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
-    public LoginTokenResponse parseRefreshToken(String refreshToken){
-        Claims claims = (Claims) Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parse(refreshToken)
-                .getPayload();
-
-        String tokenType = claims.get("type", String.class);
-        if (!"refresh".equals(tokenType)) {
-            throw new RuntimeException("리프레시 토큰 검증 실패");
-        }
-
-        return LoginTokenResponse.from(claims);
+    // Refresh Token 생성
+    public String generateRefreshToken(UUID userId) {
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .claim("type", "refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
     }
 
-    public boolean isTokenExpired(String token){
+    // 토큰에서 userId(UUID) 추출
+    public UUID getUserIdFromToken(String token) {
+        Jws<Claims> jws = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
+        return UUID.fromString(jws.getBody().getSubject());
+    }
+
+    // 토큰 유효성(서명·만료) 검사
+    public boolean validateToken(String token) {
         try {
-            Claims claims = (Claims) Jwts.parser()
-                    .verifyWith(secretKey)
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
                     .build()
-                    .parse(token)
-                    .getPayload();
-            return claims.getExpiration().before(new Date());
-        } catch (Exception e) {
+                    .parseClaimsJws(token);
             return true;
+        } catch (JwtException | IllegalArgumentException ex) {
+            return false;
         }
     }
 
-    public String resolveToken(HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith(("Bearer "))) {
-            return bearerToken.substring(7);
+    // HTTP 요청 헤더에서 Bearer 토큰 분리
+    public String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
         }
         return null;
     }

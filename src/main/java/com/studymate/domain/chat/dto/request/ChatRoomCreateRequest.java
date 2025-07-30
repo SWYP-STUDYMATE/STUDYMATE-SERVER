@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Builder
 public record ChatRoomCreateRequest(
-    List<UUID> participantUserIds,
-    String roomName
+    String roomName,
+    List<UUID> participantIds
 ) {
 }
