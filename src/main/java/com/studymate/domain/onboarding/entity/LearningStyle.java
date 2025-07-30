@@ -16,7 +16,7 @@ public class LearningStyle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "LEARNIG_STYLE_ID")
+    @Column(name = "LEARNING_STYLE_ID")
     private int learningStyleId;
 
     @Column(name = "LEARNING_STYLE_NAME")
