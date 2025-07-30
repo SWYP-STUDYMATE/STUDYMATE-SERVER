@@ -2,16 +2,16 @@ package com.studymate.domain.user.controller;
 
 import com.studymate.domain.user.domain.dto.request.EnglishNameRequest;
 import com.studymate.domain.user.domain.dto.request.LocationRequest;
-import com.studymate.domain.user.domain.dto.request.ProfileImageRequest;
 import com.studymate.domain.user.domain.dto.request.SelfBioRequest;
 import com.studymate.domain.user.domain.dto.response.LocationResponse;
+import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
 import com.studymate.domain.user.domain.dto.response.UserNameResponse;
 import com.studymate.domain.user.service.UserService;
-import com.studymate.domain.user.service.UserServiceImpl;
 import com.studymate.domain.user.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,12 +31,12 @@ public class UserController {
         userService.saveEnglishName(userId,req);
     }
 
-    @PostMapping("/profile-image")
+    @PostMapping(value = "/profile-image", consumes = "multipart/form-data")
     public void saveProfileImage (@AuthenticationPrincipal CustomUserDetails principal,
-                                  @RequestBody ProfileImageRequest req
-    ) {
+                                  @RequestPart("file")MultipartFile file
+                                  ) {
         UUID userId = principal.getUuid();
-        userService.saveProfileImage(userId,req);
+        userService.saveProfileImage(userId,file);
     }
 
     @PostMapping("/self-bio")
@@ -58,9 +58,18 @@ public class UserController {
     public List<LocationResponse> getAllLocation() {
         return userService.getAllLocation();
     }
+
     @GetMapping("/name")
     public UserNameResponse getUserName(@AuthenticationPrincipal CustomUserDetails principal) {
         UUID userId = principal.getUuid();
         return userService.getUserName(userId);
+    }
+
+    @GetMapping("/profile")
+    public ProfileImageUrlResponse getProfileImageUrl(@AuthenticationPrincipal CustomUserDetails principal
+    ) {
+        UUID userId = principal.getUuid();
+        return userService.getProfileImageUrl(userId);
+
     }
 }
