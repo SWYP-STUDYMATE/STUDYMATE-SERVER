@@ -2,9 +2,11 @@ package com.studymate.domain.onboarding.controller;
 
 import com.studymate.domain.onboarding.domain.dto.request.CommunicationMethodRequest;
 import com.studymate.domain.onboarding.domain.dto.request.DailyMinuteRequest;
+import com.studymate.domain.onboarding.domain.dto.request.GroupSizeRequest;
 import com.studymate.domain.onboarding.domain.dto.request.OnboardScheduleRequests;
 import com.studymate.domain.onboarding.domain.dto.response.CommunicationMethodResponse;
 import com.studymate.domain.onboarding.domain.dto.response.DailyMinuteResponse;
+import com.studymate.domain.onboarding.domain.dto.response.GroupSizeResponse;
 import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
 import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.service.OnboardScheduleService;
@@ -32,7 +34,6 @@ public class OnboardScheduleContoller {
     ) {
         UUID userId = principal.getUuid();
         onboardScheduleService.saveCommunicationMethod(userId,req);
-        System.out.println("saveCommunicationMethod 진입, userId = " + userId);
     }
 
     @PostMapping("/daily-minute")
@@ -41,6 +42,13 @@ public class OnboardScheduleContoller {
     ) {
         UUID userId = principal.getUuid();
         onboardScheduleService.saveDailyMinute(userId,req);
+    }
+    @PostMapping("/group-size")
+    public void saveOnboardGroupSize(@AuthenticationPrincipal CustomUserDetails principal,
+                                     @RequestBody GroupSizeRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        onboardScheduleService.saveOnboardGroupSize(userId,req);
     }
 
     @PostMapping
@@ -53,13 +61,21 @@ public class OnboardScheduleContoller {
     }
 
     @GetMapping("/communication-methods")
-    public List<CommunicationMethodResponse> getAllCommunication() {
+    public List<CommunicationMethodResponse> getAllCommunication(
+    ) {
         return onboardScheduleService.getAllCommunication();
     }
 
     @GetMapping("/daily-methods")
-    public List<DailyMinuteResponse> getAllDailyMethod() {
+    public List<DailyMinuteResponse> getAllDailyMethod(
+    ) {
         return onboardScheduleService.getAllDailyMethod();
+    }
+
+    @GetMapping("/group-sizes")
+    public List<GroupSizeResponse> getAllGroupSize(
+    ) {
+        return onboardScheduleService.getAllGroupSize();
     }
 
 }

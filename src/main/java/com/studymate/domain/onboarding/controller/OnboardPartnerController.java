@@ -50,4 +50,6 @@ public class OnboardPartnerController {
         return onboardPartnerService.getAllPartnerPersonality();
     }
 
+
+
 }
