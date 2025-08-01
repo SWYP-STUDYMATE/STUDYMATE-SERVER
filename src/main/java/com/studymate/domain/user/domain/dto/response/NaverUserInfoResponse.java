@@ -5,7 +5,7 @@ public record NaverUserInfoResponse(
         String name,
         String gender,
         String birthday,
-        String birthyear
-
+        String birthyear,
+        String profile_image
 ) {
 }

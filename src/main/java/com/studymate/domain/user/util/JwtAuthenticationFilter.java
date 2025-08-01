@@ -22,7 +22,7 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final UserDao userDao;    // ← UserRepository → UserDao
+    private final UserDao userDao;
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDao userDao) {
         this.jwtUtils = jwtUtils;
@@ -37,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String path = request.getRequestURI();
         String token = jwtUtils.resolveToken(request);
-        log.info("▶ JWT Filter: [{}] token={}", path, token);
 
         if (token != null && jwtUtils.validateToken(token)) {
             try {

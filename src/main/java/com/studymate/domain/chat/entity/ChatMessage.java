@@ -5,6 +5,9 @@ import com.studymate.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -25,6 +28,35 @@ public class ChatMessage extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User sender;
 
-    @Column(name = "message", nullable = false, length = 1000)
+    @Column(name = "message", length = 1000)
     private String message;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatImage> images = new ArrayList<>();
+
+    public void addImage(ChatImage image) {
+        this.images.add(image);
+        image.setChatMessage(this);
+    }
+
+    public boolean hasMessage() {
+        return this.message != null && !this.message.isEmpty();
+    }
+
+    public boolean hasImages() {
+        return !this.images.isEmpty();
+    }
+
+    public boolean isOnlyImage() {
+        return !hasMessage() && hasImages();
+    }
+
+    public boolean isOnlyMessage() {
+        return hasMessage() && !hasImages();
+    }
+
+    public boolean isMixed() {
+        return hasMessage() && hasImages();
+    }
 }
