@@ -89,11 +89,12 @@ public class User {
 
 
 
-    public void updateNaverProfile(String name, String birthday,String gender,String birthyear){
+    public void updateNaverProfile(String name, String birthday,String gender,String birthyear, String profileImage){
         this.name = name;
         this.birthday = birthday;
         this.gender = gender;
         this.birthyear = birthyear;
+        this.profileImage = profileImage;
 
     }
 

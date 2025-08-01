@@ -11,7 +11,9 @@ import com.studymate.domain.user.oauth.NaverUserInfo;
 import com.studymate.domain.user.oauth.OAuthUserInfo;
 import com.studymate.domain.user.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -20,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
@@ -56,6 +59,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+
     public TokenResponse getLoginTokenCallback(String provider, String code, String state) {
         OAuthUserInfo userInfo;
         UserIdentityType type = UserIdentityType.valueOf(provider.toUpperCase());
@@ -84,6 +88,7 @@ public class LoginServiceImpl implements LoginService {
                 return u;
             });
             userDao.save(user);
+
 
             UUID userId = user.getUserId();
             String accessToken = jwtUtils.generateAccessToken(userId);
