@@ -9,7 +9,9 @@ import com.studymate.domain.user.domain.dto.response.TokenResponse;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
@@ -41,6 +44,7 @@ public class LoginServiceImpl implements LoginService {
     public TokenResponse getLoginTokenCallback(String code, String state) {
         NaverTokenResponse token = naverApi.getToken(code, state);
         NaverUserInfoResponse userInfo = naverApi.getUserInfo(token.access_token());
+        log.info("Naver User Info: {}", userInfo);
 
         Optional<User> optUser = userDao.findByUserIdentity(userInfo.id());
         User user = optUser.orElseGet(() -> {
@@ -51,10 +55,12 @@ public class LoginServiceImpl implements LoginService {
                     .birthday(userInfo.birthday())
                     .gender(userInfo.gender())
                     .birthyear(userInfo.birthyear())
+                    .profileImage(userInfo.profile_image())
                     .userDisable(false)
                     .build();
             return u;
         });
+        user.updateNaverProfile(userInfo.name(), userInfo.birthday(), userInfo.gender(), userInfo.birthyear(), userInfo.profile_image());
         userDao.save(user);
 
         UUID userId = user.getUserId();
