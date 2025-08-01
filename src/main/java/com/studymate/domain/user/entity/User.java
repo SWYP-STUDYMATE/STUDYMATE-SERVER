@@ -5,6 +5,7 @@ import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.domain.type.PartnerGenderType;
 import com.studymate.domain.onboarding.entity.Language;
 import com.studymate.domain.onboarding.domain.type.LearningExpectionType;
+import com.studymate.domain.user.domain.type.UserIdentityType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -78,6 +79,10 @@ public class User {
     @Column(name = "DAILY_MINUTE")
     @Enumerated(EnumType.STRING)
     private DailyMinuteType dailyMinuteType;
+
+    @Column(name = "USER_IDENTITY_TYPE")
+    @Enumerated(EnumType.STRING)
+    private UserIdentityType userIdentityType;
 
 
 
