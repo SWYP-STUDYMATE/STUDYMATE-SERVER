@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-public class NaverAuthFeignConfig {
+public class AuthFeignConfig {
 
     @Bean
     public Encoder multipartFormEncoder() {

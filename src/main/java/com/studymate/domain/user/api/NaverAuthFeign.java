@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "NaverAuth", url = "https://nid.naver.com",configuration = NaverAuthFeignConfig.class)
+@FeignClient(name = "NaverAuth", url = "https://nid.naver.com",configuration = AuthFeignConfig.class)
 public interface NaverAuthFeign {
 
     @PostMapping(value = "/oauth2.0/token", consumes = "application/x-www-form-urlencoded")

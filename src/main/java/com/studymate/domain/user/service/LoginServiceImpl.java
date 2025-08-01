@@ -1,12 +1,14 @@
 package com.studymate.domain.user.service;
 
+import com.studymate.domain.user.api.GoogleApi;
 import com.studymate.domain.user.api.NaverApi;
 import com.studymate.domain.user.domain.dao.UserDao;
-import com.studymate.domain.user.domain.dto.response.LoginTokenResponse;
-import com.studymate.domain.user.domain.dto.response.NaverTokenResponse;
-import com.studymate.domain.user.domain.dto.response.NaverUserInfoResponse;
-import com.studymate.domain.user.domain.dto.response.TokenResponse;
+import com.studymate.domain.user.domain.dto.response.*;
+import com.studymate.domain.user.domain.type.UserIdentityType;
 import com.studymate.domain.user.entity.User;
+import com.studymate.domain.user.oauth.GoogleUserInfo;
+import com.studymate.domain.user.oauth.NaverUserInfo;
+import com.studymate.domain.user.oauth.OAuthUserInfo;
 import com.studymate.domain.user.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,49 +28,74 @@ import java.util.concurrent.TimeUnit;
 public class LoginServiceImpl implements LoginService {
 
     private final NaverApi naverApi;
+    private final GoogleApi googleApi;
     private final JwtUtils jwtUtils;
     private final UserDao userDao;
     private final RedisTemplate<String, String> redisTemplate;
 
+
     @Override
-    public String getLoginUrl(String state, String clientId, String redirectUri) {
-        return UriComponentsBuilder.fromHttpUrl("https://nid.naver.com/oauth2.0/authorize")
-                .queryParam("response_type", "code")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
-                .queryParam("state", state)
-                .build().toUriString();
+    public String getLoginUrl(String provider, String state, String clientId, String redirectUri) {
+        switch (UserIdentityType.valueOf(provider.toUpperCase())) {
+            case NAVER -> {
+                return UriComponentsBuilder.fromHttpUrl("https://nid.naver.com/oauth2.0/authorize")
+                        .queryParam("response_type", "code")
+                        .queryParam("client_id", clientId)
+                        .queryParam("redirect_uri", redirectUri)
+                        .queryParam("state", state)
+                        .build().toUriString();
+            }
+            case GOOGLE -> {
+                return UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
+                        .queryParam("response_type", "code")
+                        .queryParam("client_id", clientId)
+                        .queryParam("redirect_uri", redirectUri)
+                        .queryParam("scope", "openid profile email")
+                        .queryParam("state", state)
+                        .build().toUriString();
+            }
+            default -> throw new IllegalArgumentException("없는 provider" + provider);
+        }
     }
 
     @Override
-    public TokenResponse getLoginTokenCallback(String code, String state) {
-        NaverTokenResponse token = naverApi.getToken(code, state);
-        NaverUserInfoResponse userInfo = naverApi.getUserInfo(token.access_token());
-        log.info("Naver User Info: {}", userInfo);
 
-        Optional<User> optUser = userDao.findByUserIdentity(userInfo.id());
-        User user = optUser.orElseGet(() -> {
-            User u = User.builder()
-                    .userIdentity(userInfo.id())
-                    .userCreatedAt(LocalDateTime.now())
-                    .name(userInfo.name())
-                    .birthday(userInfo.birthday())
-                    .gender(userInfo.gender())
-                    .birthyear(userInfo.birthyear())
-                    .profileImage(userInfo.profile_image())
-                    .userDisable(false)
-                    .build();
-            return u;
-        });
-        user.updateNaverProfile(userInfo.name(), userInfo.birthday(), userInfo.gender(), userInfo.birthyear(), userInfo.profile_image());
-        userDao.save(user);
+    public TokenResponse getLoginTokenCallback(String provider, String code, String state) {
+        OAuthUserInfo userInfo;
+        UserIdentityType type = UserIdentityType.valueOf(provider.toUpperCase());
+        if (type == UserIdentityType.NAVER){
+                NaverTokenResponse token = naverApi.getToken(code, state);
+                NaverUserInfoResponse res = naverApi.getUserInfo(token.access_token());
+                userInfo = new NaverUserInfo(res);
+        } else if (type == UserIdentityType.GOOGLE) {
+            GoogleTokenResponse token = googleApi.getToken(code);
+            GoogleUserInfoResponse res = googleApi.getUserInfo(token.access_token());
+            userInfo = new GoogleUserInfo(res);
+        }else {
+            throw new IllegalArgumentException("없는 provider"+provider);
 
-        UUID userId = user.getUserId();
-        String accessToken = jwtUtils.generateAccessToken(userId);
-        String refreshToken = jwtUtils.generateRefreshToken(userId);
-        redisTemplate.opsForValue()
-                .set("refresh_token:" + userId, refreshToken, 7, TimeUnit.DAYS);
+        }
 
-        return TokenResponse.of(accessToken, refreshToken);
+            Optional<User> optUser = userDao.findByUserIdentity(userInfo.getId());
+            User user = optUser.orElseGet(() -> {
+                User u = User.builder()
+                        .userIdentity(userInfo.getId())
+                        .userIdentityType(type)
+                        .userCreatedAt(LocalDateTime.now())
+                        .name(userInfo.getName())
+                        .userDisable(false)
+                        .build();
+                return u;
+            });
+            userDao.save(user);
+
+
+            UUID userId = user.getUserId();
+            String accessToken = jwtUtils.generateAccessToken(userId);
+            String refreshToken = jwtUtils.generateRefreshToken(userId);
+            redisTemplate.opsForValue()
+                    .set("refresh_token:" + userId, refreshToken, 7, TimeUnit.DAYS);
+
+            return TokenResponse.of(accessToken, refreshToken);
+        }
     }
-}
