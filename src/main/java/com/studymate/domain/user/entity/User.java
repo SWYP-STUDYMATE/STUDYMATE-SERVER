@@ -5,6 +5,7 @@ import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.domain.type.PartnerGenderType;
 import com.studymate.domain.onboarding.entity.Language;
 import com.studymate.domain.onboarding.domain.type.LearningExpectionType;
+import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.domain.type.UserIdentityType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +37,8 @@ public class User {
     private String birthday;
 
     @Column(name = "GENDER")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private UserGenderType userGenderType;
 
     @Column(name = "BIRTHYEAR")
     private String birthyear;
@@ -92,7 +94,6 @@ public class User {
     public void updateNaverProfile(String name, String birthday,String gender,String birthyear, String profileImage){
         this.name = name;
         this.birthday = birthday;
-        this.gender = gender;
         this.birthyear = birthyear;
         this.profileImage = profileImage;
 

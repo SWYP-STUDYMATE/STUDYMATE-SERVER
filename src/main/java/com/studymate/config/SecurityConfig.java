@@ -46,6 +46,13 @@ public class SecurityConfig {
                         // 1) OPTIONS, 로그인/토큰 엔드포인트
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/login/**", "/auth/**").permitAll()
+                        //인증 없이 접근 가능한 옵션 조회용 API
+                        .requestMatchers("/onboard/interest/motivations", "/onboard/interest/topics",
+                                "/onboard/interest/learning-styles", "/onboard/interest/learning-expectations",
+                                "/onboard/language/languages","/onboard/language/level-types-language","/onboard/language/level-types-partner"
+                                ,"/onboard/partner/gender-type","/onboard/partner/personalities","/onboard/schedule/communication-methods",
+                                "/onboard/schedule/daily-methods","/onboard/schedule/group-sizes","/user/locations","/user/gender-type"
+                                ).permitAll()
                         // 2) SockJS/WebSocket 핸드셰이크 경로
                         .requestMatchers("/ws/**").permitAll()
                         // 3) 나머지 API

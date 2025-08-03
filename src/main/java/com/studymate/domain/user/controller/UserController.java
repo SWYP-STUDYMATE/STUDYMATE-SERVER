@@ -1,10 +1,9 @@
 package com.studymate.domain.user.controller;
 
-import com.studymate.domain.user.domain.dto.request.EnglishNameRequest;
-import com.studymate.domain.user.domain.dto.request.LocationRequest;
-import com.studymate.domain.user.domain.dto.request.SelfBioRequest;
+import com.studymate.domain.user.domain.dto.request.*;
 import com.studymate.domain.user.domain.dto.response.LocationResponse;
 import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
+import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
 import com.studymate.domain.user.domain.dto.response.UserNameResponse;
 import com.studymate.domain.user.service.UserService;
 import com.studymate.domain.user.util.CustomUserDetails;
@@ -31,12 +30,36 @@ public class UserController {
         userService.saveEnglishName(userId,req);
     }
 
+    @PostMapping("/birthyear")
+    public void saveBirthYear (@AuthenticationPrincipal CustomUserDetails principal,
+                                 @RequestBody BirthyearRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveBirthYear(userId,req);
+    }
+
+    @PostMapping("/birthday")
+    public void saveBirthDay (@AuthenticationPrincipal CustomUserDetails principal,
+                                 @RequestBody BirthdayRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveBirthDay(userId,req);
+    }
+
     @PostMapping(value = "/profile-image", consumes = "multipart/form-data")
     public void saveProfileImage (@AuthenticationPrincipal CustomUserDetails principal,
                                   @RequestPart("file")MultipartFile file
                                   ) {
         UUID userId = principal.getUuid();
         userService.saveProfileImage(userId,file);
+    }
+
+    @PostMapping("/gender")
+    public void saveUserGender (@AuthenticationPrincipal CustomUserDetails principal,
+                            @RequestBody UserGenderTypeRequest req
+    ) {
+        UUID userId = principal.getUuid();
+        userService.saveUserGender(userId,req);
     }
 
     @PostMapping("/self-bio")
@@ -71,5 +94,11 @@ public class UserController {
         UUID userId = principal.getUuid();
         return userService.getProfileImageUrl(userId);
 
+    }
+
+    @GetMapping("/gender-type")
+    public List<UserGenderTypeResponse> getAllUserGender(
+    ) {
+        return userService.getAllUserGender();
     }
 }
