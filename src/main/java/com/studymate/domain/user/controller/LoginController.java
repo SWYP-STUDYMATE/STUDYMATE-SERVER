@@ -65,10 +65,11 @@ public class LoginController {
     @GetMapping("/login/oauth2/code/google")
     public void googleCallback(
             @RequestParam("code") String code,
+            @RequestParam("state") String state,
             HttpServletResponse response
     ) throws IOException {
         // 1) 토큰 발급
-        TokenResponse tokens = loginService.getLoginTokenCallback("google",code,null);
+        TokenResponse tokens = loginService.getLoginTokenCallback("google",code,state);
 
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
