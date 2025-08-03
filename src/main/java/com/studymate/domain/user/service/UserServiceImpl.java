@@ -4,28 +4,29 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.studymate.domain.user.domain.dto.request.EnglishNameRequest;
-import com.studymate.domain.user.domain.dto.request.LocationRequest;
-import com.studymate.domain.user.domain.dto.request.ProfileImageRequest;
-import com.studymate.domain.user.domain.dto.request.SelfBioRequest;
+import com.studymate.domain.user.domain.dto.request.*;
 import com.studymate.domain.user.domain.dto.response.LocationResponse;
 import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
+import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
 import com.studymate.domain.user.domain.dto.response.UserNameResponse;
 import com.studymate.domain.user.domain.repository.LocationRepository;
 import com.studymate.domain.user.domain.repository.UserRepository;
+import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.entity.Location;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -68,6 +69,14 @@ public class UserServiceImpl implements UserService {
 
 
     }
+    @Override
+     public void saveUserGender(UUID userId, UserGenderTypeRequest req) {
+        UserGenderType userGenderType = req.genderType();
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("User NOT FOUND"));
+        user.setUserGenderType(userGenderType);
+        userRepository.save(user);
+    }
 
     @Override
     public void saveSelfBio(UUID userId,SelfBioRequest req){
@@ -85,6 +94,22 @@ public class UserServiceImpl implements UserService {
        Location location = locationRepository.findById(locationId)
                        .orElseThrow(()-> new NotFoundException("NOT FOUND LOCATION"));
         user.setLocation(location);
+        userRepository.save(user);
+
+    }
+    @Override
+    public void saveBirthYear (UUID userId, BirthyearRequest req){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
+        user.setBirthyear(req.birthyear());
+        userRepository.save(user);
+
+    }
+    @Override
+    public void saveBirthDay (UUID userId, BirthdayRequest req){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
+        user.setBirthday(req.birthday());
         userRepository.save(user);
 
     }
@@ -115,6 +140,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
         return new ProfileImageUrlResponse(user.getProfileImage());
 
+    }
+    @Override
+    public List<UserGenderTypeResponse> getAllUserGender() {
+        return Arrays.stream(UserGenderType.values())
+                .map(e-> new UserGenderTypeResponse(e.name(),e.getDescription()))
+                .toList();
     }
 
 
