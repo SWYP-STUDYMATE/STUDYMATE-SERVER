@@ -49,6 +49,7 @@ public class ChatController {
                 userId,
                 request.message(),
                 request.imageUrls(),
+                request.audioUrl(),
                 request.messageType()
         );
     }
@@ -60,5 +61,14 @@ public class ChatController {
     ) {
         List<String> imageUrls = chatService.uploadChatImages(roomId, files);
         return ResponseDto.of(imageUrls, "이미지 업로드 성공");
+    }
+
+    @PostMapping("/api/chat/rooms/{roomId}/audio")
+    public ResponseDto<String> uploadChatAudio(
+            @PathVariable Long roomId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        String audioUrl = chatService.uploadChatAudio(roomId, file);
+        return ResponseDto.of(audioUrl, "오디오 업로드 성공");
     }
 }

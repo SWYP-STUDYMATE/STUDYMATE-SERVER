@@ -96,7 +96,11 @@ public class User {
         this.birthday = birthday;
         this.birthyear = birthyear;
         this.profileImage = profileImage;
+    }
 
+    public void updateGoogleProfile(String name, String profileImage) {
+        this.name = name;
+        this.profileImage = profileImage;
     }
 
 

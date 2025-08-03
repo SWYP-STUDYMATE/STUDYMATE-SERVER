@@ -13,8 +13,9 @@ import java.util.UUID;
 
 public interface ChatService {
     ChatRoomResponse createChatRoom(UUID creatorId, ChatRoomCreateRequest request);
-    void sendMessage(Long roomId, UUID senderId, String message, List<String> imageUrls, MessageType messageType);
+    void sendMessage(Long roomId, UUID senderId, String message, List<String> imageUrls, String audioUrl, MessageType messageType);
     List<ChatRoomListResponse> listChatRooms(UUID userId);
     List<ChatMessageResponse> listMessages(Long roomId, UUID userId, int page, int size);
     List<String> uploadChatImages(Long roomId, List<MultipartFile> files);
+    String uploadChatAudio(Long roomId, MultipartFile file);
 }

@@ -76,17 +76,27 @@ public class LoginServiceImpl implements LoginService {
 
         }
 
-            Optional<User> optUser = userDao.findByUserIdentity(userInfo.getId());
-            User user = optUser.orElseGet(() -> {
-                User u = User.builder()
-                        .userIdentity(userInfo.getId())
-                        .userIdentityType(type)
-                        .userCreatedAt(LocalDateTime.now())
-                        .name(userInfo.getName())
-                        .userDisable(false)
-                        .build();
-                return u;
-            });
+            User user = userDao.findByUserIdentity(userInfo.getId())
+                .map(existingUser -> {
+                    if (type == UserIdentityType.NAVER) {
+                        existingUser.updateNaverProfile(userInfo.getName(), null, null, null, userInfo.getProfileImageUrl());
+                    } else if (type == UserIdentityType.GOOGLE) {
+                        existingUser.updateGoogleProfile(userInfo.getName(), userInfo.getProfileImageUrl());
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .userIdentity(userInfo.getId())
+                            .userIdentityType(type)
+                            .userCreatedAt(LocalDateTime.now())
+                            .name(userInfo.getName())
+                            .profileImage(userInfo.getProfileImageUrl())
+                            .userDisable(false)
+                            .build();
+                    return newUser;
+                });
+
             userDao.save(user);
 
 

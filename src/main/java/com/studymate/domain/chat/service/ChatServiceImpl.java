@@ -73,7 +73,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void sendMessage(Long roomId, UUID senderId, String message, List<String> imageUrls, MessageType messageType) {
+    public void sendMessage(Long roomId, UUID senderId, String message, List<String> imageUrls, String audioUrl, MessageType messageType) {
         ChatRoom room = roomRepo.findById(roomId)
                 .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_CHAT_ROOM.of());
         User sender = userRepo.findById(senderId)
@@ -89,6 +89,7 @@ public class ChatServiceImpl implements ChatService {
                 .chatRoom(room)
                 .sender(sender)
                 .message(message)
+                .audioUrl(audioUrl)
                 .build();
         msgRepo.save(msg);
 
@@ -176,6 +177,29 @@ public class ChatServiceImpl implements ChatService {
                 throw StudymateExceptionType.SERVER_ERROR.of("이미지 업로드 실패: " + e.getMessage());
             }
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public String uploadChatAudio(Long roomId, MultipartFile file) {
+        roomRepo.findById(roomId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_CHAT_ROOM.of());
+
+        String key = "chat-audio/" + roomId + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+            PutObjectRequest request = new PutObjectRequest(
+                    bucketName,
+                    key,
+                    file.getInputStream(),
+                    metadata
+            ).withCannedAcl(CannedAccessControlList.PublicRead);
+            amazonS3.putObject(request);
+            return amazonS3.getUrl(bucketName, key).toString();
+        } catch (IOException e) {
+            throw StudymateExceptionType.SERVER_ERROR.of("오디오 업로드 실패: " + e.getMessage());
+        }
     }
 
     private ParticipantDto toParticipantDto(User user) {
