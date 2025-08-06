@@ -22,6 +22,7 @@ import com.studymate.domain.chat.repository.ChatRoomRepository;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -72,6 +74,17 @@ public class ChatServiceImpl implements ChatService {
         }
 
         roomRepo.save(room);
+
+        // 방 생성 알림 전송
+        room.getParticipants().forEach(p -> {
+            log.info("Sending new room notification to user: {}", p.getUser().getUserId());
+            template.convertAndSendToUser(
+                p.getUser().getUserId().toString(),
+                "/queue/rooms",
+                ChatRoomResponse.from(room)
+            );
+        });
+
         return ChatRoomResponse.from(room);
     }
 
@@ -91,7 +104,7 @@ public class ChatServiceImpl implements ChatService {
         ChatMessage msg = ChatMessage.builder()
                 .chatRoom(room)
                 .sender(sender)
-                .message(message)
+                .message(message.isEmpty() ? null : message)
                 .audioUrl(audioUrl)
                 .build();
         msgRepo.save(msg);
