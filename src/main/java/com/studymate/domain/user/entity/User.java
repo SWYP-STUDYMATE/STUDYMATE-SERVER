@@ -91,16 +91,28 @@ public class User {
 
 
 
-    public void updateNaverProfile(String name, String birthday,String gender,String birthyear, String profileImage){
-        this.name = name;
-        this.birthday = birthday;
-        this.birthyear = birthyear;
-        this.profileImage = profileImage;
+    public void updateNaverProfile(String name, String birthday, String birthyear, String profileImage) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (birthday != null) {
+            this.birthday = birthday;
+        }
+        if (birthyear != null) {
+            this.birthyear = birthyear;
+        }
+        if (profileImage != null) {
+            this.profileImage = profileImage;
+        }
     }
 
     public void updateGoogleProfile(String name, String profileImage) {
-        this.name = name;
-        this.profileImage = profileImage;
+        if (name != null) {
+            this.name = name;
+        }
+        if (profileImage != null) {
+            this.profileImage = profileImage;
+        }
     }
 
 

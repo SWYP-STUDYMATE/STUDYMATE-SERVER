@@ -29,7 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -204,9 +207,51 @@ public class ChatServiceImpl implements ChatService {
 
     private ParticipantDto toParticipantDto(User user) {
         return new ParticipantDto() {
-            @Override public UUID getUserId() { return user.getUserId(); }
-            @Override public String getName() { return user.getName(); }
-            @Override public String getProfileImage() { return user.getProfileImage(); }
+            @Override
+            public UUID getUserId() {
+                return user.getUserId();
+            }
+
+            @Override
+            public String getName() {
+                return user.getName();
+            }
+
+            @Override
+            public String getProfileImage() {
+                return user.getProfileImage();
+            }
         };
+    }
+
+    @Override
+    public String uploadChatAudioFromBase64(Long roomId, String base64Data) {
+        roomRepo.findById(roomId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_CHAT_ROOM.of());
+
+        // 최대 2개로 나눠, 빈 부분 방지
+        String[] parts = base64Data.split(",", 2);
+        if (parts.length < 2 || parts[1].isEmpty()) {
+            throw StudymateExceptionType.SERVER_ERROR
+                    .of("전송된 오디오 데이터가 비어 있습니다.");
+        }
+        byte[] decoded = Base64.getDecoder().decode(parts[1]);
+
+        String key = "chat-audio/" + roomId + "/" + UUID.randomUUID() + ".webm";
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(decoded.length);
+        metadata.setContentType("audio/webm");
+
+        try (InputStream is = new ByteArrayInputStream(decoded)) {
+            amazonS3.putObject(
+                    new PutObjectRequest(bucketName, key, is, metadata)
+                            .withCannedAcl(CannedAccessControlList.PublicRead)
+            );
+        } catch (IOException e) {
+            throw StudymateExceptionType.SERVER_ERROR
+                    .of("오디오 업로드 실패: " + e.getMessage());
+        }
+
+        return amazonS3.getUrl(bucketName, key).toString();
     }
 }

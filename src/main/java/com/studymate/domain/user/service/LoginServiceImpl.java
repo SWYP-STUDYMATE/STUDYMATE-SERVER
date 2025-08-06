@@ -79,7 +79,7 @@ public class LoginServiceImpl implements LoginService {
             User user = userDao.findByUserIdentity(userInfo.getId())
                 .map(existingUser -> {
                     if (type == UserIdentityType.NAVER) {
-                        existingUser.updateNaverProfile(userInfo.getName(), null, null, null, userInfo.getProfileImageUrl());
+                        existingUser.updateNaverProfile(userInfo.getName(), null, null, userInfo.getProfileImageUrl());
                     } else if (type == UserIdentityType.GOOGLE) {
                         existingUser.updateGoogleProfile(userInfo.getName(), userInfo.getProfileImageUrl());
                     }

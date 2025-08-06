@@ -18,4 +18,5 @@ public interface ChatService {
     List<ChatMessageResponse> listMessages(Long roomId, UUID userId, int page, int size);
     List<String> uploadChatImages(Long roomId, List<MultipartFile> files);
     String uploadChatAudio(Long roomId, MultipartFile file);
+    String uploadChatAudioFromBase64(Long roomId, String base64Data);
 }
