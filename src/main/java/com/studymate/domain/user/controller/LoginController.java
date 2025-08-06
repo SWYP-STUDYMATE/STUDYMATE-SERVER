@@ -52,13 +52,20 @@ public class LoginController {
     ) throws IOException {
         // 1) 토큰 발급
         TokenResponse tokens = loginService.getLoginTokenCallback("naver",code, state);
+        
+        // 디버깅 로그 추가
+        System.out.println("네이버 로그인 - userId: " + tokens.userId());
+        System.out.println("네이버 로그인 - accessToken: " + tokens.accessToken());
 
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
                 .fromUriString("http://localhost:3000/main")
                 .queryParam("accessToken", tokens.accessToken())
+                .queryParam("userId", tokens.userId().toString())
                 .build()
                 .toUriString();
+                
+        System.out.println("네이버 리다이렉트 URL: " + redirectUrl);
 
         response.sendRedirect(redirectUrl);
     }
@@ -70,13 +77,20 @@ public class LoginController {
     ) throws IOException {
         // 1) 토큰 발급
         TokenResponse tokens = loginService.getLoginTokenCallback("google",code,state);
+        
+        // 디버깅 로그 추가
+        System.out.println("구글 로그인 - userId: " + tokens.userId());
+        System.out.println("구글 로그인 - accessToken: " + tokens.accessToken());
 
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
                 .fromUriString("http://localhost:3000/main")
                 .queryParam("accessToken", tokens.accessToken())
+                .queryParam("userId", tokens.userId().toString())
                 .build()
                 .toUriString();
+                
+        System.out.println("구글 리다이렉트 URL: " + redirectUrl);
 
         response.sendRedirect(redirectUrl);
     }
