@@ -39,4 +39,33 @@ public class ChatRoomController {
         List<ChatRoomListResponse> rooms = chatService.listChatRooms(userId);
         return ResponseEntity.ok(ResponseDto.of(rooms, "채팅방 목록 조회 완료"));
     }
+
+    @GetMapping("/public")
+    public ResponseEntity<ResponseDto<List<ChatRoomListResponse>>> listPublicChatRooms(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        UUID userId = UUID.fromString(userDetails.getUsername());
+        List<ChatRoomListResponse> rooms = chatService.listPublicChatRooms(userId);
+        return ResponseEntity.ok(ResponseDto.of(rooms, "공개 채팅방 목록 조회 완료"));
+    }
+
+    @PostMapping("/{roomId}/join")
+    public ResponseEntity<ResponseDto<ChatRoomResponse>> joinChatRoom(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        UUID userId = UUID.fromString(userDetails.getUsername());
+        ChatRoomResponse response = chatService.joinChatRoom(roomId, userId);
+        return ResponseEntity.ok(ResponseDto.of(response, "채팅방 참여 완료"));
+    }
+
+    @PostMapping("/{roomId}/leave")
+    public ResponseEntity<ResponseDto<String>> leaveChatRoom(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        UUID userId = UUID.fromString(userDetails.getUsername());
+        chatService.leaveChatRoom(roomId, userId);
+        return ResponseEntity.ok(ResponseDto.of("채팅방을 나갔습니다.", "채팅방 나가기 완료"));
+    }
 }

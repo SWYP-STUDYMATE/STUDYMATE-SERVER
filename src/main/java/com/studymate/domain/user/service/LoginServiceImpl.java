@@ -106,6 +106,6 @@ public class LoginServiceImpl implements LoginService {
             redisTemplate.opsForValue()
                     .set("refresh_token:" + userId, refreshToken, 7, TimeUnit.DAYS);
 
-            return TokenResponse.of(accessToken, refreshToken);
+            return TokenResponse.of(accessToken, refreshToken, userId);
         }
     }

@@ -39,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
         }
         // 4) 새 Access Token 발급
         String newAccessToken = jwtUtils.generateAccessToken(userId);
-        return TokenResponse.of(newAccessToken, null);
+        return TokenResponse.of(newAccessToken, null, userId);
     }
 
     @Override

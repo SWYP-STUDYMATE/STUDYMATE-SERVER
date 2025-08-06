@@ -37,6 +37,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.studymate.domain.chat.entity.RoomType;
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -59,6 +61,9 @@ public class ChatServiceImpl implements ChatService {
     public ChatRoomResponse createChatRoom(UUID creatorId, ChatRoomCreateRequest req) {
         ChatRoom room = ChatRoom.builder()
                 .roomName(req.roomName())
+                .roomType(RoomType.GROUP)
+                .isPublic(true)
+                .maxParticipants(4)
                 .build();
         roomRepo.save(room);
 
@@ -66,24 +71,32 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_USER.of());
         room.addParticipant(creator);
 
-        for (UUID id : req.participantIds()) {
-            if (id.equals(creatorId)) continue;
-            User u = userRepo.findById(id)
-                    .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_USER.of());
-            room.addParticipant(u);
+        if (req.participantIds() != null) {
+            for (UUID id : req.participantIds()) {
+                if (id.equals(creatorId)) continue;
+                User u = userRepo.findById(id)
+                        .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_USER.of());
+                room.addParticipant(u);
+            }
         }
 
         roomRepo.save(room);
 
-        // 방 생성 알림 전송
-        room.getParticipants().forEach(p -> {
-            log.info("Sending new room notification to user: {}", p.getUser().getUserId());
-            template.convertAndSendToUser(
-                p.getUser().getUserId().toString(),
-                "/queue/rooms",
-                ChatRoomResponse.from(room)
-            );
-        });
+        // 공개 채팅방 생성 시 모든 사용자에게 알림 전송
+        if (room.isPublic()) {
+            log.info("Sending public room creation notification to all users");
+            template.convertAndSend("/sub/chat/public-rooms", ChatRoomResponse.from(room));
+        } else {
+            // 비공개 채팅방인 경우 참여자들에게만 알림 전송
+            room.getParticipants().forEach(p -> {
+                log.info("Sending new room notification to user: {}", p.getUser().getUserId());
+                template.convertAndSendToUser(
+                    p.getUser().getUserId().toString(),
+                    "/queue/rooms",
+                    ChatRoomResponse.from(room)
+                );
+            });
+        }
 
         return ChatRoomResponse.from(room);
     }
@@ -127,8 +140,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional(readOnly = true)
     public List<ChatRoomListResponse> listChatRooms(UUID userId) {
+        // 참여 중인 채팅방 목록
         List<ChatRoomParticipant> parts = participantRepo.findByUserUserId(userId);
-        return parts.stream()
+        List<ChatRoomListResponse> participatingRooms = parts.stream()
                 .map(p -> {
                     ChatRoom room = p.getRoom();
                     ChatMessage last = msgRepo
@@ -138,6 +152,9 @@ public class ChatServiceImpl implements ChatService {
                     return new ChatRoomListResponse(
                             room.getId(),
                             room.getRoomName(),
+                            room.getRoomType(),
+                            room.isPublic(),
+                            room.getMaxParticipants(),
                             room.getParticipants().stream()
                                     .map(cp -> toParticipantDto(cp.getUser()))
                                     .collect(Collectors.toList()),
@@ -146,6 +163,126 @@ public class ChatServiceImpl implements ChatService {
                     );
                 })
                 .collect(Collectors.toList());
+
+        // 참여 가능한 공개 채팅방 목록 (참여하지 않은 방들)
+        List<ChatRoom> publicRooms = roomRepo.findByIsPublicTrue();
+        List<ChatRoomListResponse> availablePublicRooms = publicRooms.stream()
+                .filter(room -> {
+                    // 현재 사용자가 참여하지 않은 방만 필터링
+                    boolean notParticipating = room.getParticipants().stream()
+                            .noneMatch(p -> p.getUser().getUserId().equals(userId));
+                    return notParticipating && room.canJoin(userId);
+                })
+                .map(room -> {
+                    ChatMessage last = msgRepo
+                            .findTopByChatRoomOrderByCreatedAtDesc(room)
+                            .orElse(null);
+
+                    return new ChatRoomListResponse(
+                            room.getId(),
+                            room.getRoomName(),
+                            room.getRoomType(),
+                            room.isPublic(),
+                            room.getMaxParticipants(),
+                            room.getParticipants().stream()
+                                    .map(cp -> toParticipantDto(cp.getUser()))
+                                    .collect(Collectors.toList()),
+                            last != null ? last.getMessage() : "",
+                            last != null ? last.getCreatedAt() : room.getCreatedAt()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // 두 목록을 합쳐서 반환
+        List<ChatRoomListResponse> allRooms = new ArrayList<>();
+        allRooms.addAll(participatingRooms);
+        allRooms.addAll(availablePublicRooms);
+        
+        return allRooms;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ChatRoomListResponse> listPublicChatRooms(UUID userId) {
+        // 공개 채팅방 목록 조회 (참여하지 않은 방들)
+        List<ChatRoom> publicRooms = roomRepo.findByIsPublicTrue();
+        
+        return publicRooms.stream()
+                .filter(room -> {
+                    // 현재 사용자가 참여하지 않은 방만 필터링
+                    boolean notParticipating = room.getParticipants().stream()
+                            .noneMatch(p -> p.getUser().getUserId().equals(userId));
+                    return notParticipating && room.canJoin(userId);
+                })
+                .map(room -> {
+                    ChatMessage last = msgRepo
+                            .findTopByChatRoomOrderByCreatedAtDesc(room)
+                            .orElse(null);
+
+                    return new ChatRoomListResponse(
+                            room.getId(),
+                            room.getRoomName(),
+                            room.getRoomType(),
+                            room.isPublic(),
+                            room.getMaxParticipants(),
+                            room.getParticipants().stream()
+                                    .map(cp -> toParticipantDto(cp.getUser()))
+                                    .collect(Collectors.toList()),
+                            last != null ? last.getMessage() : "",
+                            last != null ? last.getCreatedAt() : room.getCreatedAt()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChatRoomResponse joinChatRoom(Long roomId, UUID userId) {
+        ChatRoom room = roomRepo.findById(roomId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_CHAT_ROOM.of());
+        
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_USER.of());
+
+        // 참여 가능한지 확인
+        if (!room.canJoin(userId)) {
+            throw StudymateExceptionType.UNAUTHORIZED_TOKEN_EXPIRED.of("채팅방에 참여할 수 없습니다.");
+        }
+
+        // 채팅방에 참여
+        room.addParticipant(user);
+        roomRepo.save(room);
+
+        // 참여 알림 전송
+        template.convertAndSendToUser(
+            userId.toString(),
+            "/queue/rooms",
+            ChatRoomResponse.from(room)
+        );
+
+        return ChatRoomResponse.from(room);
+    }
+
+    @Override
+    public void leaveChatRoom(Long roomId, UUID userId) {
+        ChatRoom room = roomRepo.findById(roomId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_CHAT_ROOM.of());
+        
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> StudymateExceptionType.NOT_FOUND_USER.of());
+
+        // 채팅방에서 나가기
+        ChatRoomParticipant participant = participantRepo
+                .findByRoomIdAndUserUserId(roomId, userId)
+                .orElseThrow(() -> StudymateExceptionType.UNAUTHORIZED_TOKEN_EXPIRED.of("채팅방에 참여하지 않은 사용자입니다."));
+
+        participantRepo.delete(participant);
+        
+        // 채팅방 나가기 알림 전송
+        template.convertAndSendToUser(
+            userId.toString(),
+            "/queue/rooms/leave",
+            ChatRoomResponse.from(room)
+        );
     }
 
     @Override
