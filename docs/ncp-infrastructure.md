@@ -207,41 +207,50 @@
 
 ## 🔒 8. Network ACL
 
-### ⚠️ **심각한 보안 이슈: 모든 Network ACL에 규칙이 없음**
+### ✅ **Network ACL 규칙 설정 완료**
 
 | NACL 이름 | ID | 적용 Subnet | Inbound 규칙 | Outbound 규칙 | 상태 |
 |-----------|-----|------------|--------------|---------------|------|  
-| **languagemate-public-nacl** | 159112 | 3개 Public Subnet | ❌ 0개 | ❌ 0개 | **트래픽 차단** |
-| **languagemate-private-nacl** | 159113 | Private Subnet | ❌ 0개 | ❌ 0개 | **트래픽 차단** |
-| **live-languagemate-default-network-acl** | 159110 | 미적용 | ❌ 0개 | ❌ 0개 | 미사용 |
+| **languagemate-public-nacl** | 159112 | 3개 Public Subnet | ✅ 6개 | ✅ 1개 | **정상 운영** |
+| **languagemate-private-nacl** | 159113 | Private Subnet | ✅ 3개 | ✅ 2개 | **정상 운영** |
+| **live-languagemate-default-network-acl** | 159110 | 미적용 | 0개 | 0개 | 미사용 |
 
-> 🚨 **긴급 조치 필요**: Network ACL에 규칙이 전혀 없어 모든 트래픽이 차단되고 있습니다.
-> 이로 인해 인스턴스 간 통신, 외부 접속, 데이터베이스 연결이 모두 불가능한 상태입니다.
+### 설정된 Network ACL 규칙 상세
 
-### 필요한 Network ACL 규칙 (최소 요구사항)
+#### Public NACL (languagemate-public-nacl) - ID: 159112
 
-#### Public NACL (languagemate-public-nacl)
-**Inbound:**
-- HTTP (80) from 0.0.0.0/0
-- HTTPS (443) from 0.0.0.0/0  
-- SSH (22) from 관리자 IP
-- Ephemeral ports (1024-65535) from 0.0.0.0/0
+**Inbound Rules:**
+| 우선순위 | 프로토콜 | 접근 소스 | 포트 | 허용여부 | 메모 |
+|---------|----------|----------|------|---------|------|
+| 100 | TCP | 0.0.0.0/0 (전체) | 80 | 허용 | https |
+| 101 | TCP | 0.0.0.0/0 (전체) | 443 | 허용 | https |
+| 102 | TCP | 165.225.229.3/32 | 22 | 허용 | ssh |
+| 103 | TCP | 10.10.13.0/24 | 8080 | 허용 | alb-server |
+| 104 | TCP | 0.0.0.0/0 (전체) | 1024-65535 | 허용 | ephemeral |
+| 105 | TCP | 10.10.0.0/16 | 1-65535 | 허용 | vpc internal |
 
-**Outbound:**
-- All traffic to 0.0.0.0/0
+**Outbound Rules:**
+| 우선순위 | 프로토콜 | 목적지 | 포트 | 허용여부 |
+|---------|----------|--------|------|---------|
+| 100 | TCP | 0.0.0.0/0 (전체) | 1-65535 | 허용 |
 
-#### Private NACL (languagemate-private-nacl)
-**Inbound:**
-- MySQL (3306) from 10.10.10.0/24
-- Redis (6379) from 10.10.10.0/24
-- Ephemeral ports from 10.10.0.0/16
+#### Private NACL (languagemate-private-nacl) - ID: 159113
 
-**Outbound:**
-- HTTPS (443) to 0.0.0.0/0 (외부 API 호출용)
-- Ephemeral ports to 10.10.0.0/16
+**Inbound Rules:**
+| 우선순위 | 프로토콜 | 접근 소스 | 포트 | 허용여부 | 메모 |
+|---------|----------|----------|------|---------|------|
+| 101 | TCP | 10.10.10.0/24 | 3306 | 허용 | mysql |
+| 102 | TCP | 10.10.10.0/24 | 6379 | 허용 | redis |
+| 103 | TCP | 10.10.0.0/16 | 1-65535 | 허용 | vpc internal |
+
+**Outbound Rules:**
+| 우선순위 | 프로토콜 | 목적지 | 포트 | 허용여부 | 메모 |
+|---------|----------|--------|------|---------|------|
+| 101 | TCP | 0.0.0.0/0 (전체) | 443 | 허용 | https |
+| 102 | TCP | 10.10.0.0/16 | 1-65535 | 허용 | vpc internal |
 
 ## 🔐 9. ACG (Access Control Group)
-> **참고**: ACG는 인스턴스 레벨 보안 그룹으로, 현재 Network ACL이 모든 트래픽을 차단하고 있어 ACG 규칙이 적용되지 않는 상태입니다.
+> **참고**: ACG는 인스턴스 레벨 보안 그룹으로, Network ACL 규칙이 정상 설정되어 ACG 규칙이 정상 적용중입니다.
 
 ---
 
@@ -264,23 +273,64 @@
 
 ---
 
+## 🛡️ 11. SSL 인증서 (Certificate Manager)
+
+### ✅ **SSL 인증서 발급 완료**
+
+| 항목 | 값 |
+|------|-----|
+| **인증서 이름** | languagemate |
+| **인증서 타입** | Cloud Basic |
+| **도메인** | *.languagemate.kr |
+| **발급 기관** | NAVER Secure Certification Authority 1 |
+| **발급일** | 2025-07-28 22:14:32 (UTC+09:00) |
+| **만료일** | 2026-08-27 20:59:59 (UTC+09:00) |
+| **인증 시작일** | 2025-07-28 09:00:00 (UTC+09:00) |
+| **Certificate No** | languagemate (50093) |
+| **Public Key** | Sun RSA public key, 2048 bits |
+| **시그니처 알고리즘** | SHA256withRSA |
+| **검증 방식** | DNS 검증 |
+| **검증 상태** | ✅ 성공 |
+| **갱신 자동화** | 활성화 (만료 30일 전 자동 갱신) |
+| **상태** | 정상 ✅ |
+
+### DNS 검증 레코드 (완료)
+| 도메인 | Record Name | Record Type | 검증 상태 |
+|--------|-------------|-------------|-----------|
+| *.languagemate.kr | _d37ebbbb886f74192a0ae259fc3e4f1e1.languagemate.kr | CNAME | ✅ 성공 |
+
+### 갱신 대상 설정
+| 갱신 대상 여부 | 갱신 자격 | 갱신 시작일 | 갱신 종료일 |
+|---------------|----------|------------|------------|
+| Y | 보적격 | 2026-07-13 (UTC+09:00) | 2026-07-28 (UTC+09:00) |
+
+---
+
 ## 📝 확인 필요 사항 및 이슈
 
-### 🚨 긴급 조치 필요 사항
+### ✅ 완료된 작업
 
-1. **Network ACL 규칙 없음 (최우선)**
-   - 모든 NACL에 인바운드/아웃바운드 규칙이 0개
-   - **현재 모든 네트워크 트래픽이 차단된 상태**
-   - 서비스 완전 중단 상태로 즉시 규칙 설정 필요
+1. **Network ACL 규칙 설정 완료**
+   - Public NACL: Inbound 6개, Outbound 1개 규칙 설정
+   - Private NACL: Inbound 3개, Outbound 2개 규칙 설정
+   - 정상적인 트래픽 흐름 확보
 
-2. **Load Balancer 미구성**
+2. **SSL 인증서 발급 완료**
+   - Certificate Manager를 통한 와일드카드 인증서 발급
+   - DNS 검증 완료
+   - 자동 갱신 설정 활성화
+
+### ⏳ 진행 필요 사항
+
+1. **Load Balancer 구성**
    - Load Balancer 전용 Subnet (public-languagemate-subnet-lb)은 존재하나 LB 미생성
-   - 고가용성 및 부하 분산 불가
-   - SSL Termination 처리 불가
+   - Target Group 생성 필요
+   - 리스너 및 헬스체크 설정 필요
 
-3. **API Server 미확인**
-   - Spring Boot 애플리케이션 서버 위치 불명
-   - 현재 Bastion 서버만 확인됨
+2. **API Server 구성**
+   - Bastion 서버를 애플리케이션 서버로 전환
+   - Docker 및 Container Registry 설정 필요
+   - Spring Boot 애플리케이션 배포 필요
 
 ### ✅ 정상 구성 항목
 - VPC 및 Subnet 구성
@@ -289,6 +339,8 @@
 - Container Registry
 - Object Storage
 - DNS 기본 설정
+- Network ACL 규칙
+- SSL 인증서
 
 ### 📡 공인 IP 현황
 | IP 주소 | 사용처 | 설명 |
@@ -297,4 +349,18 @@
 | **175.45.205.226** | NAT Gateway | Private Subnet 외부 통신용 |
 | **223.130.156.72** | Bastion Server | 관리자 접속용 |
 
-### 📅 마지막 업데이트: 2025-08-08 14:45
+### 📅 마지막 업데이트: 2025-08-08 15:30
+
+---
+
+## 📜 변경 이력
+
+### 2025-08-08 15:30
+- ✅ **Network ACL 규칙 설정 완료**
+  - languagemate-public-nacl: Inbound 6개, Outbound 1개 규칙 추가
+  - languagemate-private-nacl: Inbound 3개, Outbound 2개 규칙 추가
+  - SSH 접근 IP: 165.225.229.3/32로 제한
+- ✅ **SSL 인증서 발급 완료**
+  - 와일드카드 인증서 (*.languagemate.kr) 발급
+  - DNS 검증 완료
+  - 자동 갱신 설정 (만료 30일 전)
