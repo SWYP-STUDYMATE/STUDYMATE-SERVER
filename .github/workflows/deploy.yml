@@ -60,7 +60,7 @@ jobs:
         with:
           host: ${{ secrets.NCP_SERVER_HOST }}
           username: ${{ secrets.NCP_SERVER_USER }}
-          key: ${{ secrets.NCP_SERVER_SSH_KEY }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
           script: |
             # Docker login to NCP Registry
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_REGISTRY_URL }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
