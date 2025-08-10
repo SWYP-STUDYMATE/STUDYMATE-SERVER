@@ -28,6 +28,29 @@ jobs:
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
       
+      - name: Debug - print key config (redacted)
+        run: |
+          echo "===== application.yml (redacted) ====="
+          sed -E \
+            -e 's/(password:).*/\1 *******/' \
+            -e 's/(client_secret:).*/\1 *******/' \
+            -e 's/(secret_key:).*/\1 *******/' \
+            -e 's/(access-key:).*/\1 *******/' \
+            -e 's/(secret-key:).*/\1 *******/' \
+            src/main/resources/application.yml | sed -n '1,200p'
+          echo "===== end ====="
+
+      - name: Debug - required secrets presence
+        run: |
+          echo "Secrets presence (values redacted):"
+          [ -n "${{ secrets.NCP_ACCESS_KEY }}" ] && echo "NCP_ACCESS_KEY: set" || echo "NCP_ACCESS_KEY: MISSING"
+          [ -n "${{ secrets.NCP_SECRET_KEY }}" ] && echo "NCP_SECRET_KEY: set" || echo "NCP_SECRET_KEY: MISSING"
+          [ -n "${{ secrets.NCP_REGISTRY_URL }}" ] && echo "NCP_REGISTRY_URL: set" || echo "NCP_REGISTRY_URL: MISSING"
+          [ -n "${{ secrets.NCP_SERVER_HOST }}" ] && echo "NCP_SERVER_HOST: set" || echo "NCP_SERVER_HOST: MISSING"
+          [ -n "${{ secrets.NCP_SERVER_USER }}" ] && echo "NCP_SERVER_USER: set" || echo "NCP_SERVER_USER: MISSING"
+          [ -n "${{ secrets.NCP_SERVER_PASSWORD }}" ] && echo "NCP_SERVER_PASSWORD: set" || echo "NCP_SERVER_PASSWORD: MISSING"
+          [ -n "${{ secrets.APPLICATION_YML }}" ] && echo "APPLICATION_YML: set" || echo "APPLICATION_YML: MISSING"
+      
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
