@@ -40,6 +40,16 @@ jobs:
             src/main/resources/application.yml | sed -n '1,200p'
           echo "===== end ====="
 
+      - name: Debug - validate application.yml and compute checksum
+        run: |
+          echo "application.yml size:" $(wc -c < src/main/resources/application.yml) "bytes"
+          echo "application.yml sha256:" $(shasum -a 256 src/main/resources/application.yml | awk '{print $1}')
+          echo "Validate required keys exist (no values printed)"
+          grep -q '^spring:' src/main/resources/application.yml || (echo "Missing key: spring" && exit 1)
+          grep -q 'datasource:' src/main/resources/application.yml || (echo "Missing key: datasource" && exit 1)
+          grep -q 'jdbc:mysql://' src/main/resources/application.yml || (echo "Missing JDBC URL" && exit 1)
+          grep -q '^redis:' src/main/resources/application.yml || (echo "Missing key: redis" && exit 1)
+
       - name: Debug - required secrets presence
         run: |
           echo "Secrets presence (values redacted):"
@@ -56,6 +66,18 @@ jobs:
       
       - name: Build with Gradle
         run: ./gradlew bootJar -x test
+
+      - name: Debug - jar contains application.yml and checksum match
+        run: |
+          JAR=$(ls -1 build/libs/*-SNAPSHOT.jar | head -n1)
+          echo "Using JAR: $JAR"
+          jar tf "$JAR" | grep -q 'BOOT-INF/classes/application.yml' || (echo "application.yml missing in JAR" && exit 1)
+          echo "JAR application.yml size:" $(unzip -p "$JAR" BOOT-INF/classes/application.yml | wc -c) "bytes"
+          SRC_HASH=$(shasum -a 256 src/main/resources/application.yml | awk '{print $1}')
+          JAR_HASH=$(unzip -p "$JAR" BOOT-INF/classes/application.yml | shasum -a 256 | awk '{print $1}')
+          echo "SRC sha256: $SRC_HASH"
+          echo "JAR sha256: $JAR_HASH"
+          [ "$SRC_HASH" = "$JAR_HASH" ] || (echo "Checksum mismatch between source and JAR" && exit 1)
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
