@@ -24,7 +24,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+src/main/resources/application.yaml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -44,3 +44,4 @@ application.yml
 # Environment variables
 .env
 .env.*
+"src/main/resources/application.yaml" 
