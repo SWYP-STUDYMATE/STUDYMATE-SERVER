@@ -32,15 +32,17 @@ public class LoginController {
 
 
     @GetMapping("/login/naver")
-    public String naverLoginPage() {
+    public void naverLoginPage(HttpServletResponse res) throws IOException {
         String state = UUID.randomUUID().toString();
-        return loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
+        String url = loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
+        res.sendRedirect(url);
     }
 
     @GetMapping("/login/google")
-    public String googleLoginPage() {
+    public void googleLoginPage(HttpServletResponse res) throws IOException {
         String state = UUID.randomUUID().toString();
-        return loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
+        String url = loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
+        res.sendRedirect(url);
     }
 
 
