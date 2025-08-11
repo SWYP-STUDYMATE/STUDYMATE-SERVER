@@ -4,6 +4,7 @@ import com.studymate.common.dto.ResponseDto;
 import com.studymate.common.exception.StudymateExceptionType;
 import com.studymate.domain.chat.dto.request.ChatMessageRequest;
 
+import com.studymate.domain.chat.entity.MessageType;
 import com.studymate.domain.chat.service.ChatService;
 import com.studymate.domain.user.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -43,12 +44,23 @@ public class ChatController {
                 (CustomUserDetails) authentication.getPrincipal();
         UUID userId = UUID.fromString(userDetails.getUsername());
 
+        String finalAudioUrl = null;
+        if (request.audioData() != null && request.messageType() == MessageType.AUDIO) {
+            // Base64 → S3 업로드
+            finalAudioUrl = chatService.uploadChatAudioFromBase64(
+                    request.roomId(),
+                    request.audioData()
+            );
+        }
+
+
         // 실제 메시지 전송 로직
         chatService.sendMessage(
                 request.roomId(),
                 userId,
                 request.message(),
                 request.imageUrls(),
+                finalAudioUrl,
                 request.messageType()
         );
     }
@@ -60,5 +72,14 @@ public class ChatController {
     ) {
         List<String> imageUrls = chatService.uploadChatImages(roomId, files);
         return ResponseDto.of(imageUrls, "이미지 업로드 성공");
+    }
+
+    @PostMapping("/api/chat/rooms/{roomId}/audio")
+    public ResponseDto<String> uploadChatAudio(
+            @PathVariable Long roomId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        String audioUrl = chatService.uploadChatAudio(roomId, file);
+        return ResponseDto.of(audioUrl, "오디오 업로드 성공");
     }
 }

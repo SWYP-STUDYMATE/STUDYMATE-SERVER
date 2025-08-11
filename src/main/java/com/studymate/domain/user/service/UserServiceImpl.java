@@ -17,6 +17,7 @@ import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +33,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final AmazonS3Client amazonS3;
-    private final String bucketName = "languagemate-profile-img";
+
+    @Value("${cloud.ncp.storage.bucket-name}")
+    private String bucketName;
 
     @Override
     public void saveEnglishName(UUID userId,EnglishNameRequest req) {

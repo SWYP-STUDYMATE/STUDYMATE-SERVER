@@ -15,10 +15,22 @@ public record ChatMessageResponse(
         ParticipantDto sender,
         String message,
         List<String> imageUrls,
+        String audioUrl,
         MessageType messageType,
         LocalDateTime sentAt
 ) {
     public static ChatMessageResponse from(ChatMessage msg) {
+        MessageType messageType;
+        if (msg.isOnlyAudio()) {
+            messageType = MessageType.AUDIO;
+        } else if (msg.isOnlyImage()) {
+            messageType = MessageType.IMAGE;
+        } else if (msg.isOnlyMessage()) {
+            messageType = MessageType.TEXT;
+        } else {
+            messageType = MessageType.MIXED;
+        }
+
         return ChatMessageResponse.builder()
                 .messageId(msg.getId())
                 .sender(new ParticipantDto() {
@@ -28,7 +40,8 @@ public record ChatMessageResponse(
                 })
                 .message(msg.getMessage())
                 .imageUrls(msg.getImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toList()))
-                .messageType(msg.isOnlyImage() ? MessageType.IMAGE : (msg.isOnlyMessage() ? MessageType.TEXT : MessageType.MIXED))
+                .audioUrl(msg.getAudioUrl())
+                .messageType(messageType)
                 .sentAt(msg.getCreatedAt())
                 .build();
     }

@@ -31,6 +31,9 @@ public class ChatMessage extends BaseTimeEntity {
     @Column(name = "message", length = 1000)
     private String message;
 
+    @Column(name = "audio_url", length = 500)
+    private String audioUrl;
+
     @Builder.Default
     @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatImage> images = new ArrayList<>();
@@ -48,15 +51,23 @@ public class ChatMessage extends BaseTimeEntity {
         return !this.images.isEmpty();
     }
 
+    public boolean hasAudio() {
+        return this.audioUrl != null && !this.audioUrl.isEmpty();
+    }
+
     public boolean isOnlyImage() {
-        return !hasMessage() && hasImages();
+        return !hasMessage() && hasImages() && !hasAudio();
     }
 
     public boolean isOnlyMessage() {
-        return hasMessage() && !hasImages();
+        return hasMessage() && !hasImages() && !hasAudio();
+    }
+
+    public boolean isOnlyAudio() {
+        return !hasMessage() && !hasImages() && hasAudio();
     }
 
     public boolean isMixed() {
-        return hasMessage() && hasImages();
+        return (hasMessage() && hasImages()) || (hasMessage() && hasAudio()) || (hasImages() && hasAudio());
     }
 }
