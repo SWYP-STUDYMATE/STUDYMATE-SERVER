@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -23,6 +24,16 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(name = "room_name", nullable = false)
     private String roomName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "room_type", nullable = false)
+    private RoomType roomType;
+
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic;
+
+    @Column(name = "max_participants")
+    private Integer maxParticipants;
+
     @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomParticipant> participants = new ArrayList<>();
@@ -37,13 +48,34 @@ public class ChatRoom extends BaseTimeEntity {
         if (participants.stream().anyMatch(p -> p.getUser().getUserId().equals(user.getUserId()))) {
             throw new IllegalStateException("User already joined");
         }
-        if (participants.size() >= 4) {
-            throw new IllegalStateException("최대 4명까지 참여 가능합니다.");
+        
+        int maxAllowed = maxParticipants != null ? maxParticipants : 
+                        (roomType == RoomType.ONE_TO_ONE ? 2 : 4);
+        
+        if (participants.size() >= maxAllowed) {
+            throw new IllegalStateException("최대 " + maxAllowed + "명까지 참여 가능합니다.");
         }
+        
         participants.add(ChatRoomParticipant.builder()
                 .id(new ChatRoomParticipantId(id, user.getUserId()))
                 .room(this)
                 .user(user)
                 .build());
+    }
+
+    public boolean canJoin(UUID userId) {
+        // 이미 참여 중인지 확인
+        if (participants.stream().anyMatch(p -> p.getUser().getUserId().equals(userId))) {
+            return false;
+        }
+        
+        // 공개 채팅방이거나 1:1 채팅방인 경우 참여 가능
+        if (isPublic || roomType == RoomType.ONE_TO_ONE) {
+            int maxAllowed = maxParticipants != null ? maxParticipants : 
+                            (roomType == RoomType.ONE_TO_ONE ? 2 : 4);
+            return participants.size() < maxAllowed;
+        }
+        
+        return false;
     }
 }

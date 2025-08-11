@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record GoogleUserInfoResponse(
         @JsonProperty("sub") String sub,
-        @JsonProperty("name") String name
+        @JsonProperty("name") String name,
+        @JsonProperty("picture") String picture
 ) {
 }

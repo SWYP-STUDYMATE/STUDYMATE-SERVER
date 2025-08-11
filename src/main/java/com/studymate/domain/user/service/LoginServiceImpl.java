@@ -1,26 +1,31 @@
 package com.studymate.domain.user.service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.studymate.domain.user.api.GoogleApi;
 import com.studymate.domain.user.api.NaverApi;
 import com.studymate.domain.user.domain.dao.UserDao;
-import com.studymate.domain.user.domain.dto.response.*;
+import com.studymate.domain.user.domain.dto.response.GoogleTokenResponse;
+import com.studymate.domain.user.domain.dto.response.GoogleUserInfoResponse;
+import com.studymate.domain.user.domain.dto.response.NaverTokenResponse;
+import com.studymate.domain.user.domain.dto.response.NaverUserInfoResponse;
+import com.studymate.domain.user.domain.dto.response.TokenResponse;
 import com.studymate.domain.user.domain.type.UserIdentityType;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.oauth.GoogleUserInfo;
 import com.studymate.domain.user.oauth.NaverUserInfo;
 import com.studymate.domain.user.oauth.OAuthUserInfo;
 import com.studymate.domain.user.util.JwtUtils;
+import com.studymate.redis.entity.RefreshToken;
+import com.studymate.redis.repository.RefreshTokenRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,8 +36,7 @@ public class LoginServiceImpl implements LoginService {
     private final GoogleApi googleApi;
     private final JwtUtils jwtUtils;
     private final UserDao userDao;
-    private final RedisTemplate<String, String> redisTemplate;
-
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public String getLoginUrl(String provider, String state, String clientId, String redirectUri) {
@@ -63,39 +67,52 @@ public class LoginServiceImpl implements LoginService {
     public TokenResponse getLoginTokenCallback(String provider, String code, String state) {
         OAuthUserInfo userInfo;
         UserIdentityType type = UserIdentityType.valueOf(provider.toUpperCase());
-        if (type == UserIdentityType.NAVER){
-                NaverTokenResponse token = naverApi.getToken(code, state);
-                NaverUserInfoResponse res = naverApi.getUserInfo(token.access_token());
-                userInfo = new NaverUserInfo(res);
+        if (type == UserIdentityType.NAVER) {
+            NaverTokenResponse token = naverApi.getToken(code, state);
+            NaverUserInfoResponse res = naverApi.getUserInfo(token.access_token());
+            userInfo = new NaverUserInfo(res);
         } else if (type == UserIdentityType.GOOGLE) {
             GoogleTokenResponse token = googleApi.getToken(code);
             GoogleUserInfoResponse res = googleApi.getUserInfo(token.access_token());
             userInfo = new GoogleUserInfo(res);
-        }else {
-            throw new IllegalArgumentException("없는 provider"+provider);
+        } else {
+            throw new IllegalArgumentException("없는 provider" + provider);
 
         }
 
-            Optional<User> optUser = userDao.findByUserIdentity(userInfo.getId());
-            User user = optUser.orElseGet(() -> {
-                User u = User.builder()
-                        .userIdentity(userInfo.getId())
-                        .userIdentityType(type)
-                        .userCreatedAt(LocalDateTime.now())
-                        .name(userInfo.getName())
-                        .userDisable(false)
-                        .build();
-                return u;
-            });
-            userDao.save(user);
+        User user = userDao.findByUserIdentity(userInfo.getId())
+                .map(existingUser -> {
+                    if (type == UserIdentityType.NAVER) {
+                        existingUser.updateNaverProfile(userInfo.getName(), null, null, userInfo.getProfileImageUrl());
+                    } else if (type == UserIdentityType.GOOGLE) {
+                        existingUser.updateGoogleProfile(userInfo.getName(), userInfo.getProfileImageUrl());
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .userIdentity(userInfo.getId())
+                            .userIdentityType(type)
+                            .userCreatedAt(LocalDateTime.now())
+                            .name(userInfo.getName())
+                            .profileImage(userInfo.getProfileImageUrl())
+                            .userDisable(false)
+                            .build();
+                    return newUser;
+                });
 
+        userDao.save(user);
 
-            UUID userId = user.getUserId();
-            String accessToken = jwtUtils.generateAccessToken(userId);
-            String refreshToken = jwtUtils.generateRefreshToken(userId);
-            redisTemplate.opsForValue()
-                    .set("refresh_token:" + userId, refreshToken, 7, TimeUnit.DAYS);
+        UUID userId = user.getUserId();
+        String accessToken = jwtUtils.generateAccessToken(userId);
+        String refreshToken = jwtUtils.generateRefreshToken(userId);
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .userId(userId.toString())
+                        .token(refreshToken)
+                        .ttlSeconds(TimeUnit.DAYS.toSeconds(7))
+                        .build());
 
-            return TokenResponse.of(accessToken, refreshToken);
-        }
+        return TokenResponse.of(accessToken, refreshToken, userId);
     }
+}

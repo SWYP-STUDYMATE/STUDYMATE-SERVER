@@ -55,7 +55,7 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - "6379:6379"
+      - "6380:6379"
     restart: unless-stopped
     networks:
       - studymate-network

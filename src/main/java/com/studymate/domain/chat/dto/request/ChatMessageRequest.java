@@ -11,6 +11,7 @@ public record ChatMessageRequest(
     Long roomId,
     String message,
     List<String> imageUrls,
+    String audioData,
     MessageType messageType
 ) {
 }

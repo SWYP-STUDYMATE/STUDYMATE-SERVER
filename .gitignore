@@ -1,11 +1,9 @@
 HELP.md
 .gradle
-src/main/resources/application.yaml
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/resources/application.yaml
 ### STS ###
 .apt_generated
 .classpath
@@ -37,4 +35,12 @@ out/
 ### VS Code ###
 .vscode/
 
+# Application Properties
+src/main/resources/application.yml
+src/main/resources/application-*.yml
+!src/main/resources/application.yml.example
 application.yml
+
+# Environment variables
+.env
+.env.*
