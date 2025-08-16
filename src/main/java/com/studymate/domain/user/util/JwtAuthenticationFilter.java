@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return path.startsWith("api/login")
                 || path.startsWith("api/auth")
                 //헬스체크 허용
-                || path.equals("api/health");
+                || path.equals("health");
     }
 }
 
