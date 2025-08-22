@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping
 public class LoginController {
     private final LoginService loginService;
 
@@ -31,13 +31,13 @@ public class LoginController {
 
 
 
-    @GetMapping("/login/naver")
+    @GetMapping("api/login/naver")
     public String naverLoginPage() {
         String state = UUID.randomUUID().toString();
         return loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
     }
 
-    @GetMapping("/login/google")
+    @GetMapping("api/login/google")
     public String googleLoginPage() {
         String state = UUID.randomUUID().toString();
         return loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
