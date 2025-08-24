@@ -38,26 +38,27 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(authz -> authz
                                                 // 1) OPTIONS, 로그인/토큰 엔드포인트
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                                .requestMatchers("/api/login/**", "/api/auth/**").permitAll()
+                                                .requestMatchers("/api/v1/login/**", "/api/v1/auth/**").permitAll()
                                                  .requestMatchers("/health").permitAll()
                                         // OAuth2 콜백 경로 허용
                                         .requestMatchers("/login/oauth2/code/**").permitAll()
 
 
                                                 // 인증 없이 접근 가능한 옵션 조회용 API
-                                                .requestMatchers("/onboard/interest/motivations",
-                                                                "/onboard/interest/topics",
-                                                                "/onboard/interest/learning-styles",
-                                                                "/onboard/interest/learning-expectations",
-                                                                "/onboard/language/languages",
-                                                                "/onboard/language/level-types-language",
-                                                                "/onboard/language/level-types-partner",
-                                                                "/onboard/partner/gender-type",
-                                                                "/onboard/partner/personalities",
-                                                                "/onboard/schedule/communication-methods",
-                                                                "/onboard/schedule/daily-methods",
-                                                                "/onboard/schedule/group-sizes", "/user/locations",
-                                                                "/user/gender-type")
+                                                .requestMatchers("/api/v1/onboard/interest/motivations",
+                                                                "/api/v1/onboard/interest/topics",
+                                                                "/api/v1/onboard/interest/learning-styles",
+                                                                "/api/v1/onboard/interest/learning-expectations",
+                                                                "/api/v1/onboard/language/languages",
+                                                                "/api/v1/onboard/language/level-types-language",
+                                                                "/api/v1/onboard/language/level-types-partner",
+                                                                "/api/v1/onboard/partner/gender-type",
+                                                                "/api/v1/onboard/partner/personalities",
+                                                                "/api/v1/onboard/schedule/communication-methods",
+                                                                "/api/v1/onboard/schedule/daily-methods",
+                                                                "/api/v1/onboard/schedule/group-sizes",
+                                                                "/api/v1/user/locations",
+                                                                "/api/v1/user/gender-type")
                                                 .permitAll()
                                                 // 2) SockJS/WebSocket 핸드셰이크 경로
                                                 .requestMatchers("/ws/**").permitAll()

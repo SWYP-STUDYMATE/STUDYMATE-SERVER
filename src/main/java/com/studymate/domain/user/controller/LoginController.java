@@ -31,18 +31,18 @@ public class LoginController {
 
 
 
-    @GetMapping("api/login/naver")
+    @GetMapping("api/v1/login/naver")
     public String naverLoginPage() {
         String state = UUID.randomUUID().toString();
         return loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
     }
 
-    @GetMapping("api/login/google")
+    @GetMapping("api/v1/login/google")
     public String googleLoginPage() {
         String state = UUID.randomUUID().toString();
         return loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
     }
-
+swit
 
 
     @GetMapping("/login/oauth2/code/naver")
@@ -57,6 +57,7 @@ public class LoginController {
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
                 .fromUriString("http://localhost:3000/main")
+//                .fromUriString("https://languagemate.kr/main")
                 .queryParam("accessToken", tokens.accessToken())
                 .build()
                 .toUriString();
@@ -74,6 +75,7 @@ public class LoginController {
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
                 .fromUriString("http://localhost:3000/main")
+//                .fromUriString("https://languagemate.kr/main")
                 .queryParam("accessToken", tokens.accessToken())
                 .build()
                 .toUriString();

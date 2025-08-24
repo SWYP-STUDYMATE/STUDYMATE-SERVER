@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/onboard/interest")
+@RequestMapping("api/v1/onboard/interest")
 public class OnbaordInterestController {
 
     private final OnboardInterestService onboardInterestService;
