@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/onboard/language")
+@RequestMapping("api/v1/onboard/language")
 public class OnboardLanguageController {
 
     private final OnboardLanguageService onboardLanguageService;

@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/onboard/schedule")
+@RequestMapping("api/v1/onboard/schedule")
 public class OnboardScheduleContoller {
 
     private final OnboardScheduleService onboardScheduleService;
