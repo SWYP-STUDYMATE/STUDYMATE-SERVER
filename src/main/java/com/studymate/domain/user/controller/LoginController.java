@@ -42,7 +42,6 @@ public class LoginController {
         String state = UUID.randomUUID().toString();
         return loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
     }
-swit
 
 
     @GetMapping("/login/oauth2/code/naver")
