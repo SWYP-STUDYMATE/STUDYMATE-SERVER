@@ -100,40 +100,78 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Deploy to NCP Server
+      - name: Deploy to NCP Server with Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.NCP_SERVER_HOST }}
           username: ${{ secrets.NCP_SERVER_USER }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           script: |
+            # 작업 디렉토리로 이동
+            cd /home/ubuntu/studymate-server
+            
             # Docker login to NCP Registry
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_REGISTRY_URL }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
             
-            # Pull the latest image
-            docker pull ${{ secrets.NCP_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest
+            # Git pull latest changes (docker-compose files)
+            git pull origin main || true
             
-            # Stop and remove existing container
-            docker stop studymate-server || true
-            docker rm studymate-server || true
+            # Create application.yml from secrets
+            echo "${{ secrets.APPLICATION_YML }}" > application.yml
             
-            # Run new container
-            docker run -d \
-              --name studymate-server \
-              --restart always \
-              -p 8080:8080 \
-              ${{ secrets.NCP_REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest
+            # Create .env file with Docker-specific settings
+            cat > .env << EOF
+            REGISTRY_URL=${{ secrets.NCP_REGISTRY_URL }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            BACKUP_RETENTION_DAYS=7
+            EOF
             
-            # Wait for container to start
-            sleep 10
+            # 데이터 디렉토리 생성
+            sudo mkdir -p /home/ubuntu/studymate-data/{mysql,redis}
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/studymate-data
             
-            # Check container status
-            if docker ps | grep studymate-server; then
-              echo "Container is running successfully!"
-              docker logs --tail 50 studymate-server
+            # Pull latest images
+            docker-compose -f docker-compose.prod.yml pull
+            
+            # Stop existing services
+            docker-compose -f docker-compose.prod.yml down
+            
+            # Start services with new configuration
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Wait for services to start
+            echo "Waiting for services to start..."
+            sleep 30
+            
+            # Check service status
+            echo "=== Docker Compose Status ==="
+            docker-compose -f docker-compose.prod.yml ps
+            
+            echo "=== Application Logs (last 50 lines) ==="
+            docker-compose -f docker-compose.prod.yml logs --tail 50 app
+            
+            echo "=== Health Check ==="
+            # Wait for app to be fully ready
+            for i in {1..12}; do
+              if curl -f http://localhost:8080/actuator/health; then
+                echo "Application is healthy!"
+                break
+              else
+                echo "Attempt $i/12: Application not ready yet, waiting..."
+                sleep 10
+              fi
+            done
+            
+            # Final status check
+            if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+              echo "Deployment successful!"
             else
-              echo "Container failed to start!"
-              docker logs studymate-server
+              echo "Deployment failed!"
+              docker-compose -f docker-compose.prod.yml logs
               exit 1
             fi
             
