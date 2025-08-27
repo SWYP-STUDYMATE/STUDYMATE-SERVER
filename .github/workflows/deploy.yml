@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
-      - name: Create application.yml
+      - name: Create application.ymlㄴ
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
@@ -107,14 +107,29 @@ jobs:
           username: ${{ secrets.NCP_SERVER_USER }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           script: |
-            # 작업 디렉토리로 이동
+            # Create and setup project directory
+            sudo mkdir -p /home/ubuntu/studymate-server
             cd /home/ubuntu/studymate-server
+            
+            # Setup git repository if not exists
+            if [ ! -d ".git" ]; then
+              git init
+              git remote add origin https://github.com/SWYP-STUDYMATE/STUDYMATE-SERVER.git
+            fi
+            
+            # Install Docker Compose plugin if not exists
+            if ! docker compose version >/dev/null 2>&1; then
+              echo "Installing Docker Compose plugin..."
+              sudo apt-get update
+              sudo apt-get install -y docker-compose-plugin
+            fi
             
             # Docker login to NCP Registry
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_REGISTRY_URL }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
             
             # Git pull latest changes (docker-compose files)
-            git pull origin main || true
+            git fetch origin main
+            git reset --hard origin/main
             
             # Create application.yml from secrets
             echo "${{ secrets.APPLICATION_YML }}" > application.yml
@@ -130,9 +145,9 @@ jobs:
             BACKUP_RETENTION_DAYS=7
             EOF
             
-            # 데이터 디렉토리 생성
-            sudo mkdir -p /home/ubuntu/studymate-data/{mysql,redis}
-            sudo chown -R ubuntu:ubuntu /home/ubuntu/studymate-data
+            # 데이터 디렉토리 생성 (현재 사용자 권한으로)
+            mkdir -p ./data/{mysql,redis}
+            mkdir -p ./logs ./uploads
             
             # Pull latest images
             docker compose -f docker-compose.prod.yml pull
