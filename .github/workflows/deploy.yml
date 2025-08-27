@@ -135,13 +135,13 @@ jobs:
             sudo chown -R ubuntu:ubuntu /home/ubuntu/studymate-data
             
             # Pull latest images
-            docker-compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml pull
             
             # Stop existing services
-            docker-compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down
             
             # Start services with new configuration
-            docker-compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d
             
             # Wait for services to start
             echo "Waiting for services to start..."
@@ -149,15 +149,15 @@ jobs:
             
             # Check service status
             echo "=== Docker Compose Status ==="
-            docker-compose -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.prod.yml ps
             
             echo "=== Application Logs (last 50 lines) ==="
-            docker-compose -f docker-compose.prod.yml logs --tail 50 app
+            docker compose -f docker-compose.prod.yml logs --tail 50 app
             
             echo "=== Health Check ==="
             # Wait for app to be fully ready
             for i in {1..12}; do
-              if curl -f http://localhost:8080/actuator/health; then
+              if curl -f http://localhost:8080/api/v1/onboard/interest/motivations; then
                 echo "Application is healthy!"
                 break
               else
@@ -167,11 +167,11 @@ jobs:
             done
             
             # Final status check
-            if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+            if docker compose -f docker-compose.prod.yml ps | grep -q "Up"; then
               echo "Deployment successful!"
             else
               echo "Deployment failed!"
-              docker-compose -f docker-compose.prod.yml logs
+              docker compose -f docker-compose.prod.yml logs
               exit 1
             fi
             
