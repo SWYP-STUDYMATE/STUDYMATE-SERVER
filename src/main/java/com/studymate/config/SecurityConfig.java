@@ -39,7 +39,7 @@ public class SecurityConfig {
                                                 // 1) OPTIONS, 로그인/토큰 엔드포인트
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers("/api/v1/login/**", "/api/v1/auth/**").permitAll()
-                                                 .requestMatchers("/health").permitAll()
+                                                .requestMatchers("/health", "/actuator/health").permitAll()
                                         // OAuth2 콜백 경로 허용
                                         .requestMatchers("/login/oauth2/code/**").permitAll()
 
