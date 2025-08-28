@@ -187,8 +187,8 @@ management:
 
 logging:
   level:
-    com.studymate: INFO
-    org.springframework.security: INFO
+    "com.studymate": INFO
+    "org.springframework.security": INFO
             EOF
             
             # Create .env file with Docker-specific settings
