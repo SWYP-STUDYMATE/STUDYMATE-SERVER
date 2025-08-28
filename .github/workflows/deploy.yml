@@ -133,63 +133,63 @@ jobs:
             
             # Create application.yml with hardcoded values for POC
             cat > application.yml << 'EOF'
-            server:
-              port: 8080
-            
-            spring:
-              application:
-                name: live
-              datasource:
-                url: jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-                username: studymate
-                password: StudyMate2025!User
-              jpa:
-                hibernate:
-                  ddl-auto: update
-                show-sql: true
-            
-            naver:
-              client_id: EzXpYAkIVhX1ViFQ5edo
-              client_secret: Zml5tphcOJ
-              authorization_grant_type: authorization_code
-              redirect_uri: "https://api.languagemate.kr/login/oauth2/code/naver"
-            
-            jwt:
-              secret_key: c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
-            
-            redis:
-              host: redis
-              port: 6379
-              password: StudyMate2025!Redis
-            
-            cloud:
-              ncp:
-                storage:
-                  region: kr-standard
-                  endpoint: https://kr.object.ncloudstorage.com
-                  access-key: ncp_iam_BPAMKR1FHfq8OtlptO2s
-                  secret-key: ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
-                  bucket-name: languagemate-profile-img
-            
-            google:
-              client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
-              client_secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-              redirect_uri: "https://api.languagemate.kr/login/oauth2/code/google"
-            
-            management:
-              endpoints:
-                web:
-                  exposure:
-                    include: health,info
-              endpoint:
-                health:
-                  show-details: always
-            
-            logging:
-              level:
-                com.studymate: INFO
-                org.springframework.security: INFO
-            EOF
+server:
+  port: 8080
+
+spring:
+  application:
+    name: live
+  datasource:
+    url: jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: studymate
+    password: StudyMate2025!User
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+naver:
+  client_id: EzXpYAkIVhX1ViFQ5edo
+  client_secret: Zml5tphcOJ
+  authorization_grant_type: authorization_code
+  redirect_uri: "https://api.languagemate.kr/login/oauth2/code/naver"
+
+jwt:
+  secret_key: c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
+
+redis:
+  host: redis
+  port: 6379
+  password: StudyMate2025!Redis
+
+cloud:
+  ncp:
+    storage:
+      region: kr-standard
+      endpoint: https://kr.object.ncloudstorage.com
+      access-key: ncp_iam_BPAMKR1FHfq8OtlptO2s
+      secret-key: ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
+      bucket-name: languagemate-profile-img
+
+google:
+  client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
+  client_secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  redirect_uri: "https://api.languagemate.kr/login/oauth2/code/google"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.studymate: INFO
+    org.springframework.security: INFO
+EOF
             
             # Create .env file with Docker-specific settings
             cat > .env << EOF
