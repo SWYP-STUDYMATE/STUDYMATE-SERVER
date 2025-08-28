@@ -22,7 +22,8 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
-      - ./application.yml:/app/config/application.yml:ro
+      - ./application.properties:/app/config/application.properties:ro
+      - ./application.properties:/app/application.properties:ro
     restart: unless-stopped
     networks:
       - studymate-network
