@@ -167,8 +167,8 @@ jobs:
                 storage:
                   region: kr-standard
                   endpoint: https://kr.object.ncloudstorage.com
-                  access-key: ncp_iam_BPAMKR1FHfq8OtlptO2s
-                  secret-key: ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
+                  "access-key": ncp_iam_BPAMKR1FHfq8OtlptO2s
+                  "secret-key": ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
                   bucket-name: languagemate-profile-img
             
             google:
