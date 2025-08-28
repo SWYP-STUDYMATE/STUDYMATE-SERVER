@@ -32,15 +32,17 @@ public class LoginController {
 
 
     @GetMapping("api/v1/login/naver")
-    public String naverLoginPage() {
+    public void naverLoginPage(HttpServletResponse response) throws IOException {
         String state = UUID.randomUUID().toString();
-        return loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
+        String loginUrl = loginService.getLoginUrl("naver",state, naverClientId, naverRedirectUri);
+        response.sendRedirect(loginUrl);
     }
 
     @GetMapping("api/v1/login/google")
-    public String googleLoginPage() {
+    public void googleLoginPage(HttpServletResponse response) throws IOException {
         String state = UUID.randomUUID().toString();
-        return loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
+        String loginUrl = loginService.getLoginUrl("google",state, googleClientId, googleRedirectUri);
+        response.sendRedirect(loginUrl);
     }
 
 
@@ -55,8 +57,8 @@ public class LoginController {
 
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
-                .fromUriString("http://localhost:3000/main")
-//                .fromUriString("https://languagemate.kr/main")
+//                .fromUriString("http://localhost:3000/main")
+                .fromUriString("https://languagemate.kr/main")
                 .queryParam("accessToken", tokens.accessToken())
                 .build()
                 .toUriString();
@@ -66,15 +68,16 @@ public class LoginController {
     @GetMapping("/login/oauth2/code/google")
     public void googleCallback(
             @RequestParam("code") String code,
+            @RequestParam(value = "state", required = false) String state,
             HttpServletResponse response
     ) throws IOException {
         // 1) 토큰 발급
-        TokenResponse tokens = loginService.getLoginTokenCallback("google",code,null);
+        TokenResponse tokens = loginService.getLoginTokenCallback("google",code,state);
 
         // 2) FE 로그인 완료 페이지로 리다이렉트
         String redirectUrl = UriComponentsBuilder
-                .fromUriString("http://localhost:3000/main")
-//                .fromUriString("https://languagemate.kr/main")
+//                .fromUriString("http://localhost:3000/main")
+                .fromUriString("https://languagemate.kr/main")
                 .queryParam("accessToken", tokens.accessToken())
                 .build()
                 .toUriString();
