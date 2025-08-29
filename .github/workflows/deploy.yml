@@ -171,8 +171,10 @@ jobs:
             management.endpoints.web.exposure.include=health,info
             management.endpoint.health.show-details=always
             
-            logging.level.com.studymate=INFO
-            logging.level.org.springframework.security=INFO
+            logging.level.com.studymate=DEBUG
+            logging.level.org.springframework.security=DEBUG
+            logging.level.org.springframework.boot=INFO
+            logging.level.org.springframework.context=DEBUG
             EOF
             
             # Create .env file with Docker-specific settings
