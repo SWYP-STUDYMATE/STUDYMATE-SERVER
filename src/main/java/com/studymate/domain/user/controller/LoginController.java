@@ -55,11 +55,12 @@ public class LoginController {
         // 1) 토큰 발급
         TokenResponse tokens = loginService.getLoginTokenCallback("naver",code, state);
 
-        // 2) FE 로그인 완료 페이지로 리다이렉트
+        // 2) FE OAuth 콜백 페이지로 리다이렉트 (토큰과 함께)
         String redirectUrl = UriComponentsBuilder
-//                .fromUriString("http://localhost:3000/main")
-                .fromUriString("https://languagemate.kr/main")
+//                .fromUriString("http://localhost:3000/login/oauth2/code/naver")
+                .fromUriString("https://languagemate.kr/login/oauth2/code/naver")
                 .queryParam("accessToken", tokens.accessToken())
+                .queryParam("refreshToken", tokens.refreshToken())
                 .build()
                 .toUriString();
 
@@ -74,11 +75,12 @@ public class LoginController {
         // 1) 토큰 발급
         TokenResponse tokens = loginService.getLoginTokenCallback("google",code,state);
 
-        // 2) FE 로그인 완료 페이지로 리다이렉트
+        // 2) FE OAuth 콜백 페이지로 리다이렉트 (토큰과 함께)
         String redirectUrl = UriComponentsBuilder
-//                .fromUriString("http://localhost:3000/main")
-                .fromUriString("https://languagemate.kr/main")
+//                .fromUriString("http://localhost:3000/login/oauth2/code/google")
+                .fromUriString("https://languagemate.kr/login/oauth2/code/google")
                 .queryParam("accessToken", tokens.accessToken())
+                .queryParam("refreshToken", tokens.refreshToken())
                 .build()
                 .toUriString();
 
