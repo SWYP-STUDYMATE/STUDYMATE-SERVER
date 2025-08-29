@@ -2,13 +2,12 @@ package com.studymate.domain.clova.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studymate.domain.clova.api.ClovaStudioApi;
-import com.studymate.domain.clova.api.ClovaStudioConfig;
 import com.studymate.domain.clova.domain.dto.request.EnglishCorrectionRequest;
 import com.studymate.domain.clova.domain.dto.response.CorrectionDetail;
 import com.studymate.domain.clova.domain.dto.response.EnglishCorrectionResponse;
 import com.studymate.domain.clova.domain.dto.type.CorrectionType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,10 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClovaServiceImpl implements ClovaService{
@@ -31,6 +33,28 @@ public class ClovaServiceImpl implements ClovaService{
 
     @Value("${clova.studio.api-key}")
     private String clovaApiKey;
+
+    @PostConstruct
+    public void validateConfiguration() {
+        log.info("=== ClovaService Configuration Debug ===");
+        
+        if (clovaApiUrl == null || clovaApiUrl.trim().isEmpty()) {
+            log.error("❌ CRITICAL: clova.studio.endpoint is NULL or EMPTY! Current value: '{}'", clovaApiUrl);
+        } else {
+            log.info("✅ clova.studio.endpoint: {}", clovaApiUrl);
+        }
+        
+        if (clovaApiKey == null || clovaApiKey.trim().isEmpty()) {
+            log.error("❌ CRITICAL: clova.studio.api-key is NULL or EMPTY! Current value: '{}'", clovaApiKey);
+        } else {
+            // API 키는 보안상 일부만 표시
+            String maskedKey = clovaApiKey.length() > 8 ? 
+                clovaApiKey.substring(0, 8) + "***" : "***";
+            log.info("✅ clova.studio.api-key: {}", maskedKey);
+        }
+        
+        log.info("=== ClovaService Configuration Debug Complete ===");
+    }
 
     @Override
     public EnglishCorrectionResponse correctEnglish(EnglishCorrectionRequest request) {

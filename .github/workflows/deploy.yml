@@ -163,6 +163,11 @@ jobs:
             google.client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}
             google.redirect_uri=https://api.languagemate.kr/login/oauth2/code/google
             
+            clova.studio.api-key=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
+            clova.studio.endpoint=https://clovastudio.stream.ntruss.com/v1/chat-completions/HCX-003
+            clova.studio.model=HCX-003
+            clova.studio.max-tokens=1000
+            
             management.endpoints.web.exposure.include=health,info
             management.endpoint.health.show-details=always
             

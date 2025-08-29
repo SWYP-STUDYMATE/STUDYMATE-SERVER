@@ -5,12 +5,14 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class JwtUtils {
     private final SecretKey secretKey;
@@ -18,7 +20,21 @@ public class JwtUtils {
     private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 7;  // 7일
 
     public JwtUtils(@Value("${jwt.secret_key}") String secret) {
+        log.info("=== JWT Configuration Debug ===");
+        
+        if (secret == null || secret.trim().isEmpty()) {
+            log.error("❌ CRITICAL: jwt.secret_key is NULL or EMPTY! JWT tokens will not work!");
+            throw new IllegalArgumentException("JWT secret key cannot be null or empty");
+        } else {
+            log.info("✅ jwt.secret_key loaded (length: {} chars)", secret.length());
+            if (secret.length() < 32) {
+                log.warn("⚠️  JWT secret key is shorter than 32 characters, consider using a longer key for better security");
+            }
+        }
+        
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        log.info("✅ JWT SecretKey successfully initialized");
+        log.info("=== JWT Configuration Debug Complete ===");
     }
 
     // Access Token 생성
