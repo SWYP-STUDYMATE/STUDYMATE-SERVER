@@ -4,12 +4,7 @@ import com.studymate.domain.session.domain.dto.request.WebRtcJoinRequest;
 import com.studymate.domain.session.domain.dto.request.WebRtcSignalingMessage;
 import com.studymate.domain.session.domain.dto.response.WebRtcConnectionStatsResponse;
 import com.studymate.domain.session.domain.dto.response.WebRtcParticipantResponse;
-import com.studymate.domain.session.entity.SessionRoom;
-import com.studymate.domain.session.entity.WebRtcConnection;
-import com.studymate.domain.session.entity.WebRtcParticipant;
-import com.studymate.domain.session.repository.SessionRoomRepository;
-import com.studymate.domain.session.repository.WebRtcConnectionRepository;
-import com.studymate.domain.session.repository.WebRtcParticipantRepository;
+import com.studymate.domain.session.domain.repository.WebRtcRoomRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.exception.NotFoundException;
@@ -30,9 +25,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class WebRtcServiceImpl implements WebRtcService {
 
-    private final SessionRoomRepository sessionRoomRepository;
-    private final WebRtcParticipantRepository webRtcParticipantRepository;
-    private final WebRtcConnectionRepository webRtcConnectionRepository;
+    private final WebRtcRoomRepository webRtcRoomRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
