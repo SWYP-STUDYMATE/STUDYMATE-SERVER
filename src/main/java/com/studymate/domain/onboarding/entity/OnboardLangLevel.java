@@ -21,5 +21,20 @@ public class OnboardLangLevel {
     @JoinColumn(name = "LANG_LEVEL_TYPE")
     private LangLevelType langLevelType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LANG_ID", insertable = false, updatable = false)
+    private Language language;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CURRENT_LEVEL_ID")
+    private LangLevelType currentLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TARGET_LEVEL_ID")
+    private LangLevelType targetLevel;
+
+    // 편의 메서드들
+    public int getLanguageId() {
+        return this.id.getLanguageId();
+    }
 }

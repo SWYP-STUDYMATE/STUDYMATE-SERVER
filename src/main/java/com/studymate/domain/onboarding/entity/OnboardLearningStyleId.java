@@ -1,5 +1,6 @@
 package com.studymate.domain.onboarding.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -13,7 +14,9 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Embeddable
 public class OnboardLearningStyleId implements Serializable {
+    @Column(name = "USER_ID")
     private UUID userId;
+    
+    @Column(name = "LEARNING_STYLE_ID")
     private int learningStyleId;
-
 }

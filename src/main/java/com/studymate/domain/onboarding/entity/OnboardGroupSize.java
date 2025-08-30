@@ -19,4 +19,8 @@ public class OnboardGroupSize {
     @EmbeddedId
     private OnboardGroupSizeId id;
 
+    // 편의 메서드
+    public int getGroupSizeId() {
+        return this.id.getGroupSizeId();
+    }
 }

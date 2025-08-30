@@ -1,10 +1,7 @@
 package com.studymate.domain.user.controller;
 
 import com.studymate.domain.user.domain.dto.request.*;
-import com.studymate.domain.user.domain.dto.response.LocationResponse;
-import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
-import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
-import com.studymate.domain.user.domain.dto.response.UserNameResponse;
+import com.studymate.domain.user.domain.dto.response.*;
 import com.studymate.domain.user.service.UserService;
 import com.studymate.domain.user.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -100,5 +97,46 @@ public class UserController {
     public List<UserGenderTypeResponse> getAllUserGender(
     ) {
         return userService.getAllUserGender();
+    }
+
+    // 프론트엔드 연동을 위한 추가 API 엔드포인트들
+    
+    @GetMapping("/complete-profile")
+    public UserCompleteProfileResponse getCompleteProfile(@AuthenticationPrincipal CustomUserDetails principal) {
+        UUID userId = principal.getUuid();
+        return userService.getCompleteProfile(userId);
+    }
+    
+    @PutMapping("/complete-profile")
+    public void updateCompleteProfile(@AuthenticationPrincipal CustomUserDetails principal,
+                                     @RequestBody UserCompleteProfileRequest req) {
+        UUID userId = principal.getUuid();
+        userService.updateCompleteProfile(userId, req);
+    }
+    
+    @GetMapping("/onboarding-status")
+    public OnboardingStatusResponse getOnboardingStatus(@AuthenticationPrincipal CustomUserDetails principal) {
+        UUID userId = principal.getUuid();
+        return userService.getOnboardingStatus(userId);
+    }
+    
+    @PostMapping("/complete-onboarding")
+    public void completeOnboarding(@AuthenticationPrincipal CustomUserDetails principal,
+                                  @RequestBody CompleteOnboardingRequest req) {
+        UUID userId = principal.getUuid();
+        userService.completeOnboarding(userId, req);
+    }
+    
+    @GetMapping("/settings")
+    public UserSettingsResponse getUserSettings(@AuthenticationPrincipal CustomUserDetails principal) {
+        UUID userId = principal.getUuid();
+        return userService.getUserSettings(userId);
+    }
+    
+    @PutMapping("/settings")
+    public void updateUserSettings(@AuthenticationPrincipal CustomUserDetails principal,
+                                  @RequestBody UserSettingsRequest req) {
+        UUID userId = principal.getUuid();
+        userService.updateUserSettings(userId, req);
     }
 }

@@ -22,4 +22,11 @@ public class PartnerPersonality {
     @Column(name = "PARTNER_PERSONALITY")
     private String partnerPersonality;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    // 편의 메서드들
+    public String getName() {
+        return this.partnerPersonality;
+    }
 }

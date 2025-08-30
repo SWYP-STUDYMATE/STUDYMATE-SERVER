@@ -7,6 +7,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +16,18 @@ import java.util.UUID;
 @Embeddable
 public class OnboardScheduleId implements Serializable {
     private UUID userId;
-    private DayOfWeekType dayOfWeek;
-    private LocalTime classTime;
+    private int scheduleId;
+    private String dayOfWeek;  // 요일 정보
+    private LocalTime classTime;  // 수업 시간
 
+    // 편의 생성자
+    public OnboardScheduleId(UUID userId, int scheduleId) {
+        this.userId = userId;
+        this.scheduleId = scheduleId;
+    }
+
+    // DayOfWeekType을 받는 setter 추가
+    public void setDayOfWeek(DayOfWeekType dayOfWeekType) {
+        this.dayOfWeek = dayOfWeekType != null ? dayOfWeekType.name() : null;
+    }
 }

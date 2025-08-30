@@ -20,10 +20,14 @@ public class Language {
     private int LanguageId;
 
     @Column(name = "LANGUAGE_NAME")
-    private String LanguageName;
+    private String languageName;
+
+    @Column(name = "LANGUAGE_CODE")
+    private String code;
 
 
-
-
-
+    // 편의 메서드들
+    public String getName() {
+        return this.languageName;
+    }
 }

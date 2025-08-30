@@ -38,9 +38,18 @@ public class ChatMessage extends BaseTimeEntity {
     @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatImage> images = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatFile> files = new ArrayList<>();
+
     public void addImage(ChatImage image) {
         this.images.add(image);
         image.setChatMessage(this);
+    }
+
+    public void addFile(ChatFile file) {
+        this.files.add(file);
+        file.setChatMessage(this);
     }
 
     public boolean hasMessage() {
@@ -53,6 +62,10 @@ public class ChatMessage extends BaseTimeEntity {
 
     public boolean hasAudio() {
         return this.audioUrl != null && !this.audioUrl.isEmpty();
+    }
+
+    public boolean hasFiles() {
+        return !this.files.isEmpty();
     }
 
     public boolean isOnlyImage() {

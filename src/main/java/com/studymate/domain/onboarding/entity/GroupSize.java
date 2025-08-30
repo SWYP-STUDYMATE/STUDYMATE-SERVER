@@ -21,4 +21,12 @@ public class GroupSize {
 
     @Column(name = "GROUP_SIZE")
     private String groupSize;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    // 편의 메서드들
+    public String getName() {
+        return this.groupSize;
+    }
 }

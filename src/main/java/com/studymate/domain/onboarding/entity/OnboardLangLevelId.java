@@ -1,5 +1,6 @@
 package com.studymate.domain.onboarding.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -12,6 +13,9 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Embeddable
 public class OnboardLangLevelId {
-    private UUID usrId;
+    @Column(name = "USER_ID")
+    private UUID userId;
+    
+    @Column(name = "LANG_ID")
     private int languageId;
 }

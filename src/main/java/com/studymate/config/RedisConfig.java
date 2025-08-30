@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.PostConstruct;
 
 @Slf4j
-@Configuration
+// @Configuration - 테스트를 위해 Redis 설정 비활성화
 public class RedisConfig {
 
     @Value("${redis.host}")

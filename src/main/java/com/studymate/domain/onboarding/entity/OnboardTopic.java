@@ -1,8 +1,6 @@
 package com.studymate.domain.onboarding.entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +16,16 @@ public class OnboardTopic {
 
     @EmbeddedId
     private OnboardTopicId id;
+
+    @Column(name = "TOPIC_NAME")
+    private String topicName;
+
+    // 편의 메서드
+    public int getTopicId() {
+        return this.id.getTopicId();
+    }
+
+    public String getTopicName() {
+        return this.topicName;
+    }
 }

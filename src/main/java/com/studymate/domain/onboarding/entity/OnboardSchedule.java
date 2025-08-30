@@ -21,11 +21,8 @@ public class OnboardSchedule {
     @EmbeddedId
     private OnboardScheduleId id;
 
-
-
-
-
-
-
-
+    // 편의 메서드
+    public int getScheduleId() {
+        return this.id.getScheduleId();
+    }
 }

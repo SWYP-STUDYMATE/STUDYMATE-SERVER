@@ -1,7 +1,7 @@
 # 📚 STUDYMATE API 레퍼런스
 
 ## 📅 문서 정보
-- **최종 업데이트**: 2025-08-27
+- **최종 업데이트**: 2025-08-29
 - **작성자**: Backend Development Team
 - **목적**: STUDYMATE REST API 엔드포인트 및 사용법 가이드
 - **API 버전**: v1
@@ -245,6 +245,35 @@ multipart/form-data
 }
 ```
 
+### 사용자 온라인 상태 조회
+**GET** `/api/v1/user/status/{userId}`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "userId": "user-uuid-123",
+    "status": "ONLINE",
+    "lastSeenAt": "2025-08-29T10:30:00Z",
+    "currentActivity": "STUDYING",
+    "deviceInfo": "Chrome on MacOS"
+  }
+}
+```
+
+### 내 온라인 상태 업데이트
+**POST** `/api/v1/user/status/update`
+
+#### 요청 바디
+```json
+{
+  "status": "ONLINE",
+  "deviceInfo": "Chrome on MacOS",
+  "activity": "STUDYING"
+}
+```
+
 ### 성별 타입 목록 조회
 **GET** `/api/v1/user/gender-type`
 
@@ -398,6 +427,119 @@ multipart/form-data
 
 ---
 
+## 🤝 매칭 시스템 API
+
+### 매칭 파트너 검색 (고급 필터링)
+**POST** `/api/v1/matching/search`
+
+#### 요청 바디
+```json
+{
+  "languageFilters": {
+    "learningLanguage": "ENGLISH",
+    "nativeLanguage": "KOREAN",
+    "minimumLevel": "INTERMEDIATE"
+  },
+  "personalityFilters": {
+    "preferredPersonalities": ["OUTGOING", "PATIENT"],
+    "communicationStyle": "CASUAL"
+  },
+  "availabilityFilters": {
+    "dayOfWeek": "MONDAY",
+    "timeSlot": "19:00-21:00",
+    "timezone": "Asia/Seoul"
+  },
+  "compatibilityFilters": {
+    "ageRange": {"min": 20, "max": 35},
+    "sharedInterests": ["TRAVEL", "MOVIES"],
+    "studyGoals": ["BUSINESS_ENGLISH"]
+  },
+  "page": 0,
+  "size": 10
+}
+```
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "partners": [
+      {
+        "userId": "user-uuid-456",
+        "name": "John Smith",
+        "profileImage": "https://...",
+        "compatibilityScore": 95.5,
+        "matchingReasons": ["같은 시간대 활동", "유사한 학습 목표"],
+        "languageInfo": {
+          "nativeLanguage": "English",
+          "learningLanguage": "Korean",
+          "level": "ADVANCED"
+        },
+        "personalityType": "OUTGOING",
+        "commonInterests": ["Travel", "Technology"]
+      }
+    ],
+    "totalElements": 25,
+    "hasNext": true
+  }
+}
+```
+
+### 매칭 요청 보내기
+**POST** `/api/v1/matching/request`
+
+#### 요청 바디
+```json
+{
+  "targetUserId": "user-uuid-456",
+  "message": "안녕하세요! 언어 교환을 함께 해요!",
+  "preferredSchedule": {
+    "dayOfWeek": "MONDAY",
+    "timeSlot": "19:00-21:00"
+  }
+}
+```
+
+### 받은 매칭 요청 목록
+**GET** `/api/v1/matching/requests/received`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "requests": [
+      {
+        "requestId": "request-uuid-789",
+        "fromUser": {
+          "userId": "user-uuid-456",
+          "name": "John Smith",
+          "profileImage": "https://..."
+        },
+        "message": "안녕하세요! 언어 교환을 함께 해요!",
+        "status": "PENDING",
+        "createdAt": "2025-08-29T10:30:00Z",
+        "compatibilityScore": 95.5
+      }
+    ]
+  }
+}
+```
+
+### 매칭 요청 응답 (수락/거절)
+**POST** `/api/v1/matching/requests/{requestId}/respond`
+
+#### 요청 바디
+```json
+{
+  "response": "ACCEPTED", // ACCEPTED, REJECTED
+  "message": "네, 좋아요! 함께 공부해요!"
+}
+```
+
+---
+
 ## 💬 채팅 API
 
 ### 채팅방 목록 조회
@@ -459,10 +601,137 @@ multipart/form-data
         "content": "안녕하세요!",
         "messageType": "TEXT",
         "timestamp": "2025-08-27T10:30:00Z",
-        "isRead": true
+        "isRead": true,
+        "files": [],
+        "images": []
       }
     ],
     "hasNext": false
+  }
+}
+```
+
+### 채팅 파일 업로드
+**POST** `/api/v1/chat/files/upload`
+
+#### Content-Type
+```
+multipart/form-data
+```
+
+#### 요청 파라미터
+- `roomId`: 채팅방 ID
+- `files`: 업로드할 파일들 (최대 10개, 각 파일 최대 50MB)
+- `description`: 파일 설명 (선택사항)
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "uploadedFiles": [
+      {
+        "fileId": "file-uuid-123",
+        "fileName": "document.pdf",
+        "fileType": "DOCUMENT",
+        "fileSize": 2048576,
+        "downloadUrl": "https://api.languagemate.kr/api/v1/chat/files/file-uuid-123/download",
+        "thumbnailUrl": null,
+        "uploadedAt": "2025-08-29T10:30:00Z"
+      }
+    ]
+  }
+}
+```
+
+### 채팅 파일 다운로드
+**GET** `/api/v1/chat/files/{fileId}/download`
+
+#### 응답
+파일 스트림이 직접 반환됩니다.
+
+### 채팅 파일 정보 조회
+**GET** `/api/v1/chat/files/{fileId}`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "fileId": "file-uuid-123",
+    "fileName": "document.pdf",
+    "fileType": "DOCUMENT",
+    "fileSize": 2048576,
+    "uploadedBy": {
+      "userId": "user-uuid-456",
+      "name": "홍길동"
+    },
+    "uploadedAt": "2025-08-29T10:30:00Z",
+    "downloadCount": 5,
+    "isPublic": false
+  }
+}
+```
+
+### 메시지 읽음 처리
+**POST** `/api/v1/chat/read-status/messages/{messageId}/read`
+
+### 채팅방 메시지 일괄 읽음 처리
+**POST** `/api/v1/chat/read-status/rooms/{roomId}/read-all`
+
+### 안읽은 메시지 수 조회
+**GET** `/api/v1/chat/read-status/rooms/{roomId}/unread-count`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": 15
+}
+```
+
+### 전체 안읽은 메시지 통계
+**GET** `/api/v1/chat/read-status/global-unread-summary`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "totalUnreadMessages": 42,
+    "unreadRoomsCount": 5,
+    "unreadByRoom": {
+      "room-uuid-123": 15,
+      "room-uuid-456": 12,
+      "room-uuid-789": 8
+    },
+    "lastUpdatedAt": "2025-08-29T10:30:00Z"
+  }
+}
+```
+
+### 메시지 읽음 상태 조회
+**GET** `/api/v1/chat/read-status/messages/{messageId}`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "messageId": 123,
+    "totalReaders": 2,
+    "totalParticipants": 3,
+    "readers": [
+      {
+        "userId": "user-uuid-456",
+        "userName": "John Smith",
+        "profileImage": "https://...",
+        "readAt": "2025-08-29T10:30:00Z"
+      }
+    ],
+    "unreadUserIds": ["user-uuid-789"],
+    "isFullyRead": false,
+    "readPercentage": 66.7
   }
 }
 ```
@@ -512,6 +781,128 @@ multipart/form-data
 
 ---
 
+## 📹 WebRTC API
+
+### WebRTC 룸 생성
+**POST** `/api/v1/webrtc/rooms/{sessionId}`
+
+#### 쿼리 파라미터
+- `hostUserId`: 호스트 사용자 ID
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "roomId": "webrtc-room-uuid-123",
+    "sessionId": 456,
+    "status": "CREATED",
+    "signalingServerUrl": "wss://signal.languagemate.kr",
+    "iceServers": [
+      {
+        "urls": ["stun:stun.l.google.com:19302"],
+        "username": null,
+        "credential": null
+      },
+      {
+        "urls": ["turn:turn.languagemate.kr:3478"],
+        "username": "turnuser",
+        "credential": "turnpass"
+      }
+    ],
+    "maxParticipants": 2,
+    "currentParticipants": 0,
+    "isRecordingEnabled": false
+  }
+}
+```
+
+### WebRTC 룸 참가
+**POST** `/api/v1/webrtc/rooms/{roomId}/join`
+
+#### 요청 바디
+```json
+{
+  "userId": "user-uuid-123",
+  "peerId": "peer-123",
+  "deviceInfo": "Chrome 120 on macOS",
+  "cameraEnabled": true,
+  "microphoneEnabled": true,
+  "preferredVideoQuality": "HD"
+}
+```
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "participantId": "participant-uuid-789",
+    "userId": "user-uuid-123",
+    "peerId": "peer-123",
+    "connectionStatus": "CONNECTING",
+    "isHost": false,
+    "isModerator": false,
+    "cameraEnabled": true,
+    "microphoneEnabled": true,
+    "joinedAt": "2025-08-29T10:30:00Z"
+  }
+}
+```
+
+### WebRTC 룸 정보 조회
+**GET** `/api/v1/webrtc/rooms/{roomId}`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "roomId": "webrtc-room-uuid-123",
+    "sessionId": 456,
+    "status": "ACTIVE",
+    "maxParticipants": 2,
+    "currentParticipants": 2,
+    "participants": [
+      {
+        "userId": "user-uuid-123",
+        "userName": "홍길동",
+        "peerId": "peer-123",
+        "isHost": true,
+        "connectionStatus": "CONNECTED",
+        "cameraEnabled": true,
+        "microphoneEnabled": true,
+        "screenSharing": false,
+        "joinedAt": "2025-08-29T10:30:00Z"
+      }
+    ],
+    "startedAt": "2025-08-29T10:30:00Z"
+  }
+}
+```
+
+### 참가자 상태 업데이트
+**PUT** `/api/v1/webrtc/rooms/{roomId}/participants/{userId}/status`
+
+#### 쿼리 파라미터
+- `statusType`: 상태 타입 (camera, microphone, screen_share)
+- `statusValue`: 상태 값 (true/false)
+
+### WebRTC 룸 종료
+**POST** `/api/v1/webrtc/rooms/{roomId}/end`
+
+#### 쿼리 파라미터
+- `hostUserId`: 호스트 사용자 ID
+
+### 녹화 시작/중지
+**POST** `/api/v1/webrtc/rooms/{roomId}/recording/start`
+**POST** `/api/v1/webrtc/rooms/{roomId}/recording/stop`
+
+#### 쿼리 파라미터
+- `userId`: 사용자 ID (호스트만 가능)
+
+---
+
 ## 🤖 AI 기능 API
 
 ### Clova Studio 텍스트 교정
@@ -545,34 +936,151 @@ multipart/form-data
 
 ---
 
-## 📊 통계 및 분석 API
+## 📊 분석 및 통계 대시보드 API
 
-### 학습 통계 조회
-**GET** `/api/v1/analytics/stats`
-
-#### 쿼리 파라미터
-- `period`: 기간 (`WEEK`, `MONTH`, `YEAR`)
+### 내 학습 통계 조회
+**GET** `/api/v1/analytics/users/my-stats`
 
 #### 응답
 ```json
 {
   "success": true,
   "data": {
+    "totalXp": 2450,
+    "currentStreak": 7,
+    "totalStudyTimeMinutes": 1680,
     "totalSessions": 15,
-    "totalDuration": 18000,
-    "averageSessionDuration": 1200,
-    "completedLevelTests": 3,
-    "currentLevel": "B2",
-    "weeklyProgress": [
+    "totalMessages": 234,
+    "totalWordsLearned": 156,
+    "totalTestsTaken": 3,
+    "averageTestScore": 85.6,
+    "totalBadgesEarned": 8,
+    "languageProgress": {
+      "english": 2100,
+      "japanese": 350
+    },
+    "skillProgress": {
+      "SPEAKING": 420,
+      "LISTENING": 380,
+      "READING": 310,
+      "WRITING": 570
+    },
+    "dailyProgress": [
       {
-        "date": "2025-08-20",
-        "sessions": 2,
-        "duration": 2400
+        "date": "2025-08-29",
+        "xpEarned": 120,
+        "studyMinutes": 60,
+        "messagesSent": 15,
+        "wasActive": true
+      }
+    ],
+    "achievements": [
+      {
+        "title": "Week Warrior",
+        "description": "7-day learning streak",
+        "earnedDate": "2025-08-29",
+        "iconUrl": "/badges/streak-7.png"
       }
     ]
   }
 }
 ```
+
+### 기간별 학습 통계 조회
+**GET** `/api/v1/analytics/users/my-stats/range`
+
+#### 쿼리 파라미터
+- `startDate`: 시작 날짜 (YYYY-MM-DD)
+- `endDate`: 종료 날짜 (YYYY-MM-DD)
+
+### 시스템 전체 분석 (관리자 전용)
+**GET** `/api/v1/analytics/system`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "totalUsers": 5420,
+    "activeUsersToday": 234,
+    "activeUsersThisWeek": 1456,
+    "activeUsersThisMonth": 3210,
+    "totalSessions": 12450,
+    "completedSessionsToday": 156,
+    "averageSessionDuration": 45.6,
+    "totalMessages": 89234,
+    "messagesThisWeek": 5678,
+    "usersByLanguage": {
+      "english": 3200,
+      "korean": 1500,
+      "japanese": 720
+    },
+    "userGrowthTrend": [
+      {
+        "date": "2025-08-29T00:00:00",
+        "value": 5420,
+        "metricName": "USER_GROWTH"
+      }
+    ],
+    "activityTrend": [
+      {
+        "date": "2025-08-29T00:00:00",
+        "value": 234,
+        "metricName": "DAILY_ACTIVITY"
+      }
+    ],
+    "activityByHour": {
+      "9": 45,
+      "10": 67,
+      "19": 89,
+      "20": 112
+    },
+    "topLanguages": [
+      {
+        "languageCode": "en",
+        "languageName": "English",
+        "userCount": 3200,
+        "sessionCount": 8900,
+        "averageProgress": 75.4
+      }
+    ],
+    "systemHealth": {
+      "successRate": 99.2,
+      "averageResponseTime": 145.6,
+      "errorCount": 12,
+      "systemStatus": "HEALTHY"
+    }
+  }
+}
+```
+
+### 사용자 활동 기록
+**POST** `/api/v1/analytics/activities/record`
+
+#### 쿼리 파라미터
+- `activityType`: 활동 타입 (LOGIN, LOGOUT, SESSION_JOIN, MESSAGE_SENT 등)
+- `activityCategory`: 활동 카테고리 (AUTH, SESSION, CHAT, PROFILE 등)
+- `description`: 활동 설명 (선택사항)
+- `metadata`: 추가 메타데이터 JSON (선택사항)
+
+### 학습 진도 업데이트
+**POST** `/api/v1/analytics/learning-progress/update`
+
+#### 쿼리 파라미터
+- `languageCode`: 언어 코드 (en, ko, ja 등)
+- `progressType`: 진도 타입 (SESSION_COMPLETED, MESSAGE_SENT, WORDS_LEARNED 등)
+- `value`: 값 (숫자)
+- `metadata`: 추가 메타데이터 (선택사항)
+
+### 시스템 메트릭 기록 (관리자 전용)
+**POST** `/api/v1/analytics/metrics/record`
+
+#### 쿼리 파라미터
+- `metricName`: 메트릭 이름
+- `metricCategory`: 메트릭 카테고리
+- `metricValue`: 메트릭 값
+- `metricUnit`: 측정 단위 (선택사항)
+- `aggregationPeriod`: 집계 기간 (선택사항)
 
 ### 매칭 기록 조회
 **GET** `/api/v1/matching/history`
@@ -691,6 +1199,61 @@ stompClient.send('/app/chat.sendMessage', {}, JSON.stringify({
 stompClient.subscribe('/topic/session/{sessionId}', function(message) {
   const sessionUpdate = JSON.parse(message.body);
   // 세션 상태 업데이트 처리
+});
+```
+
+#### WebRTC 시그널링
+```javascript
+// WebRTC 시그널링 메시지 구독
+stompClient.subscribe('/topic/webrtc/{roomId}/signaling', function(message) {
+  const signalingMessage = JSON.parse(message.body);
+  // WebRTC 시그널링 처리 (offer, answer, ice-candidate)
+});
+
+// 시그널링 메시지 전송
+stompClient.send('/app/webrtc/{roomId}/signaling', {}, JSON.stringify({
+  type: 'offer',
+  fromPeerId: 'peer-123',
+  toPeerId: 'peer-456',
+  data: sdpOffer
+}));
+```
+
+#### 실시간 통계 구독
+```javascript
+// 사용자별 통계 업데이트 구독
+stompClient.subscribe('/topic/users/{userId}/stats', function(message) {
+  const statsUpdate = JSON.parse(message.body);
+  // 실시간 통계 업데이트 처리
+});
+
+// 실시간 활동 피드백 구독
+stompClient.subscribe('/topic/users/{userId}/feedback', function(message) {
+  const feedback = JSON.parse(message.body);
+  // XP 획득, 레벨업 등 피드백 처리
+});
+
+// 관리자 시스템 분석 구독
+stompClient.subscribe('/topic/admin/analytics', function(message) {
+  const analyticsUpdate = JSON.parse(message.body);
+  // 관리자 대시보드 실시간 업데이트
+});
+```
+
+#### 참가자 상태 업데이트
+```javascript
+// WebRTC 참가자 상태 업데이트 전송
+stompClient.send('/app/webrtc/{roomId}/participant-update', {}, JSON.stringify({
+  userId: 'user-uuid-123',
+  statusType: 'camera',
+  statusValue: false,
+  timestamp: Date.now()
+}));
+
+// 참가자 업데이트 구독
+stompClient.subscribe('/topic/webrtc/{roomId}/participant-updates', function(message) {
+  const update = JSON.parse(message.body);
+  // 다른 참가자의 상태 변경 처리
 });
 ```
 

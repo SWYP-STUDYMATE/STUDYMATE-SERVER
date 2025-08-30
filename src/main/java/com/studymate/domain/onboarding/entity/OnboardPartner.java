@@ -20,5 +20,8 @@ public class OnboardPartner {
     @EmbeddedId
     private OnboardPartnerId id;
 
-
+    // 편의 메서드
+    public int getPartnerPersonalityId() {
+        return this.id.getPartnerPersonalityId();
+    }
 }

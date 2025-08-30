@@ -23,5 +23,11 @@ public class Motivation {
     @Column (name = "MOTIVATION_NAME")
     private String motivationName;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
 
+    // 편의 메서드들
+    public String getName() {
+        return this.motivationName;
+    }
 }

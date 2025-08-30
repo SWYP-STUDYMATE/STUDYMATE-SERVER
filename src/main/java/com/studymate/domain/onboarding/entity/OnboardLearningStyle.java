@@ -19,4 +19,8 @@ public class OnboardLearningStyle {
     @EmbeddedId
     private OnboardLearningStyleId id;
 
+    // 편의 메서드
+    public int getLearningStyleId() {
+        return this.id.getLearningStyleId();
+    }
 }

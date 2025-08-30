@@ -21,4 +21,12 @@ public class Topic {
 
     @Column(name = "TOPIC_NAME")
     private String topicName;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    // 편의 메서드들
+    public String getName() {
+        return this.topicName;
+    }
 }

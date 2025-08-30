@@ -19,5 +19,8 @@ public class OnboardMotivation {
     @EmbeddedId
     private OnboardMotivationId id;
 
-
+    // 편의 메서드
+    public int getMotivationId() {
+        return this.id.getMotivationId();
+    }
 }

@@ -24,6 +24,22 @@ public class Schedule {
     @Column(name = "DAY_OF_WEEK")
     private DayOfWeekType dayOfWeekType;
 
+    @Column(name = "SCHEDULE_NAME")
+    private String scheduleName;
 
+    @Column(name = "TIME_SLOT")
+    private String timeSlot;
 
+    // 편의 메서드들
+    public String getName() {
+        return this.scheduleName;
+    }
+
+    public String getTimeSlot() {
+        return this.timeSlot;
+    }
+
+    public String getDayOfWeek() {
+        return this.dayOfWeekType != null ? this.dayOfWeekType.name() : null;
+    }
 }

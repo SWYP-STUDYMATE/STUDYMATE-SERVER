@@ -1,0 +1,314 @@
+package com.studymate.domain.chat.service;
+
+import com.studymate.domain.chat.entity.ChatMessage;
+import com.studymate.domain.chat.entity.ChatRoom;
+import com.studymate.domain.chat.entity.MessageReadStatus;
+import com.studymate.domain.chat.repository.ChatMessageRepository;
+import com.studymate.domain.chat.repository.ChatRoomParticipantRepository;
+import com.studymate.domain.chat.repository.ChatRoomRepository;
+import com.studymate.domain.chat.repository.MessageReadStatusRepository;
+import com.studymate.domain.chat.dto.response.MessageReadStatusResponse;
+import com.studymate.domain.chat.dto.response.UnreadMessageSummary;
+import com.studymate.domain.user.domain.repository.UserRepository;
+import com.studymate.domain.user.entity.User;
+import com.studymate.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class MessageReadServiceImpl implements MessageReadService {
+
+    private final MessageReadStatusRepository readStatusRepository;
+    private final ChatMessageRepository messageRepository;
+    private final ChatRoomRepository roomRepository;
+    private final ChatRoomParticipantRepository participantRepository;
+    private final UserRepository userRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    
+    private static final String UNREAD_COUNT_PREFIX = "unread:count:";
+    private static final String LAST_READ_PREFIX = "last:read:";
+
+    @Override
+    public void markMessageAsRead(Long messageId, UUID userId) {
+        ChatMessage message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND MESSAGE"));
+                
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+
+        // 자신이 보낸 메시지는 읽음 처리하지 않음
+        if (message.getSender().getUserId().equals(userId)) {
+            return;
+        }
+
+        // 이미 읽음 처리된 경우 중복 처리 방지
+        Optional<MessageReadStatus> existing = readStatusRepository
+                .findByMessageAndReaderAndIsDeletedFalse(message, user);
+        
+        if (existing.isPresent()) {
+            return;
+        }
+
+        MessageReadStatus readStatus = MessageReadStatus.builder()
+                .message(message)
+                .reader(user)
+                .readAt(LocalDateTime.now())
+                .build();
+
+        readStatusRepository.save(readStatus);
+
+        // 캐시 업데이트
+        updateUnreadCountCache(message.getChatRoom().getRoomId(), userId);
+        
+        log.debug("Message {} marked as read by user {}", messageId, userId);
+    }
+
+    @Override
+    public void markRoomMessagesAsRead(UUID roomId, UUID userId, LocalDateTime readUntil) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+
+        readStatusRepository.bulkMarkAsRead(roomId, user, readUntil);
+        
+        // 캐시 업데이트
+        updateUnreadCountCache(roomId, userId);
+        updateLastReadTimeCache(roomId, userId, readUntil);
+        
+        log.debug("Room {} messages marked as read by user {} until {}", roomId, userId, readUntil);
+    }
+
+    @Override
+    public void markAllRoomMessagesAsRead(UUID roomId, UUID userId) {
+        markRoomMessagesAsRead(roomId, userId, LocalDateTime.now());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MessageReadStatusResponse getMessageReadStatus(Long messageId) {
+        ChatMessage message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND MESSAGE"));
+
+        List<MessageReadStatus> readStatuses = readStatusRepository
+                .findByMessageAndIsDeletedFalseOrderByReadAtAsc(message);
+
+        // 채팅방 참가자 수 조회
+        int totalParticipants = participantRepository
+                .countBychatRoomAndJoinedAtIsNotNull(message.getChatRoom());
+
+        List<MessageReadStatusResponse.ReaderInfo> readers = readStatuses.stream()
+                .map(status -> MessageReadStatusResponse.ReaderInfo.builder()
+                        .userId(status.getReader().getUserId())
+                        .userName(status.getReader().getName())
+                        .profileImage(status.getReader().getProfileImage())
+                        .readAt(status.getReadAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 읽지 않은 사용자 목록
+        List<User> unreadUsers = readStatusRepository.findUnreadUsersByMessage(
+                messageId, message.getChatRoom().getRoomId(), message.getSender());
+        
+        List<UUID> unreadUserIds = unreadUsers.stream()
+                .map(User::getUserId)
+                .collect(Collectors.toList());
+
+        LocalDateTime firstReadAt = readStatuses.stream()
+                .map(MessageReadStatus::getReadAt)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+
+        LocalDateTime lastReadAt = readStatuses.stream()
+                .map(MessageReadStatus::getReadAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+
+        boolean isFullyRead = unreadUserIds.isEmpty();
+
+        return MessageReadStatusResponse.builder()
+                .messageId(messageId)
+                .totalReaders(readers.size())
+                .totalParticipants(totalParticipants)
+                .readers(readers)
+                .unreadUserIds(unreadUserIds)
+                .firstReadAt(firstReadAt)
+                .lastReadAt(lastReadAt)
+                .isFullyRead(isFullyRead)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long getUnreadMessageCount(UUID roomId, UUID userId) {
+        // 캐시에서 먼저 확인
+        String cacheKey = UNREAD_COUNT_PREFIX + roomId + ":" + userId;
+        Long cachedCount = (Long) redisTemplate.opsForValue().get(cacheKey);
+        if (cachedCount != null) {
+            return cachedCount;
+        }
+
+        // 마지막 읽음 시간 조회
+        Optional<LocalDateTime> lastReadTime = readStatusRepository
+                .findLastReadTimeByRoomIdAndUserId(roomId, userId);
+
+        long unreadCount;
+        if (lastReadTime.isPresent()) {
+            unreadCount = readStatusRepository
+                    .countUnreadMessagesInRoom(roomId, userId, lastReadTime.get());
+        } else {
+            // 한번도 읽지 않은 경우 모든 메시지가 안읽은 메시지
+            unreadCount = messageRepository.countByRoomIdAndSenderIdNot(roomId, userId);
+        }
+
+        // 캐시에 저장 (5분)
+        redisTemplate.opsForValue().set(cacheKey, unreadCount, 5, TimeUnit.MINUTES);
+
+        return unreadCount;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long getTotalUnreadMessageCount(UUID userId) {
+        return readStatusRepository.countTotalUnreadMessages(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UnreadMessageSummary> getUnreadMessageSummary(UUID userId) {
+        // 사용자가 참여한 모든 채팅방 조회
+        List<ChatRoom> rooms = participantRepository.findRoomsByUserId(userId);
+        
+        return rooms.stream()
+                .map(room -> {
+                    long unreadCount = getUnreadMessageCount(room.getRoomId(), userId);
+                    if (unreadCount == 0) {
+                        return null; // 안읽은 메시지가 없는 방은 제외
+                    }
+                    
+                    LocalDateTime lastReadAt = getLastReadTime(room.getRoomId(), userId);
+                    
+                    // 마지막 메시지 정보 조회
+                    Optional<ChatMessage> lastMessage = messageRepository
+                            .findTopByRoomIdOrderByCreatedAtDesc(room.getRoomId());
+                    
+                    UnreadMessageSummary.UnreadMessageSummaryBuilder builder = UnreadMessageSummary.builder()
+                            .roomId(room.getRoomId())
+                            .roomName(room.getRoomName())
+                            .unreadCount(unreadCount)
+                            .lastReadAt(lastReadAt);
+                    
+                    if (lastMessage.isPresent()) {
+                        ChatMessage msg = lastMessage.get();
+                        builder.lastMessageAt(msg.getCreatedAt())
+                               .lastMessageContent(getMessagePreview(msg))
+                               .lastMessageSender(msg.getSender().getName())
+                               .lastMessageType(determineMessageType(msg));
+                    }
+                    
+                    return builder.build();
+                })
+                .filter(Objects::nonNull)
+                .sorted((a, b) -> b.getLastMessageAt().compareTo(a.getLastMessageAt()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnreadMessageSummary.GlobalUnreadSummary getGlobalUnreadSummary(UUID userId) {
+        long totalUnread = getTotalUnreadMessageCount(userId);
+        List<UnreadMessageSummary> roomSummaries = getUnreadMessageSummary(userId);
+        
+        Map<UUID, Long> unreadByRoom = roomSummaries.stream()
+                .collect(Collectors.toMap(
+                        UnreadMessageSummary::getRoomId,
+                        UnreadMessageSummary::getUnreadCount
+                ));
+        
+        return UnreadMessageSummary.GlobalUnreadSummary.builder()
+                .totalUnreadMessages(totalUnread)
+                .unreadRoomsCount(roomSummaries.size())
+                .unreadByRoom(unreadByRoom)
+                .lastUpdatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalDateTime getLastReadTime(UUID roomId, UUID userId) {
+        String cacheKey = LAST_READ_PREFIX + roomId + ":" + userId;
+        LocalDateTime cachedTime = (LocalDateTime) redisTemplate.opsForValue().get(cacheKey);
+        if (cachedTime != null) {
+            return cachedTime;
+        }
+
+        Optional<LocalDateTime> lastReadTime = readStatusRepository
+                .findLastReadTimeByRoomIdAndUserId(roomId, userId);
+        
+        LocalDateTime result = lastReadTime.orElse(null);
+        if (result != null) {
+            redisTemplate.opsForValue().set(cacheKey, result, 10, TimeUnit.MINUTES);
+        }
+        
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isMessageFullyRead(Long messageId) {
+        MessageReadStatusResponse status = getMessageReadStatus(messageId);
+        return status.isFullyRead();
+    }
+
+    @Override
+    public void cleanupOldReadStatuses(int daysThreshold) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysThreshold);
+        int cleanedCount = readStatusRepository.cleanupOldReadStatuses(cutoffDate);
+        
+        log.info("Cleaned up {} old read statuses older than {} days", cleanedCount, daysThreshold);
+    }
+
+    // Private helper methods
+
+    private void updateUnreadCountCache(UUID roomId, UUID userId) {
+        String cacheKey = UNREAD_COUNT_PREFIX + roomId + ":" + userId;
+        redisTemplate.delete(cacheKey); // 캐시 무효화하여 다음 조회시 재계산
+    }
+
+    private void updateLastReadTimeCache(UUID roomId, UUID userId, LocalDateTime readTime) {
+        String cacheKey = LAST_READ_PREFIX + roomId + ":" + userId;
+        redisTemplate.opsForValue().set(cacheKey, readTime, 10, TimeUnit.MINUTES);
+    }
+
+    private String getMessagePreview(ChatMessage message) {
+        if (message.getMessage() != null && !message.getMessage().isEmpty()) {
+            return message.getMessage().length() > 50 ? 
+                   message.getMessage().substring(0, 50) + "..." : 
+                   message.getMessage();
+        } else if (message.hasFiles()) {
+            return "파일을 전송했습니다.";
+        } else if (message.hasImages()) {
+            return "이미지를 전송했습니다.";
+        } else if (message.hasAudio()) {
+            return "음성 메시지를 전송했습니다.";
+        } else {
+            return "메시지";
+        }
+    }
+
+    private String determineMessageType(ChatMessage message) {
+        if (message.hasFiles()) return "FILE";
+        if (message.hasImages()) return "IMAGE";
+        if (message.hasAudio()) return "AUDIO";
+        return "TEXT";
+    }
+}

@@ -1,10 +1,7 @@
 package com.studymate.domain.user.service;
 
 import com.studymate.domain.user.domain.dto.request.*;
-import com.studymate.domain.user.domain.dto.response.LocationResponse;
-import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
-import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
-import com.studymate.domain.user.domain.dto.response.UserNameResponse;
+import com.studymate.domain.user.domain.dto.response.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,4 +20,11 @@ public interface UserService {
     ProfileImageUrlResponse getProfileImageUrl(UUID userId);
     List<UserGenderTypeResponse> getAllUserGender();
 
+    // 프론트엔드 연동을 위한 추가 메서드들
+    UserCompleteProfileResponse getCompleteProfile(UUID userId);
+    void updateCompleteProfile(UUID userId, UserCompleteProfileRequest req);
+    OnboardingStatusResponse getOnboardingStatus(UUID userId);
+    void completeOnboarding(UUID userId, CompleteOnboardingRequest req);
+    UserSettingsResponse getUserSettings(UUID userId);
+    void updateUserSettings(UUID userId, UserSettingsRequest req);
 }

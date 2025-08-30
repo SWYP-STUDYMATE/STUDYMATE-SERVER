@@ -19,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User {
 
     @Id
@@ -86,6 +86,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserIdentityType userIdentityType;
 
+    @Column(name = "IS_ONBOARDING_COMPLETED", nullable = false)
+    @Builder.Default
+    private Boolean isOnboardingCompleted = false;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserStatus userStatus;
+
 
 
 
@@ -115,7 +122,33 @@ public class User {
         }
     }
 
+    // 추가 게터 메서드들
+    public UserGenderType getGender() {
+        return this.userGenderType;
+    }
 
+    public String getEmail() {
+        // OAuth 로그인에서 email 정보는 userIdentity에 저장됨
+        return this.userIdentity;
+    }
 
+    public String getBirthyear() {
+        return this.birthyear;
+    }
 
+    public void setGender(UserGenderType gender) {
+        this.userGenderType = gender;
+    }
+
+    public void setBirthyear(Integer birthyear) {
+        this.birthyear = birthyear != null ? birthyear.toString() : null;
+    }
+
+    public void setBirthyear(String birthyear) {
+        this.birthyear = birthyear;
+    }
+
+    public void setIsOnboardingCompleted(Boolean isOnboardingCompleted) {
+        this.isOnboardingCompleted = isOnboardingCompleted;
+    }
 }

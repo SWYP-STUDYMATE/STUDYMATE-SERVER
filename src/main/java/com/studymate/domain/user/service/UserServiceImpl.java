@@ -5,10 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.studymate.domain.user.domain.dto.request.*;
-import com.studymate.domain.user.domain.dto.response.LocationResponse;
-import com.studymate.domain.user.domain.dto.response.ProfileImageUrlResponse;
-import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
-import com.studymate.domain.user.domain.dto.response.UserNameResponse;
+import com.studymate.domain.user.domain.dto.response.*;
 import com.studymate.domain.user.domain.repository.LocationRepository;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.domain.type.UserGenderType;
@@ -151,5 +148,138 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
-
+    // 프론트엔드 연동을 위한 추가 메서드 구현들
+    
+    @Override
+    public UserCompleteProfileResponse getCompleteProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        return new UserCompleteProfileResponse(
+                user.getEnglishName(),
+                user.getName(),
+                user.getProfileImage(),
+                user.getSelfBio(),
+                user.getEmail(),
+                user.getGender() != null ? user.getGender().name() : null,
+                user.getBirthyear() != null ? Integer.parseInt(user.getBirthyear()) : null,
+                user.getBirthday(),
+                user.getLocation() != null ? user.getLocation().getCity() : null,
+                user.getNativeLanguage() != null ? user.getNativeLanguage().getName() : null,
+                null, // targetLanguage - 온보딩 데이터에서 가져와야 함
+                null, // languageLevel - 온보딩 데이터에서 가져와야 함
+                user.getIsOnboardingCompleted()
+        );
+    }
+    
+    @Override
+    public void updateCompleteProfile(UUID userId, UserCompleteProfileRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        if (req.getEnglishName() != null) {
+            user.setEnglishName(req.getEnglishName());
+        }
+        if (req.getKoreanName() != null) {
+            user.setName(req.getKoreanName());
+        }
+        if (req.getSelfBio() != null) {
+            user.setSelfBio(req.getSelfBio());
+        }
+        if (req.getGender() != null) {
+            user.setGender(UserGenderType.valueOf(req.getGender()));
+        }
+        if (req.getBirthYear() != null) {
+            user.setBirthyear(req.getBirthYear());
+        }
+        if (req.getBirthday() != null) {
+            user.setBirthday(req.getBirthday());
+        }
+        if (req.getLocationId() != null) {
+            Location location = locationRepository.findById(req.getLocationId())
+                    .orElseThrow(() -> new NotFoundException("NOT FOUND LOCATION"));
+            user.setLocation(location);
+        }
+        
+        userRepository.save(user);
+    }
+    
+    @Override
+    public OnboardingStatusResponse getOnboardingStatus(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        // 기본 정보 완성도 체크
+        boolean basicInfoCompleted = user.getEnglishName() != null && 
+                                   user.getBirthyear() != null && 
+                                   user.getGender() != null;
+        
+        // 온보딩 단계별 완성도 체크 (실제로는 온보딩 관련 테이블들을 확인해야 함)
+        boolean languageInfoCompleted = user.getNativeLanguage() != null;
+        boolean interestInfoCompleted = false; // TODO: 관심사 테이블 확인
+        boolean partnerInfoCompleted = false; // TODO: 파트너 선호도 테이블 확인
+        boolean scheduleInfoCompleted = false; // TODO: 스케줄 테이블 확인
+        
+        int completedSteps = 0;
+        if (basicInfoCompleted) completedSteps++;
+        if (languageInfoCompleted) completedSteps++;
+        if (interestInfoCompleted) completedSteps++;
+        if (partnerInfoCompleted) completedSteps++;
+        if (scheduleInfoCompleted) completedSteps++;
+        
+        return new OnboardingStatusResponse(
+                basicInfoCompleted,
+                languageInfoCompleted,
+                interestInfoCompleted,
+                partnerInfoCompleted,
+                scheduleInfoCompleted,
+                user.getIsOnboardingCompleted(),
+                completedSteps,
+                5
+        );
+    }
+    
+    @Override
+    public void completeOnboarding(UUID userId, CompleteOnboardingRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        // TODO: 온보딩 데이터를 각각의 테이블에 저장
+        // 1. 언어 정보 저장 (OnboardLangLevel 등)
+        // 2. 관심사 정보 저장 (OnboardMotivation, OnboardTopic 등)
+        // 3. 파트너 선호도 저장 (OnboardPartner 등)
+        // 4. 스케줄 정보 저장 (OnboardSchedule 등)
+        
+        user.setIsOnboardingCompleted(true);
+        userRepository.save(user);
+    }
+    
+    @Override
+    public UserSettingsResponse getUserSettings(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        // 기본값으로 설정 (실제로는 UserSettings 테이블이 필요)
+        return new UserSettingsResponse(
+                true,  // emailNotifications
+                true,  // pushNotifications
+                true,  // matchingNotifications
+                true,  // chatNotifications
+                true,  // sessionReminders
+                "ko",  // preferredLanguage
+                user.getLocation() != null ? user.getLocation().getTimeZone() : "Asia/Seoul",
+                false  // privateProfile
+        );
+    }
+    
+    @Override
+    public void updateUserSettings(UUID userId, UserSettingsRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        // TODO: UserSettings 엔티티 생성 후 실제 설정 저장
+        // 현재는 기본 구현만 제공
+        
+        userRepository.save(user);
+    }
 }

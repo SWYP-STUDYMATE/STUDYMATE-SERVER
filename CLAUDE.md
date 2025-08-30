@@ -13,6 +13,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 관련 프로젝트
 - **STUDYMATE-CLIENT**: React 기반 웹 클라이언트 (Cloudflare Pages)
 
+## 📝 필수 상호 참조 규칙
+
+**백엔드 개발 시 반드시 확인해야 할 클라이언트 관련 사항:**
+- **TypeScript 인터페이스**: `../STYDYMATE-CLIENT/src/types/` DTO 응답과 일치 확인
+- **컴포넌트 요구사항**: `../STYDYMATE-CLIENT/docs/06-frontend/components/` API 응답 형식 확인  
+- **에러 처리**: `../STYDYMATE-CLIENT/src/utils/errorHandling.ts` 에러 코드 동기화
+- **WebSocket 이벤트**: 클라이언트 이벤트 핸들러와 서버 이벤트 일치
+- **상태 관리**: `../STYDYMATE-CLIENT/src/stores/` Zustand store와 서버 상태 동기화
+
+**문서 업데이트 필수:**
+- Controller 변경 → `docs/04-api/api-reference.md` 업데이트
+- DTO 변경 → 클라이언트 TypeScript 인터페이스 확인 요청
+- Entity 변경 → `docs/05-database/database-schema.md` 업데이트  
+- 에러 코드 추가 → `docs/07-backend/error-handling.md` 업데이트
+
 ## 📦 기술 스택
 
 ### Core Technologies
