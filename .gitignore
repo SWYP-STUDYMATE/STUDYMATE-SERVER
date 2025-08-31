@@ -38,12 +38,15 @@ src/main/resources/application.yaml
 # Application Properties
 src/main/resources/application.yml
 src/main/resources/application-*.yml
+!src/main/resources/application-prod.yml
 !src/main/resources/application.yml.example
 application.yml
 
 # Environment variables
 .env
 .env.*
+!.env.example
+!.env.prod.example
 "src/main/resources/application.yaml" 
 
 # Logs

@@ -1,0 +1,135 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: studymate-server
+  
+  # MySQL Database for Production
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:studymate}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:studymate}
+    password: ${DB_PASSWORD:password}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # JPA Configuration for MySQL
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: Asia/Seoul
+        connection:
+          characterEncoding: utf-8
+          CharSet: utf-8
+          useUnicode: true
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      database: 0
+      jedis:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+          max-wait: 2000ms
+
+# Naver OAuth
+naver:
+  client_id: ${NAVER_CLIENT_ID:your-naver-client-id}
+  client_secret: ${NAVER_CLIENT_SECRET:your-naver-secret}
+  authorization_grant_type: authorization_code
+  redirect_uri: ${NAVER_REDIRECT_URI:https://api.languagemate.kr/login/oauth2/code/naver}
+
+# Google OAuth  
+google:
+  client_id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+  client_secret: ${GOOGLE_CLIENT_SECRET:your-google-secret}
+  redirect_uri: ${GOOGLE_REDIRECT_URI:https://api.languagemate.kr/login/oauth2/code/google}
+
+# JWT
+jwt:
+  secret_key: ${JWT_SECRET:your-very-long-secret-key-at-least-256-bits-for-production}
+  access_token_expiration_time: ${JWT_ACCESS_TOKEN_EXPIRATION:3600000}
+  refresh_token_expiration_time: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
+
+# NCP Object Storage
+cloud:
+  ncp:
+    storage:
+      region: kr-standard
+      endpoint: ${NCP_OBJECT_STORAGE_ENDPOINT:https://kr.object.ncloudstorage.com}
+      access-key: ${NCP_ACCESS_KEY:your-ncp-access-key}
+      secret-key: ${NCP_SECRET_KEY:your-ncp-secret-key}
+      bucket-name: ${NCP_BUCKET_NAME:languagemate-profile-img}
+
+# Clova Studio API
+clova:
+  studio:
+    endpoint: ${CLOVA_STUDIO_ENDPOINT:https://clovastudio.stream.ntruss.com}
+    api_key: ${CLOVA_API_KEY:your-clova-api-key}
+
+# Production Logging Configuration
+logging:
+  level:
+    com.studymate: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.boot.actuator: INFO
+    org.springframework.data.jpa: WARN
+    root: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{36} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{36} - %msg%n'
+  file:
+    name: /app/logs/studymate-server.log
+    max-size: 100MB
+    max-history: 30
+
+# Actuator for Health Check
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+  server:
+    port: 8080
+
+# CORS Configuration for Production
+cors:
+  allowed-origins: 
+    - https://languagemate.kr
+    - https://www.languagemate.kr
+    - https://api.languagemate.kr
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+  allowed-headers: "*"
+  allow-credentials: true
