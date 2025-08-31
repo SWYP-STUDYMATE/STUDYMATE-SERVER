@@ -31,21 +31,21 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
     /**
      * 채팅방의 모든 메시지에 대한 사용자의 읽음 상태 조회
      */
-    @Query("SELECT mrs FROM MessageReadStatus mrs WHERE mrs.message.chatRoom.roomId = :roomId AND mrs.reader.userId = :userId AND mrs.isDeleted = false")
-    List<MessageReadStatus> findByRoomIdAndUserIdAndIsDeletedFalse(@Param("roomId") UUID roomId, @Param("userId") UUID userId);
+    @Query("SELECT mrs FROM MessageReadStatus mrs WHERE mrs.message.chatRoom.id = :roomId AND mrs.reader.userId = :userId AND mrs.isDeleted = false")
+    List<MessageReadStatus> findByRoomIdAndUserIdAndIsDeletedFalse(@Param("roomId") Long roomId, @Param("userId") UUID userId);
 
     /**
      * 사용자의 채팅방별 마지막 읽음 시간 조회
      */
-    @Query("SELECT MAX(mrs.readAt) FROM MessageReadStatus mrs WHERE mrs.message.chatRoom.roomId = :roomId AND mrs.reader.userId = :userId AND mrs.isDeleted = false")
-    Optional<LocalDateTime> findLastReadTimeByRoomIdAndUserId(@Param("roomId") UUID roomId, @Param("userId") UUID userId);
+    @Query("SELECT MAX(mrs.readAt) FROM MessageReadStatus mrs WHERE mrs.message.chatRoom.id = :roomId AND mrs.reader.userId = :userId AND mrs.isDeleted = false")
+    Optional<LocalDateTime> findLastReadTimeByRoomIdAndUserId(@Param("roomId") Long roomId, @Param("userId") UUID userId);
 
     /**
      * 채팅방에서 특정 시간 이후의 안읽은 메시지 수 조회
      */
     @Query("""
         SELECT COUNT(m) FROM ChatMessage m 
-        WHERE m.chatRoom.roomId = :roomId 
+        WHERE m.chatRoom.id = :roomId 
         AND m.sender.userId != :userId 
         AND m.createdAt > :lastReadTime 
         AND NOT EXISTS (
@@ -55,7 +55,7 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
             AND mrs.isDeleted = false
         )
     """)
-    long countUnreadMessagesInRoom(@Param("roomId") UUID roomId, @Param("userId") UUID userId, @Param("lastReadTime") LocalDateTime lastReadTime);
+    long countUnreadMessagesInRoom(@Param("roomId") Long roomId, @Param("userId") UUID userId, @Param("lastReadTime") LocalDateTime lastReadTime);
 
     /**
      * 사용자의 전체 안읽은 메시지 수 조회
@@ -88,7 +88,7 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
         INSERT INTO MessageReadStatus (message, reader, readAt, isDeleted)
         SELECT m, :reader, :readAt, false
         FROM ChatMessage m
-        WHERE m.chatRoom.roomId = :roomId
+        WHERE m.chatRoom.id = :roomId
         AND m.createdAt <= :readAt
         AND m.sender != :reader
         AND NOT EXISTS (
@@ -98,14 +98,14 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
             AND mrs.isDeleted = false
         )
     """)
-    void bulkMarkAsRead(@Param("roomId") UUID roomId, @Param("reader") User reader, @Param("readAt") LocalDateTime readAt);
+    void bulkMarkAsRead(@Param("roomId") Long roomId, @Param("reader") User reader, @Param("readAt") LocalDateTime readAt);
 
     /**
      * 메시지별 읽지 않은 사용자 목록 조회 (채팅방 참가자 중)
      */
     @Query("""
         SELECT p.user FROM ChatRoomParticipant p
-        WHERE p.chatRoom.roomId = :roomId
+        WHERE p.chatRoom.id = :roomId
         AND p.user != :sender
         AND NOT EXISTS (
             SELECT mrs FROM MessageReadStatus mrs
@@ -114,7 +114,7 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
             AND mrs.isDeleted = false
         )
     """)
-    List<User> findUnreadUsersByMessage(@Param("messageId") Long messageId, @Param("roomId") UUID roomId, @Param("sender") User sender);
+    List<User> findUnreadUsersByMessage(@Param("messageId") Long messageId, @Param("roomId") Long roomId, @Param("sender") User sender);
 
     /**
      * 오래된 읽음 상태 정리 (성능 최적화용)

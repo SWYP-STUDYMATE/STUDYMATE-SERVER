@@ -48,7 +48,7 @@ public class ChatFileServiceImpl implements ChatFileService {
     private String[] allowedTypes;
 
     @Override
-    public ChatMessageResponse sendMessageWithFiles(UUID roomId, UUID userId, String message, List<MultipartFile> files) {
+    public ChatMessageResponse sendMessageWithFiles(Long roomId, UUID userId, String message, List<MultipartFile> files) {
         // 채팅방과 사용자 검증
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND CHAT ROOM"));
@@ -85,7 +85,7 @@ public class ChatFileServiceImpl implements ChatFileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ChatFileResponse> getRoomFiles(UUID roomId) {
+    public List<ChatFileResponse> getRoomFiles(Long roomId) {
         List<ChatFile> files = chatFileRepository.findByRoomIdAndIsDeletedFalseOrderByCreatedAtDesc(roomId);
         return files.stream()
                 .map(this::convertToResponse)
@@ -94,7 +94,7 @@ public class ChatFileServiceImpl implements ChatFileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ChatFileResponse> getRoomFilesByType(UUID roomId, String fileType) {
+    public List<ChatFileResponse> getRoomFilesByType(Long roomId, String fileType) {
         ChatFile.FileType type;
         try {
             type = ChatFile.FileType.valueOf(fileType.toUpperCase());
@@ -149,7 +149,7 @@ public class ChatFileServiceImpl implements ChatFileService {
 
     @Override
     @Transactional(readOnly = true)
-    public FileUsageStatistics getRoomFileUsage(UUID roomId) {
+    public FileUsageStatistics getRoomFileUsage(Long roomId) {
         List<ChatFile> files = chatFileRepository.findByRoomIdAndIsDeletedFalseOrderByCreatedAtDesc(roomId);
         
         long totalSize = files.stream().mapToLong(ChatFile::getFileSize).sum();

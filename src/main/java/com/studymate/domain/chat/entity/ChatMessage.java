@@ -83,4 +83,8 @@ public class ChatMessage extends BaseTimeEntity {
     public boolean isMixed() {
         return (hasMessage() && hasImages()) || (hasMessage() && hasAudio()) || (hasImages() && hasAudio());
     }
+
+    public String getContent() {
+        return this.message;
+    }
 }

@@ -48,6 +48,10 @@ public class JwtUtils {
 
         return UUID.fromString(claims.getSubject());
     }
+    
+    public UUID getUserIdFromToken(String token) {
+        return getUserIdFromJwtToken(token);
+    }
 
     public boolean validateJwtToken(String authToken) {
         try {

@@ -81,4 +81,8 @@ public class WebRtcSignalingMessage {
         return SignalType.SCREEN_SHARE_START.getValue().equals(this.type) ||
                SignalType.SCREEN_SHARE_STOP.getValue().equals(this.type);
     }
+    
+    public UUID getFromPeerId() {
+        return this.userId;
+    }
 }

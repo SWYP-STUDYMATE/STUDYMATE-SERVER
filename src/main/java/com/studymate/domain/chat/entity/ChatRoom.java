@@ -78,4 +78,8 @@ public class ChatRoom extends BaseTimeEntity {
         
         return false;
     }
+    
+    public Long getRoomId() {
+        return this.id;
+    }
 }

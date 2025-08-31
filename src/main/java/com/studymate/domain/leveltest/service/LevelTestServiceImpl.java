@@ -30,6 +30,12 @@ public class LevelTestServiceImpl implements LevelTestService {
     private final LevelTestResultRepository levelTestResultRepository;
 
     @Override
+    public String generateVoiceTestPrompt(String level, String language) {
+        // TODO: AI를 활용한 음성 테스트 프롬프트 생성
+        return String.format("Please read the following text aloud in %s at %s level:", language, level);
+    }
+
+    @Override
     public LevelTestResponse startLevelTest(UUID userId, StartLevelTestRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
@@ -146,7 +152,7 @@ public class LevelTestServiceImpl implements LevelTestService {
         List<LevelTestSummaryResponse.RecentTestSummary> recentTestSummaries = recentTests.stream()
                 .map(test -> new LevelTestSummaryResponse.RecentTestSummary(
                         test.getTestId(),
-                        test.getTestType(),
+                        test.getTestType().name(),
                         test.getLanguageCode(),
                         test.getEstimatedLevel(),
                         test.getAccuracyPercentage(),
@@ -296,7 +302,7 @@ public class LevelTestServiceImpl implements LevelTestService {
 
         return new LevelTestResponse(
                 levelTest.getTestId(),
-                levelTest.getTestType(),
+                levelTest.getTestType().name(),
                 levelTest.getLanguageCode(),
                 levelTest.getTestLevel(),
                 levelTest.getTotalQuestions(),
@@ -335,5 +341,71 @@ public class LevelTestServiceImpl implements LevelTestService {
                 result.getSkillCategory(),
                 result.getExplanation()
         );
+    }
+    
+    @Override
+    @Transactional
+    public LevelTestResponse startVoiceLevelTest(UUID userId, String languageCode) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        LevelTest levelTest = LevelTest.builder()
+                .user(user)
+                .testType(LevelTest.TestType.VOICE)
+                .languageCode(languageCode)
+                .testLevel("ADAPTIVE")
+                .totalQuestions(1)
+                .startedAt(LocalDateTime.now())
+                .build();
+        
+        levelTest.setAsVoiceTest();
+        LevelTest savedLevelTest = levelTestRepository.save(levelTest);
+        
+        return convertToLevelTestResponse(savedLevelTest);
+    }
+
+    @Override
+    @Transactional
+    public LevelTestResponse uploadVoiceRecording(UUID userId, Long testId, org.springframework.web.multipart.MultipartFile audioFile) {
+        LevelTest levelTest = levelTestRepository.findByTestIdAndUserId(testId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Level test not found"));
+        
+        if (levelTest.getTestType() != LevelTest.TestType.VOICE) {
+            throw new IllegalArgumentException("This is not a voice test");
+        }
+        
+        // TODO: 실제로는 파일 저장 및 처리 로직 구현 필요
+        // 현재는 임시 URL로 처리
+        String audioFileUrl = "/audio/" + testId + "_" + System.currentTimeMillis() + ".wav";
+        levelTest.updateAudioFile(audioFileUrl);
+        
+        levelTestRepository.save(levelTest);
+        
+        return convertToLevelTestResponse(levelTest);
+    }
+
+    @Override
+    @Transactional
+    public LevelTestResponse processVoiceTest(UUID userId, Long testId) {
+        LevelTest levelTest = levelTestRepository.findByTestIdAndUserId(testId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Level test not found"));
+        
+        if (levelTest.getTestType() != LevelTest.TestType.VOICE) {
+            throw new IllegalArgumentException("This is not a voice test");
+        }
+        
+        // 음성 처리 로직 (AI 분석 등)
+        // 임시로 기본 구현
+        levelTest.setStatus(LevelTest.TestStatus.COMPLETED);
+        levelTest.setCompletedAt(LocalDateTime.now());
+        
+        // 기본 결과 생성
+        levelTest.setAccuracyPercentage(75.0);
+        levelTest.setTotalScore(75);
+        levelTest.setMaxScore(100);
+        
+        levelTestRepository.save(levelTest);
+        
+        return convertToLevelTestResponse(levelTest);
     }
 }

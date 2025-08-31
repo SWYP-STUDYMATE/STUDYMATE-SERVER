@@ -362,6 +362,154 @@ multipart/form-data
 }
 ```
 
+### ✨ 온보딩 UX 개선 API
+
+### 단계별 온보딩 데이터 저장
+사용자가 온보딩을 진행하면서 각 단계별로 데이터를 저장합니다.
+
+**POST** `/api/v1/onboarding/steps/{stepNumber}/save`
+
+#### 요청 바디
+```json
+{
+  "stepNumber": 3,
+  "stepData": {
+    "learningLanguage": "English",
+    "languageLevel": "Intermediate",
+    "motivation": ["Career", "Travel"]
+  }
+}
+```
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "stepNumber": 3,
+    "progressPercentage": 42.8,
+    "isCompleted": false,
+    "nextStepInfo": {
+      "stepNumber": 4,
+      "title": "파트너 선호도 설정",
+      "description": "원하는 언어교환 파트너의 특성을 선택해주세요"
+    }
+  },
+  "message": "3단계 데이터가 저장되었습니다"
+}
+```
+
+### 현재 진행 중인 단계 조회
+**GET** `/api/v1/onboarding/steps/current`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "currentStep": 3,
+    "totalSteps": 7,
+    "progressPercentage": 42.8,
+    "completedSteps": [1, 2],
+    "stepData": {
+      "1": {"name": "홍길동", "englishName": "John"},
+      "2": {"learningLanguage": "English"}
+    },
+    "motivationalMessage": "벌써 절반 가까이 완료했어요! 조금만 더 힘내세요 💪"
+  }
+}
+```
+
+### 온보딩 단계 건너뛰기
+**POST** `/api/v1/onboarding/steps/{stepNumber}/skip`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "skippedStep": 4,
+    "nextStep": 5,
+    "progressPercentage": 57.1,
+    "canSkip": true
+  },
+  "message": "4단계를 건너뛰었습니다"
+}
+```
+
+### 자동 저장 (백그라운드)
+**POST** `/api/v1/onboarding/auto-save`
+
+#### 요청 바디
+```json
+{
+  "currentStep": 3,
+  "formData": {
+    "partialInput": "현재 입력 중인 데이터"
+  },
+  "timestamp": 1629789600000
+}
+```
+
+### 임시 매칭 체험
+온보딩 중에 매칭 시스템을 미리 체험해볼 수 있습니다.
+
+**POST** `/api/v1/onboarding/trial-matching`
+
+#### 요청 바디
+```json
+{
+  "preferences": {
+    "learningLanguage": "English",
+    "languageLevel": "Intermediate"
+  }
+}
+```
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "trialPartners": [
+      {
+        "name": "Alex (체험용)",
+        "profileImage": "https://example.com/alex.jpg",
+        "compatibilityScore": 87.5,
+        "commonInterests": ["Travel", "Movies"],
+        "description": "실제 매칭 시스템 체험"
+      }
+    ],
+    "estimatedWaitTime": "평균 2-3분",
+    "totalAvailablePartners": 156
+  }
+}
+```
+
+### 온보딩 진행률 조회
+**GET** `/api/v1/onboarding/progress`
+
+#### 응답
+```json
+{
+  "success": true,
+  "data": {
+    "progressPercentage": 71.4,
+    "completedSteps": 5,
+    "totalSteps": 7,
+    "timeSpent": "12분",
+    "estimatedTimeRemaining": "3-5분",
+    "milestones": [
+      {
+        "step": 5,
+        "title": "절반 완료!",
+        "reward": "첫 단계 완료 배지"
+      }
+    ]
+  }
+}
+```
+
 ---
 
 ## 🎯 레벨 테스트 API

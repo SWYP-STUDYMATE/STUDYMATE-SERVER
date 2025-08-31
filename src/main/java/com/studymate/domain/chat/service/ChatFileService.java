@@ -12,17 +12,17 @@ public interface ChatFileService {
     /**
      * 채팅방에 파일과 함께 메시지 전송
      */
-    ChatMessageResponse sendMessageWithFiles(UUID roomId, UUID userId, String message, List<MultipartFile> files);
+    ChatMessageResponse sendMessageWithFiles(Long roomId, UUID userId, String message, List<MultipartFile> files);
     
     /**
      * 채팅방의 모든 파일 목록 조회
      */
-    List<ChatFileResponse> getRoomFiles(UUID roomId);
+    List<ChatFileResponse> getRoomFiles(Long roomId);
     
     /**
      * 특정 타입의 파일 목록 조회 (이미지, 비디오, 문서 등)
      */
-    List<ChatFileResponse> getRoomFilesByType(UUID roomId, String fileType);
+    List<ChatFileResponse> getRoomFilesByType(Long roomId, String fileType);
     
     /**
      * 파일 다운로드 URL 생성
@@ -42,7 +42,7 @@ public interface ChatFileService {
     /**
      * 채팅방 파일 사용량 통계
      */
-    FileUsageStatistics getRoomFileUsage(UUID roomId);
+    FileUsageStatistics getRoomFileUsage(Long roomId);
     
     /**
      * 파일 저장소 정리 (오래된 파일 삭제)

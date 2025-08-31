@@ -17,12 +17,12 @@ public interface MessageReadService {
     /**
      * 채팅방의 모든 메시지를 읽음 처리 (특정 시간까지)
      */
-    void markRoomMessagesAsRead(UUID roomId, UUID userId, LocalDateTime readUntil);
+    void markRoomMessagesAsRead(Long roomId, UUID userId, LocalDateTime readUntil);
     
     /**
      * 채팅방의 모든 메시지를 읽음 처리 (현재 시간까지)
      */
-    void markAllRoomMessagesAsRead(UUID roomId, UUID userId);
+    void markAllRoomMessagesAsRead(Long roomId, UUID userId);
     
     /**
      * 특정 메시지의 읽음 상태 조회
@@ -32,7 +32,7 @@ public interface MessageReadService {
     /**
      * 채팅방별 안읽은 메시지 수 조회
      */
-    long getUnreadMessageCount(UUID roomId, UUID userId);
+    long getUnreadMessageCount(Long roomId, UUID userId);
     
     /**
      * 사용자의 전체 안읽은 메시지 수 조회
@@ -52,7 +52,7 @@ public interface MessageReadService {
     /**
      * 사용자의 마지막 읽음 시간 조회
      */
-    LocalDateTime getLastReadTime(UUID roomId, UUID userId);
+    LocalDateTime getLastReadTime(Long roomId, UUID userId);
     
     /**
      * 메시지가 모든 참가자에게 읽혔는지 확인

@@ -55,4 +55,7 @@ public interface LevelTestRepository extends JpaRepository<LevelTest, Long> {
     @Query("SELECT lt FROM LevelTest lt WHERE lt.completedAt BETWEEN :startDate AND :endDate ORDER BY lt.completedAt DESC")
     List<LevelTest> findTestsByDateRange(@Param("startDate") LocalDateTime startDate, 
                                         @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT lt FROM LevelTest lt WHERE lt.testId = :testId AND lt.user.userId = :userId")
+    Optional<LevelTest> findByTestIdAndUserId(@Param("testId") Long testId, @Param("userId") UUID userId);
 }

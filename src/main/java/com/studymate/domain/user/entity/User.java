@@ -151,4 +151,8 @@ public class User {
     public void setIsOnboardingCompleted(Boolean isOnboardingCompleted) {
         this.isOnboardingCompleted = isOnboardingCompleted;
     }
+
+    public UUID getId() {
+        return this.userId;
+    }
 }

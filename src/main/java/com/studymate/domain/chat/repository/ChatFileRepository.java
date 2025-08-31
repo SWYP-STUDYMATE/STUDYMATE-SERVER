@@ -17,17 +17,17 @@ public interface ChatFileRepository extends JpaRepository<ChatFile, Long> {
 
     List<ChatFile> findByChatMessageIdAndIsDeletedFalse(Long messageId);
 
-    @Query("SELECT cf FROM ChatFile cf WHERE cf.chatMessage.chatRoom.roomId = :roomId AND cf.isDeleted = false ORDER BY cf.createdAt DESC")
-    List<ChatFile> findByRoomIdAndIsDeletedFalseOrderByCreatedAtDesc(@Param("roomId") UUID roomId);
+    @Query("SELECT cf FROM ChatFile cf WHERE cf.chatMessage.chatRoom.id = :roomId AND cf.isDeleted = false ORDER BY cf.createdAt DESC")
+    List<ChatFile> findByRoomIdAndIsDeletedFalseOrderByCreatedAtDesc(@Param("roomId") Long roomId);
 
-    @Query("SELECT cf FROM ChatFile cf WHERE cf.chatMessage.chatRoom.roomId = :roomId AND cf.fileType = :fileType AND cf.isDeleted = false ORDER BY cf.createdAt DESC")
-    List<ChatFile> findByRoomIdAndFileTypeAndIsDeletedFalseOrderByCreatedAtDesc(@Param("roomId") UUID roomId, @Param("fileType") ChatFile.FileType fileType);
+    @Query("SELECT cf FROM ChatFile cf WHERE cf.chatMessage.chatRoom.id = :roomId AND cf.fileType = :fileType AND cf.isDeleted = false ORDER BY cf.createdAt DESC")
+    List<ChatFile> findByRoomIdAndFileTypeAndIsDeletedFalseOrderByCreatedAtDesc(@Param("roomId") Long roomId, @Param("fileType") ChatFile.FileType fileType);
 
-    @Query("SELECT SUM(cf.fileSize) FROM ChatFile cf WHERE cf.chatMessage.chatRoom.roomId = :roomId AND cf.isDeleted = false")
-    Long getTotalFileSizeByRoomId(@Param("roomId") UUID roomId);
+    @Query("SELECT SUM(cf.fileSize) FROM ChatFile cf WHERE cf.chatMessage.chatRoom.id = :roomId AND cf.isDeleted = false")
+    Long getTotalFileSizeByRoomId(@Param("roomId") Long roomId);
 
-    @Query("SELECT COUNT(cf) FROM ChatFile cf WHERE cf.chatMessage.chatRoom.roomId = :roomId AND cf.isDeleted = false")
-    Long countFilesByRoomId(@Param("roomId") UUID roomId);
+    @Query("SELECT COUNT(cf) FROM ChatFile cf WHERE cf.chatMessage.chatRoom.id = :roomId AND cf.isDeleted = false")
+    Long countFilesByRoomId(@Param("roomId") Long roomId);
 
     @Query("SELECT cf FROM ChatFile cf WHERE cf.chatMessage.sender.userId = :userId AND cf.isDeleted = false ORDER BY cf.createdAt DESC")
     List<ChatFile> findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(@Param("userId") UUID userId);

@@ -36,7 +36,7 @@ public class ChatFileController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ChatMessageResponse> uploadFiles(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "채팅방 ID") @RequestParam UUID roomId,
+            @Parameter(description = "채팅방 ID") @RequestParam Long roomId,
             @Parameter(description = "메시지 내용") @RequestParam(required = false) String message,
             @Parameter(description = "업로드할 파일들") @RequestParam("files") List<MultipartFile> files) {
 
@@ -49,7 +49,7 @@ public class ChatFileController {
     @Operation(summary = "채팅방 파일 목록 조회", description = "특정 채팅방의 모든 파일 목록을 조회합니다.")
     @GetMapping("/room/{roomId}")
     public ResponseEntity<List<ChatFileResponse>> getRoomFiles(
-            @Parameter(description = "채팅방 ID") @PathVariable UUID roomId) {
+            @Parameter(description = "채팅방 ID") @PathVariable Long roomId) {
         
         List<ChatFileResponse> files = chatFileService.getRoomFiles(roomId);
         return ResponseEntity.ok(files);
@@ -58,7 +58,7 @@ public class ChatFileController {
     @Operation(summary = "채팅방 특정 타입 파일 조회", description = "특정 채팅방의 특정 타입 파일들을 조회합니다.")
     @GetMapping("/room/{roomId}/type/{fileType}")
     public ResponseEntity<List<ChatFileResponse>> getRoomFilesByType(
-            @Parameter(description = "채팅방 ID") @PathVariable UUID roomId,
+            @Parameter(description = "채팅방 ID") @PathVariable Long roomId,
             @Parameter(description = "파일 타입 (IMAGE, VIDEO, AUDIO, DOCUMENT, ARCHIVE, OTHER)") @PathVariable String fileType) {
         
         List<ChatFileResponse> files = chatFileService.getRoomFilesByType(roomId, fileType);
@@ -78,7 +78,7 @@ public class ChatFileController {
     @Operation(summary = "채팅방 파일 사용량 통계", description = "특정 채팅방의 파일 사용량 통계를 조회합니다.")
     @GetMapping("/room/{roomId}/usage")
     public ResponseEntity<ChatFileService.FileUsageStatistics> getRoomFileUsage(
-            @Parameter(description = "채팅방 ID") @PathVariable UUID roomId) {
+            @Parameter(description = "채팅방 ID") @PathVariable Long roomId) {
         
         ChatFileService.FileUsageStatistics usage = chatFileService.getRoomFileUsage(roomId);
         return ResponseEntity.ok(usage);
@@ -132,7 +132,7 @@ public class ChatFileController {
     @PostMapping(value = "/upload-single", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ChatMessageResponse> uploadSingleFile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "채팅방 ID") @RequestParam UUID roomId,
+            @Parameter(description = "채팅방 ID") @RequestParam Long roomId,
             @Parameter(description = "메시지 내용") @RequestParam(required = false) String message,
             @Parameter(description = "업로드할 파일") @RequestParam("file") MultipartFile file) {
 

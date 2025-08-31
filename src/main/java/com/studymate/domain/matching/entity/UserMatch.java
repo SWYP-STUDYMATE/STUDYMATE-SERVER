@@ -78,4 +78,8 @@ public class UserMatch extends BaseTimeEntity {
     public UUID getMatchId() {
         return this.userMatchId;
     }
+
+    public Boolean getIsActive() {
+        return this.isActive;
+    }
 }

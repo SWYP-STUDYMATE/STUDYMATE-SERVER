@@ -51,7 +51,7 @@ public class MessageReadController {
     @PostMapping("/rooms/{roomId}/read-until")
     public ResponseEntity<ApiResponse<Void>> markRoomMessagesAsRead(
             @Parameter(description = "채팅방 ID", required = true)
-            @PathVariable UUID roomId,
+            @PathVariable Long roomId,
             @Parameter(description = "읽음 처리할 시간", required = true)
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime readUntil,
             @RequestHeader("Authorization") String token) {
@@ -69,7 +69,7 @@ public class MessageReadController {
     @PostMapping("/rooms/{roomId}/read-all")
     public ResponseEntity<ApiResponse<Void>> markAllRoomMessagesAsRead(
             @Parameter(description = "채팅방 ID", required = true)
-            @PathVariable UUID roomId,
+            @PathVariable Long roomId,
             @RequestHeader("Authorization") String token) {
         
         UUID userId = jwtUtils.getUserIdFromToken(token.replace("Bearer ", ""));
@@ -98,7 +98,7 @@ public class MessageReadController {
     @GetMapping("/rooms/{roomId}/unread-count")
     public ResponseEntity<ApiResponse<Long>> getUnreadMessageCount(
             @Parameter(description = "채팅방 ID", required = true)
-            @PathVariable UUID roomId,
+            @PathVariable Long roomId,
             @RequestHeader("Authorization") String token) {
         
         UUID userId = jwtUtils.getUserIdFromToken(token.replace("Bearer ", ""));
@@ -156,7 +156,7 @@ public class MessageReadController {
     @GetMapping("/rooms/{roomId}/last-read-time")
     public ResponseEntity<ApiResponse<LocalDateTime>> getLastReadTime(
             @Parameter(description = "채팅방 ID", required = true)
-            @PathVariable UUID roomId,
+            @PathVariable Long roomId,
             @RequestHeader("Authorization") String token) {
         
         UUID userId = jwtUtils.getUserIdFromToken(token.replace("Bearer ", ""));

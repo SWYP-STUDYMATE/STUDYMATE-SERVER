@@ -22,6 +22,9 @@ public class CustomUserDetails implements UserDetails {
     public UUID getUuid() {
         return uuid;
     }
+    public UUID getUserId() {
+        return uuid;
+    }
     public String getName() {
         return name;
     }

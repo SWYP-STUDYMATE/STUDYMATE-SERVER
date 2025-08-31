@@ -18,6 +18,8 @@ public class WebRtcConnectionStatsResponse {
 
     private UUID sessionId;
     private UUID roomId;
+    private UUID fromPeerId;
+    private UUID toPeerId;
     private LocalDateTime timestamp;
     
     // 전체 세션 통계

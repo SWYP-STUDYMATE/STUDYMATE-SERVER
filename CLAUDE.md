@@ -245,3 +245,7 @@ chore: 빌드 업무 수정
 - 인프라 변경사항은 반드시 minhan과 협의
 - 새로운 환경 변수 추가 시 `.env.example` 업데이트
 - 외부 서비스 연동 시 담당자와 사전 협의
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md

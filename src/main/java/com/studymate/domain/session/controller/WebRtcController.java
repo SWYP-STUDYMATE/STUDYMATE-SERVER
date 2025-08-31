@@ -197,8 +197,8 @@ public class WebRtcController {
             // 에러 메시지를 클라이언트에게 전송
             WebRtcSignalingMessage errorMessage = WebRtcSignalingMessage.builder()
                     .type("error")
-                    .fromPeerId(message.getFromPeerId())
-                    .toPeerId(message.getFromPeerId())
+                    .userId(message.getFromPeerId())
+                    .targetUserId(message.getFromPeerId().toString())
                     .data("Signaling error: " + e.getMessage())
                     .build();
             
@@ -232,8 +232,8 @@ public class WebRtcController {
                                  @Payload WebRtcConnectionStatsResponse stats,
                                  SimpMessageHeaderAccessor accessor) {
         try {
-            webRtcService.updateConnectionStats(roomId, stats.getFromPeerId(), 
-                                              stats.getToPeerId(), stats);
+            webRtcService.updateConnectionStats(roomId, stats.getFromPeerId().toString(), 
+                                              stats.getToPeerId().toString(), stats);
             
             // 통계 정보를 호스트와 모더레이터에게만 전송
             String destination = "/topic/webrtc/" + roomId + "/stats";

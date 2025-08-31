@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UnreadMessageSummary {
     
-    private UUID roomId;
+    private Long roomId;
     
     private String roomName;
     
@@ -44,7 +44,7 @@ public class UnreadMessageSummary {
         
         private int unreadRoomsCount;
         
-        private Map<UUID, Long> unreadByRoom; // 채팅방별 안읽은 메시지 수
+        private Map<Long, Long> unreadByRoom; // 채팅방별 안읽은 메시지 수
         
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime lastUpdatedAt;

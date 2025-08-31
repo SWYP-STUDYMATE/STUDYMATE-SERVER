@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,8 +16,19 @@ import java.util.UUID;
 @Entity
 @Table(name = "level_tests")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LevelTest extends BaseTimeEntity {
+
+    // Test Type Enum
+    public enum TestType {
+        SPEAKING, LISTENING, READING, WRITING, COMPREHENSIVE, VOICE
+    }
+
+    // Test Status Enum
+    public enum TestStatus {
+        PENDING, IN_PROGRESS, COMPLETED, CANCELLED, FAILED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +38,13 @@ public class LevelTest extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "test_type", nullable = false, length = 50)
-    private String testType; // SPEAKING, LISTENING, READING, WRITING, COMPREHENSIVE
+    private TestType testType; // SPEAKING, LISTENING, READING, WRITING, COMPREHENSIVE, VOICE
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private TestStatus status = TestStatus.PENDING;
 
     @Column(name = "language_code", nullable = false, length = 10)
     private String languageCode; // en, ko, ja, zh, etc.
@@ -99,11 +116,17 @@ public class LevelTest extends BaseTimeEntity {
     @Column(name = "voice_analysis_result", columnDefinition = "JSON")
     private String voiceAnalysisResult;
 
+    @Column(name = "total_score")
+    private Integer totalScore;
+
+    @Column(name = "max_score")
+    private Integer maxScore;
+
     @OneToMany(mappedBy = "levelTest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LevelTestResult> testResults;
 
     @Builder
-    public LevelTest(User user, String testType, String languageCode, String testLevel,
+    public LevelTest(User user, TestType testType, String languageCode, String testLevel,
                     Integer totalQuestions, LocalDateTime startedAt) {
         this.user = user;
         this.testType = testType;
@@ -114,6 +137,7 @@ public class LevelTest extends BaseTimeEntity {
         this.correctAnswers = 0;
         this.accuracyPercentage = 0.0;
         this.isCompleted = false;
+        this.status = TestStatus.PENDING;
     }
 
     public void completeTest(Integer correctAnswers, Double accuracyPercentage,

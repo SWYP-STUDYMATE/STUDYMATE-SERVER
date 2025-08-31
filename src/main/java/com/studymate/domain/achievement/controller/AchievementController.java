@@ -107,10 +107,10 @@ public class AchievementController {
 
     @PostMapping("/initialize")
     @Operation(summary = "성취 초기화", description = "사용자의 성취를 초기화합니다. (주로 새 사용자 등록시 사용)")
-    public ResponseEntity<ApiResponse<String>> initializeAchievements(
+    public ResponseEntity<ApiResponse<Void>> initializeAchievements(
             @AuthenticationPrincipal User user) {
         achievementService.initializeUserAchievements(user);
-        return ResponseEntity.ok(ApiResponse.success("성취 초기화가 완료되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PostMapping("/check-completion")

@@ -7,7 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studymate.domain.matching.domain.dto.request.AdvancedMatchingFilterRequest;
-import com.studymate.domain.onboarding.entity.*;
+// import com.studymate.domain.onboarding.entity.*;
 import com.studymate.domain.user.entity.QUser;
 import com.studymate.domain.user.entity.QUserStatus;
 import com.studymate.domain.user.entity.User;
@@ -30,10 +30,10 @@ public class MatchingRepositoryImpl implements MatchingRepositoryCustom {
     
     private final QUser user = QUser.user;
     private final QUserStatus userStatus = QUserStatus.userStatus;
-    private final QOnboardTopic onboardTopic = QOnboardTopic.onboardTopic;
-    private final QOnboardingPersonality onboardingPersonality = QOnboardingPersonality.onboardingPersonality;
-    private final QOnboardingStudyGoal onboardingStudyGoal = QOnboardingStudyGoal.onboardingStudyGoal;
-    private final QOnboardSchedule onboardSchedule = QOnboardSchedule.onboardSchedule;
+    // private final QOnboardTopic onboardTopic = QOnboardTopic.onboardTopic;
+    // private final QOnboardingPersonality onboardingPersonality = QOnboardingPersonality.onboardingPersonality;
+    // private final QOnboardingStudyGoal onboardingStudyGoal = QOnboardingStudyGoal.onboardingStudyGoal;
+    // private final QOnboardSchedule onboardSchedule = QOnboardSchedule.onboardSchedule;
 
     @Override
     public Page<User> findPotentialPartnersWithFilters(UUID currentUserId, 
@@ -162,77 +162,83 @@ public class MatchingRepositoryImpl implements MatchingRepositoryCustom {
             }
         }
 
-        if (filters.getNativeLanguage() != null) {
-            builder.and(user.nativeLanguage.name.eq(filters.getNativeLanguage()));
-        }
+        // TODO: nativeLanguage 필드 확인 후 구현
+        // if (filters.getNativeLanguage() != null) {
+        //     builder.and(user.nativeLanguage.name.eq(filters.getNativeLanguage()));
+        // }
     }
 
     private void addLocationFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
-        if (filters.hasLocationFilter()) {
-            if (filters.getCountry() != null) {
-                builder.and(user.location.country.eq(filters.getCountry()));
-            }
-            if (filters.getCity() != null) {
-                builder.and(user.location.city.eq(filters.getCity()));
-            }
-            if (filters.getCities() != null && !filters.getCities().isEmpty()) {
-                builder.and(user.location.city.in(filters.getCities()));
-            }
-        }
+        // TODO: location 필드 확인 후 구현
+        // if (filters.hasLocationFilter()) {
+        //     if (filters.getCountry() != null) {
+        //         builder.and(user.location.country.eq(filters.getCountry()));
+        //     }
+        //     if (filters.getCity() != null) {
+        //         builder.and(user.location.city.eq(filters.getCity()));
+        //     }
+        //     if (filters.getCities() != null && !filters.getCities().isEmpty()) {
+        //         builder.and(user.location.city.in(filters.getCities()));
+        //     }
+        // }
     }
 
     private void addPersonalityFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
-        if (filters.hasPersonalityFilter()) {
-            builder.and(user.userId.in(
-                queryFactory
-                    .select(onboardingPersonality.userId)
-                    .from(onboardingPersonality)
-                    .where(onboardingPersonality.personalityType.in(filters.getPersonalities()))
-                    .groupBy(onboardingPersonality.userId)
-                    .having(onboardingPersonality.userId.count().goe(filters.getPersonalities().size()))
-            ));
-        }
+        // TODO: QOnboardingPersonality 엔티티 필드 확인 후 구현
+        // if (filters.hasPersonalityFilter()) {
+        //     builder.and(user.userId.in(
+        //         queryFactory
+        //             .select(onboardingPersonality.userId)
+        //             .from(onboardingPersonality)
+        //             .where(onboardingPersonality.personalityType.in(filters.getPersonalities()))
+        //             .groupBy(onboardingPersonality.userId)
+        //             .having(onboardingPersonality.userId.count().goe(filters.getPersonalities().size()))
+        //     ));
+        // }
     }
 
     private void addTopicFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
-        if (filters.hasTopicFilter()) {
-            builder.and(user.userId.in(
-                queryFactory
-                    .select(onboardTopic.usrId)
-                    .from(onboardTopic)
-                    .where(onboardTopic.topicName.in(filters.getTopics()))
-                    .groupBy(onboardTopic.usrId)
-                    .having(onboardTopic.usrId.count().goe(1)) // 최소 1개 일치
-            ));
-        }
+        // TODO: QOnboardTopic 엔티티 필드 확인 후 구현
+        // if (filters.hasTopicFilter()) {
+        //     builder.and(user.userId.in(
+        //         queryFactory
+        //             .select(onboardTopic.usrId)
+        //             .from(onboardTopic)
+        //             .where(onboardTopic.topicName.in(filters.getTopics()))
+        //             .groupBy(onboardTopic.usrId)
+        //             .having(onboardTopic.usrId.count().goe(1)) // 최소 1개 일치
+        //     ));
+        // }
     }
 
     private void addStudyGoalFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
-        if (filters.hasStudyGoalFilter()) {
-            builder.and(user.userId.in(
-                queryFactory
-                    .select(onboardingStudyGoal.userId)
-                    .from(onboardingStudyGoal)
-                    .where(onboardingStudyGoal.goalType.in(filters.getStudyGoals()))
-                    .groupBy(onboardingStudyGoal.userId)
-                    .having(onboardingStudyGoal.userId.count().goe(1))
-            ));
-        }
+        // TODO: QOnboardingStudyGoal 엔티티 필드 확인 후 구현
+        // if (filters.hasStudyGoalFilter()) {
+        //     builder.and(user.userId.in(
+        //         queryFactory
+        //             .select(onboardingStudyGoal.userId)
+        //             .from(onboardingStudyGoal)
+        //             .where(onboardingStudyGoal.goalType.in(filters.getStudyGoals()))
+        //             .groupBy(onboardingStudyGoal.userId)
+        //             .having(onboardingStudyGoal.userId.count().goe(1))
+        //     ));
+        // }
     }
 
     private void addScheduleFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
-        if (filters.hasScheduleFilter()) {
-            if (filters.getAvailableDays() != null && !filters.getAvailableDays().isEmpty()) {
-                builder.and(user.userId.in(
-                    queryFactory
-                        .select(onboardSchedule.usrId)
-                        .from(onboardSchedule)
-                        .where(onboardSchedule.dayOfWeek.stringValue().in(filters.getAvailableDays()))
-                        .groupBy(onboardSchedule.usrId)
-                        .having(onboardSchedule.usrId.count().goe(1))
-                ));
-            }
-        }
+        // TODO: QOnboardSchedule 엔티티 필드 확인 후 구현
+        // if (filters.hasScheduleFilter()) {
+        //     if (filters.getAvailableDays() != null && !filters.getAvailableDays().isEmpty()) {
+        //         builder.and(user.userId.in(
+        //             queryFactory
+        //                 .select(onboardSchedule.usrId)
+        //                 .from(onboardSchedule)
+        //                 .where(onboardSchedule.dayOfWeek.stringValue().in(filters.getAvailableDays()))
+        //                 .groupBy(onboardSchedule.usrId)
+        //                 .having(onboardSchedule.usrId.count().goe(1))
+        //         ));
+        //     }
+        // }
     }
 
     private void addActivityFilters(BooleanBuilder builder, AdvancedMatchingFilterRequest filters) {
