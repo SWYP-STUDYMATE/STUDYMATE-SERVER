@@ -10,20 +10,41 @@ services:
       - db
       - redis
     environment:
-      # Docker Compose에서만 필요한 오버라이드
+      # Spring Boot Profile
+      - SPRING_PROFILES_ACTIVE=prod
+      # Database Configuration
       - DB_HOST=db
       - DB_PORT=3306
       - DB_NAME=studymate
       - DB_USERNAME=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      # Redis Configuration
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      # OAuth Configuration
+      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+      - NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      # JWT Configuration
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-3600000}
+      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
+      # NCP Object Storage
+      - NCP_OBJECT_STORAGE_ENDPOINT=${NCP_OBJECT_STORAGE_ENDPOINT}
+      - NCP_ACCESS_KEY=${NCP_ACCESS_KEY}
+      - NCP_SECRET_KEY=${NCP_SECRET_KEY}
+      - NCP_BUCKET_NAME=${NCP_BUCKET_NAME}
+      # Clova Studio API
+      - CLOVA_STUDIO_ENDPOINT=${CLOVA_STUDIO_ENDPOINT}
+      - CLOVA_API_KEY=${CLOVA_API_KEY}
+      # Timezone
       - TZ=Asia/Seoul
     volumes:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
-      - ./application.properties:/app/config/application.properties:ro
-      - ./application.properties:/app/application.properties:ro
     restart: unless-stopped
     networks:
       - studymate-network
