@@ -4,7 +4,7 @@ import com.studymate.common.exception.StudymateExceptionType;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.util.CustomUserDetails;
-import com.studymate.domain.user.util.JwtUtils;
+import com.studymate.auth.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;

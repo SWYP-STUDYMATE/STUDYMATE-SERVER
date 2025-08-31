@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.studymate.domain.user.domain.dto.response.TokenResponse;
-import com.studymate.domain.user.util.JwtUtils;
+import com.studymate.auth.jwt.JwtUtils;
 import com.studymate.exception.LoginExpirationException;
 import com.studymate.redis.repository.RefreshTokenRepository;
 

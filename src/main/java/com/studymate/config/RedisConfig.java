@@ -1,6 +1,7 @@
 package com.studymate.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -11,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.PostConstruct;
 
 @Slf4j
-// @Configuration - 테스트를 위해 Redis 설정 비활성화
+@Configuration
+@ConditionalOnProperty(name = "redis.host")
 public class RedisConfig {
 
     @Value("${redis.host}")

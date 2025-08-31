@@ -62,4 +62,12 @@ public class JwtUtils {
         }
         return false;
     }
+    
+    public boolean validateToken(String token) {
+        return validateJwtToken(token);
+    }
+    
+    public String generateRefreshToken(UUID userId) {
+        return generateTokenFromUserId(userId);
+    }
 }

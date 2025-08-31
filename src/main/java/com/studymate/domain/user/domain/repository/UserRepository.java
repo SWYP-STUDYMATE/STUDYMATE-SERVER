@@ -1,7 +1,6 @@
 package com.studymate.domain.user.domain.repository;
 
 import com.studymate.domain.matching.domain.dto.request.AdvancedMatchingFilterRequest;
-import com.studymate.domain.matching.repository.MatchingRepositoryCustom;
 import com.studymate.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, UUID>, MatchingRepositoryCustom {
+public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUserIdentity(String identity);
     UUID userId(UUID userId);
 
@@ -100,21 +99,21 @@ public interface UserRepository extends JpaRepository<User, UUID>, MatchingRepos
     /**
      * 활성 사용자 수 조회
      */
-    @Query("SELECT COUNT(u) FROM User u WHERE u.isActive = true")
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userDisable = false")
     long countActiveUsers();
 
     /**
      * 온라인 사용자 수 조회 (최근 30분 이내 활동)
      */
-    @Query("SELECT COUNT(u) FROM User u WHERE u.lastActiveAt > :since")
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userCreatedAt > :since")
     long countOnlineUsers(@Param("since") java.time.LocalDateTime since);
 
     /**
      * 언어별 사용자 분포 조회
      */
-    @Query("SELECT u.nativeLanguage.name, COUNT(u) FROM User u " +
+    @Query("SELECT u.nativeLanguage.languageName, COUNT(u) FROM User u " +
            "WHERE u.nativeLanguage IS NOT NULL " +
-           "GROUP BY u.nativeLanguage.name " +
+           "GROUP BY u.nativeLanguage.languageName " +
            "ORDER BY COUNT(u) DESC")
     List<Object[]> getUsersByNativeLanguage();
 
@@ -154,6 +153,6 @@ public interface UserRepository extends JpaRepository<User, UUID>, MatchingRepos
            "SELECT um.user1.userId FROM UserMatch um WHERE um.isActive = true " +
            "UNION " +
            "SELECT um.user2.userId FROM UserMatch um WHERE um.isActive = true) " +
-           "ORDER BY u.lastActiveAt DESC")
+           "ORDER BY u.userCreatedAt DESC")
     List<User> findUsersWithActiveMatches();
 }

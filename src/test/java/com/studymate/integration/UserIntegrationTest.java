@@ -6,7 +6,7 @@ import com.studymate.domain.user.domain.dto.request.LocationRequest;
 import com.studymate.domain.user.domain.dto.response.OnlineStatusResponse;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
-import com.studymate.domain.user.util.JwtUtils;
+import com.studymate.auth.jwt.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
