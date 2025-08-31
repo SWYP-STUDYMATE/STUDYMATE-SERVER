@@ -15,31 +15,31 @@ Standard Commons Logging discovery in action with spring-jcl: please remove comm
 
  :: Spring Boot ::                (v3.5.3)
 
-2025-08-29 23:46:19 - Starting Application using Java 21.0.8 with PID 35104 (/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main started by minhan in /Users/minhan/Desktop/public-repo/STUDYMATE-SERVER)
-2025-08-29 23:46:19 - Running with Spring Boot v3.5.3, Spring v6.2.8
-2025-08-29 23:46:19 - No active profile set, falling back to 1 default profile: "default"
-2025-08-29 23:46:19 - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-08-29 23:46:19 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-08-29 23:46:19 - Finished Spring Data repository scanning in 98 ms. Found 34 JPA repository interfaces.
-2025-08-29 23:46:19 - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-08-29 23:46:19 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2025-08-29 23:46:19 - Finished Spring Data repository scanning in 1 ms. Found 1 Redis repository interface.
-2025-08-29 23:46:20 - BeanFactory id=d91f39f6-9bf5-3a41-8aaf-214f1e7004bb
-2025-08-29 23:46:20 - Tomcat initialized with port 8080 (http)
-2025-08-29 23:46:20 - Starting service [Tomcat]
-2025-08-29 23:46:20 - Starting Servlet engine: [Apache Tomcat/10.1.42]
-2025-08-29 23:46:20 - Initializing Spring embedded WebApplicationContext
-2025-08-29 23:46:20 - Root WebApplicationContext: initialization completed in 1014 ms
+2025-08-31 21:58:31 - Starting Application using Java 21.0.8 with PID 95856 (/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main started by minhan in /Users/minhan/Desktop/public-repo/STUDYMATE-SERVER)
+2025-08-31 21:58:31 - Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-08-31 21:58:31 - No active profile set, falling back to 1 default profile: "default"
+2025-08-31 21:58:32 - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-31 21:58:32 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-31 21:58:32 - Finished Spring Data repository scanning in 117 ms. Found 47 JPA repository interfaces.
+2025-08-31 21:58:32 - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-31 21:58:32 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-31 21:58:32 - Finished Spring Data repository scanning in 1 ms. Found 1 Redis repository interface.
+2025-08-31 21:58:32 - BeanFactory id=64c7a32c-da3b-3661-9205-56358e295ad4
+2025-08-31 21:58:32 - Tomcat initialized with port 8080 (http)
+2025-08-31 21:58:32 - Starting service [Tomcat]
+2025-08-31 21:58:32 - Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-08-31 21:58:32 - Initializing Spring embedded WebApplicationContext
+2025-08-31 21:58:32 - Root WebApplicationContext: initialization completed in 1071 ms
 Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
-2025-08-29 23:46:20 - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-08-29 23:46:20 - HHH000412: Hibernate ORM core version 6.6.18.Final
-2025-08-29 23:46:20 - HHH000026: Second-level cache disabled
-2025-08-29 23:46:20 - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-08-29 23:46:20 - HikariPool-1 - Starting...
-2025-08-29 23:46:20 - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
-2025-08-29 23:46:20 - HikariPool-1 - Start completed.
-2025-08-29 23:46:20 - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-08-29 23:46:20 - HHH10001005: Database info:
+2025-08-31 21:58:32 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-31 21:58:32 - HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-08-31 21:58:32 - HHH000026: Second-level cache disabled
+2025-08-31 21:58:33 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-31 21:58:33 - HikariPool-1 - Starting...
+2025-08-31 21:58:33 - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2025-08-31 21:58:33 - HikariPool-1 - Start completed.
+2025-08-31 21:58:33 - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-31 21:58:33 - HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 2.3.232
@@ -47,75 +47,422 @@ Standard Commons Logging discovery in action with spring-jcl: please remove comm
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2025-08-29 23:46:21 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-31 21:58:33 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-31 21:58:33 - 
+    drop table if exists achievements cascade 
 Hibernate: 
+    drop table if exists achievements cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists ai_messages cascade 
+Hibernate: 
+    drop table if exists ai_messages cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists ai_partners cascade 
+Hibernate: 
+    drop table if exists ai_partners cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists ai_sessions cascade 
+Hibernate: 
+    drop table if exists ai_sessions cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists chat_files cascade 
+Hibernate: 
+    drop table if exists chat_files cascade 
+2025-08-31 21:58:33 - 
     drop table if exists chat_image cascade 
 Hibernate: 
+    drop table if exists chat_image cascade 
+2025-08-31 21:58:33 - 
     drop table if exists chat_message cascade 
 Hibernate: 
+    drop table if exists chat_message cascade 
+2025-08-31 21:58:33 - 
     drop table if exists chat_room cascade 
 Hibernate: 
+    drop table if exists chat_room cascade 
+2025-08-31 21:58:33 - 
     drop table if exists chat_room_participant cascade 
 Hibernate: 
+    drop table if exists chat_room_participant cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists group_session_participants cascade 
+Hibernate: 
+    drop table if exists group_session_participants cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists group_sessions cascade 
+Hibernate: 
+    drop table if exists group_sessions cascade 
+2025-08-31 21:58:33 - 
     drop table if exists group_size cascade 
 Hibernate: 
+    drop table if exists group_size cascade 
+2025-08-31 21:58:33 - 
     drop table if exists lang_level_type cascade 
 Hibernate: 
+    drop table if exists lang_level_type cascade 
+2025-08-31 21:58:33 - 
     drop table if exists language cascade 
 Hibernate: 
+    drop table if exists language cascade 
+2025-08-31 21:58:33 - 
     drop table if exists learning_progress cascade 
 Hibernate: 
+    drop table if exists learning_progress cascade 
+2025-08-31 21:58:33 - 
     drop table if exists learning_style cascade 
 Hibernate: 
+    drop table if exists learning_style cascade 
+2025-08-31 21:58:33 - 
     drop table if exists level_test_results cascade 
 Hibernate: 
+    drop table if exists level_test_results cascade 
+2025-08-31 21:58:33 - 
     drop table if exists level_tests cascade 
 Hibernate: 
+    drop table if exists level_tests cascade 
+2025-08-31 21:58:33 - 
     drop table if exists location cascade 
 Hibernate: 
+    drop table if exists location cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists matching_feedback cascade 
+Hibernate: 
+    drop table if exists matching_feedback cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists matching_queue cascade 
+Hibernate: 
+    drop table if exists matching_queue cascade 
+2025-08-31 21:58:33 - 
     drop table if exists matching_request cascade 
 Hibernate: 
+    drop table if exists matching_request cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists message_read_status cascade 
+Hibernate: 
+    drop table if exists message_read_status cascade 
+2025-08-31 21:58:33 - 
     drop table if exists motivation cascade 
 Hibernate: 
+    drop table if exists motivation cascade 
+2025-08-31 21:58:33 - 
     drop table if exists notification_preferences cascade 
 Hibernate: 
+    drop table if exists notification_preferences cascade 
+2025-08-31 21:58:33 - 
     drop table if exists notifications cascade 
 Hibernate: 
+    drop table if exists notifications cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_group_size cascade 
 Hibernate: 
+    drop table if exists onboard_group_size cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_lang_level cascade 
 Hibernate: 
+    drop table if exists onboard_lang_level cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_learning_style cascade 
 Hibernate: 
+    drop table if exists onboard_learning_style cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_motivation cascade 
 Hibernate: 
+    drop table if exists onboard_motivation cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_partner cascade 
 Hibernate: 
+    drop table if exists onboard_partner cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_schedule cascade 
 Hibernate: 
+    drop table if exists onboard_schedule cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboard_topic cascade 
 Hibernate: 
+    drop table if exists onboard_topic cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboarding_personality cascade 
 Hibernate: 
+    drop table if exists onboarding_personality cascade 
+2025-08-31 21:58:33 - 
     drop table if exists onboarding_study_goal cascade 
 Hibernate: 
+    drop table if exists onboarding_study_goal cascade 
+2025-08-31 21:58:33 - 
     drop table if exists partner_parsonality cascade 
 Hibernate: 
+    drop table if exists partner_parsonality cascade 
+2025-08-31 21:58:33 - 
     drop table if exists schedule cascade 
 Hibernate: 
+    drop table if exists schedule cascade 
+2025-08-31 21:58:33 - 
     drop table if exists session_bookings cascade 
 Hibernate: 
+    drop table if exists session_bookings cascade 
+2025-08-31 21:58:33 - 
     drop table if exists sessions cascade 
 Hibernate: 
+    drop table if exists sessions cascade 
+2025-08-31 21:58:33 - 
     drop table if exists system_metrics cascade 
 Hibernate: 
+    drop table if exists system_metrics cascade 
+2025-08-31 21:58:33 - 
     drop table if exists topic cascade 
 Hibernate: 
+    drop table if exists topic cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists user_achievements cascade 
+Hibernate: 
+    drop table if exists user_achievements cascade 
+2025-08-31 21:58:33 - 
     drop table if exists user_activities cascade 
 Hibernate: 
+    drop table if exists user_activities cascade 
+2025-08-31 21:58:33 - 
     drop table if exists user_match cascade 
 Hibernate: 
+    drop table if exists user_match cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists user_status cascade 
+Hibernate: 
+    drop table if exists user_status cascade 
+2025-08-31 21:58:33 - 
     drop table if exists users cascade 
+Hibernate: 
+    drop table if exists users cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists webrtc_connections cascade 
+Hibernate: 
+    drop table if exists webrtc_connections cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists webrtc_participants cascade 
+Hibernate: 
+    drop table if exists webrtc_participants cascade 
+2025-08-31 21:58:33 - 
+    drop table if exists webrtc_rooms cascade 
+Hibernate: 
+    drop table if exists webrtc_rooms cascade 
+2025-08-31 21:58:33 - 
+    create table achievements (
+        is_active boolean,
+        is_hidden boolean,
+        sort_order integer,
+        target_value integer,
+        xp_reward integer,
+        achievement_id bigint generated by default as identity,
+        created_at timestamp(6),
+        prerequisite_achievement_id bigint,
+        updated_at timestamp(6),
+        badge_color varchar(10),
+        target_unit varchar(50),
+        achievement_key varchar(100) not null unique,
+        title varchar(200) not null,
+        badge_icon_url varchar(500),
+        description TEXT,
+        category enum ('ENGAGEMENT','LEARNING','MILESTONE','SKILL','SOCIAL','SPECIAL','TIME') not null,
+        tier enum ('BRONZE','DIAMOND','GOLD','LEGENDARY','PLATINUM','SILVER') not null,
+        type enum ('ACCUMULATE','COMBINATION','COUNT','MILESTONE','STREAK','THRESHOLD') not null,
+        primary key (achievement_id)
+    )
+Hibernate: 
+    create table achievements (
+        is_active boolean,
+        is_hidden boolean,
+        sort_order integer,
+        target_value integer,
+        xp_reward integer,
+        achievement_id bigint generated by default as identity,
+        created_at timestamp(6),
+        prerequisite_achievement_id bigint,
+        updated_at timestamp(6),
+        badge_color varchar(10),
+        target_unit varchar(50),
+        achievement_key varchar(100) not null unique,
+        title varchar(200) not null,
+        badge_icon_url varchar(500),
+        description TEXT,
+        category enum ('ENGAGEMENT','LEARNING','MILESTONE','SKILL','SOCIAL','SPECIAL','TIME') not null,
+        tier enum ('BRONZE','DIAMOND','GOLD','LEGENDARY','PLATINUM','SILVER') not null,
+        type enum ('ACCUMULATE','COMBINATION','COUNT','MILESTONE','STREAK','THRESHOLD') not null,
+        primary key (achievement_id)
+    )
+2025-08-31 21:58:33 - 
+    create table ai_messages (
+        confidence_score float(53),
+        tokens_used integer,
+        created_at timestamp(6),
+        response_time_ms bigint,
+        updated_at timestamp(6),
+        id uuid not null,
+        session_id uuid not null,
+        grammar_feedback varchar(500),
+        pronunciation_feedback varchar(500),
+        vocabulary_suggestions varchar(500),
+        corrections_json varchar(1000),
+        corrected_text varchar(2000),
+        message_content varchar(2000) not null,
+        original_text varchar(2000),
+        message_type enum ('CORRECTION','FEEDBACK','GREETING','SUGGESTION','SYSTEM','TEXT'),
+        sender_type enum ('AI_PARTNER','USER'),
+        primary key (id)
+    )
+Hibernate: 
+    create table ai_messages (
+        confidence_score float(53),
+        tokens_used integer,
+        created_at timestamp(6),
+        response_time_ms bigint,
+        updated_at timestamp(6),
+        id uuid not null,
+        session_id uuid not null,
+        grammar_feedback varchar(500),
+        pronunciation_feedback varchar(500),
+        vocabulary_suggestions varchar(500),
+        corrections_json varchar(1000),
+        corrected_text varchar(2000),
+        message_content varchar(2000) not null,
+        original_text varchar(2000),
+        message_type enum ('CORRECTION','FEEDBACK','GREETING','SUGGESTION','SYSTEM','TEXT'),
+        sender_type enum ('AI_PARTNER','USER'),
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table ai_partners (
+        is_active boolean,
+        rating_average float(53),
+        rating_count integer,
+        session_count integer,
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        target_language varchar(10) not null,
+        id uuid not null,
+        language_level varchar(20) not null,
+        personality_type varchar(50),
+        voice_type varchar(50),
+        name varchar(100) not null,
+        specialty varchar(100),
+        avatar_image varchar(200),
+        description varchar(500),
+        greeting_message varchar(500),
+        system_prompt varchar(2000),
+        ai_model enum ('CLAUDE_3','GEMINI_PRO','GPT_3_5_TURBO','GPT_4'),
+        primary key (id)
+    )
+Hibernate: 
+    create table ai_partners (
+        is_active boolean,
+        rating_average float(53),
+        rating_count integer,
+        session_count integer,
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        target_language varchar(10) not null,
+        id uuid not null,
+        language_level varchar(20) not null,
+        personality_type varchar(50),
+        voice_type varchar(50),
+        name varchar(100) not null,
+        specialty varchar(100),
+        avatar_image varchar(200),
+        description varchar(500),
+        greeting_message varchar(500),
+        system_prompt varchar(2000),
+        ai_model enum ('CLAUDE_3','GEMINI_PRO','GPT_3_5_TURBO','GPT_4'),
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table ai_sessions (
+        duration_minutes integer,
+        message_count integer,
+        user_rating integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        ai_partner_id uuid not null,
+        id uuid not null,
+        user_id uuid not null,
+        session_title varchar(200),
+        grammar_points varchar(500),
+        learning_objectives varchar(500),
+        vocabulary_learned varchar(500),
+        improvement_suggestions varchar(1000),
+        session_summary varchar(1000),
+        user_feedback varchar(1000),
+        session_type enum ('CONVERSATION','FREE_TALK','GRAMMAR_PRACTICE','INTERVIEW_SIMULATION','LISTENING_COMPREHENSION','PRONUNCIATION_TRAINING','VOCABULARY_BUILDING','WRITING_PRACTICE'),
+        status enum ('ACTIVE','CANCELLED','COMPLETED','PAUSED'),
+        primary key (id)
+    )
+Hibernate: 
+    create table ai_sessions (
+        duration_minutes integer,
+        message_count integer,
+        user_rating integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        ai_partner_id uuid not null,
+        id uuid not null,
+        user_id uuid not null,
+        session_title varchar(200),
+        grammar_points varchar(500),
+        learning_objectives varchar(500),
+        vocabulary_learned varchar(500),
+        improvement_suggestions varchar(1000),
+        session_summary varchar(1000),
+        user_feedback varchar(1000),
+        session_type enum ('CONVERSATION','FREE_TALK','GRAMMAR_PRACTICE','INTERVIEW_SIMULATION','LISTENING_COMPREHENSION','PRONUNCIATION_TRAINING','VOCABULARY_BUILDING','WRITING_PRACTICE'),
+        status enum ('ACTIVE','CANCELLED','COMPLETED','PAUSED'),
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table chat_files (
+        duration integer,
+        is_deleted boolean not null,
+        created_at timestamp(6),
+        file_id bigint generated by default as identity,
+        file_size bigint not null,
+        message_id bigint not null,
+        updated_at timestamp(6),
+        content_type varchar(100),
+        file_path varchar(500) not null,
+        file_url varchar(500),
+        stored_filename varchar(500) not null,
+        thumbnail_url varchar(500),
+        original_filename varchar(255) not null,
+        file_type enum ('ARCHIVE','AUDIO','DOCUMENT','IMAGE','OTHER','VIDEO') not null,
+        primary key (file_id)
+    )
+Hibernate: 
+    create table chat_files (
+        duration integer,
+        is_deleted boolean not null,
+        created_at timestamp(6),
+        file_id bigint generated by default as identity,
+        file_size bigint not null,
+        message_id bigint not null,
+        updated_at timestamp(6),
+        content_type varchar(100),
+        file_path varchar(500) not null,
+        file_url varchar(500),
+        stored_filename varchar(500) not null,
+        thumbnail_url varchar(500),
+        original_filename varchar(255) not null,
+        file_type enum ('ARCHIVE','AUDIO','DOCUMENT','IMAGE','OTHER','VIDEO') not null,
+        primary key (file_id)
+    )
+2025-08-31 21:58:33 - 
+    create table chat_image (
+        created_at timestamp(6),
+        image_id bigint generated by default as identity,
+        message_id bigint not null,
+        updated_at timestamp(6),
+        image_url varchar(500) not null,
+        primary key (image_id)
+    )
 Hibernate: 
     create table chat_image (
         created_at timestamp(6),
@@ -124,6 +471,17 @@ Hibernate:
         updated_at timestamp(6),
         image_url varchar(500) not null,
         primary key (image_id)
+    )
+2025-08-31 21:58:33 - 
+    create table chat_message (
+        created_at timestamp(6),
+        message_id bigint generated by default as identity,
+        room_id bigint not null,
+        updated_at timestamp(6),
+        user_id uuid not null,
+        audio_url varchar(500),
+        message varchar(1000),
+        primary key (message_id)
     )
 Hibernate: 
     create table chat_message (
@@ -136,7 +494,7 @@ Hibernate:
         message varchar(1000),
         primary key (message_id)
     )
-Hibernate: 
+2025-08-31 21:58:33 - 
     create table chat_room (
         is_public boolean not null,
         max_participants integer,
@@ -148,10 +506,122 @@ Hibernate:
         primary key (room_id)
     )
 Hibernate: 
+    create table chat_room (
+        is_public boolean not null,
+        max_participants integer,
+        created_at timestamp(6),
+        room_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        room_name varchar(255) not null,
+        room_type enum ('GROUP','ONE_TO_ONE','PUBLIC') not null,
+        primary key (room_id)
+    )
+2025-08-31 21:58:33 - 
     create table chat_room_participant (
         room_id bigint not null,
         user_id uuid not null,
         primary key (room_id, user_id)
+    )
+Hibernate: 
+    create table chat_room_participant (
+        room_id bigint not null,
+        user_id uuid not null,
+        primary key (room_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table group_session_participants (
+        is_muted boolean,
+        is_video_enabled boolean,
+        participation_duration integer,
+        rating integer,
+        created_at timestamp(6),
+        joined_at timestamp(6),
+        left_at timestamp(6),
+        updated_at timestamp(6),
+        id uuid not null,
+        session_id uuid not null,
+        user_id uuid not null,
+        feedback varchar(500),
+        connection_quality varchar(255),
+        status enum ('BANNED','INVITED','JOINED','KICKED','LEFT'),
+        primary key (id)
+    )
+Hibernate: 
+    create table group_session_participants (
+        is_muted boolean,
+        is_video_enabled boolean,
+        participation_duration integer,
+        rating integer,
+        created_at timestamp(6),
+        joined_at timestamp(6),
+        left_at timestamp(6),
+        updated_at timestamp(6),
+        id uuid not null,
+        session_id uuid not null,
+        user_id uuid not null,
+        feedback varchar(500),
+        connection_quality varchar(255),
+        status enum ('BANNED','INVITED','JOINED','KICKED','LEFT'),
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table group_sessions (
+        current_participants integer,
+        is_public boolean,
+        max_participants integer,
+        rating_average float(53),
+        rating_count integer,
+        session_duration integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        scheduled_at timestamp(6),
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        join_code varchar(10),
+        target_language varchar(10),
+        host_user_id uuid not null,
+        id uuid not null,
+        language_level varchar(20),
+        room_id varchar(100),
+        topic_category varchar(100),
+        session_title varchar(200),
+        session_tags varchar(500),
+        session_description varchar(1000),
+        status enum ('ACTIVE','CANCELLED','COMPLETED','SCHEDULED','WAITING'),
+        primary key (id)
+    )
+Hibernate: 
+    create table group_sessions (
+        current_participants integer,
+        is_public boolean,
+        max_participants integer,
+        rating_average float(53),
+        rating_count integer,
+        session_duration integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        scheduled_at timestamp(6),
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        join_code varchar(10),
+        target_language varchar(10),
+        host_user_id uuid not null,
+        id uuid not null,
+        language_level varchar(20),
+        room_id varchar(100),
+        topic_category varchar(100),
+        session_title varchar(200),
+        session_tags varchar(500),
+        session_description varchar(1000),
+        status enum ('ACTIVE','CANCELLED','COMPLETED','SCHEDULED','WAITING'),
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table group_size (
+        group_size_id integer generated by default as identity,
+        description varchar(255),
+        group_size varchar(255),
+        primary key (group_size_id)
     )
 Hibernate: 
     create table group_size (
@@ -159,6 +629,14 @@ Hibernate:
         description varchar(255),
         group_size varchar(255),
         primary key (group_size_id)
+    )
+2025-08-31 21:58:33 - 
+    create table lang_level_type (
+        lang_level_id integer generated by default as identity,
+        category varchar(255),
+        description varchar(255),
+        lang_level_name varchar(255),
+        primary key (lang_level_id)
     )
 Hibernate: 
     create table lang_level_type (
@@ -168,12 +646,43 @@ Hibernate:
         lang_level_name varchar(255),
         primary key (lang_level_id)
     )
+2025-08-31 21:58:33 - 
+    create table language (
+        language_id integer generated by default as identity,
+        language_code varchar(255),
+        language_name varchar(255),
+        primary key (language_id)
+    )
 Hibernate: 
     create table language (
         language_id integer generated by default as identity,
         language_code varchar(255),
         language_name varchar(255),
         primary key (language_id)
+    )
+2025-08-31 21:58:33 - 
+    create table learning_progress (
+        average_test_score float(53),
+        badges_earned integer not null,
+        date date not null,
+        listening_minutes integer not null,
+        messages_sent integer not null,
+        reading_minutes integer not null,
+        sessions_completed integer not null,
+        speaking_minutes integer not null,
+        streak_days integer not null,
+        tests_taken integer not null,
+        total_session_minutes integer not null,
+        words_learned integer not null,
+        writing_minutes integer not null,
+        xp_earned integer not null,
+        created_at timestamp(6),
+        progress_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        language_code varchar(10) not null,
+        user_id uuid not null,
+        primary key (progress_id),
+        unique (user_id, date, language_code)
     )
 Hibernate: 
     create table learning_progress (
@@ -199,12 +708,42 @@ Hibernate:
         primary key (progress_id),
         unique (user_id, date, language_code)
     )
+2025-08-31 21:58:33 - 
+    create table learning_style (
+        learning_style_id integer generated by default as identity,
+        description varchar(255),
+        learning_style_name varchar(255),
+        primary key (learning_style_id)
+    )
 Hibernate: 
     create table learning_style (
         learning_style_id integer generated by default as identity,
         description varchar(255),
         learning_style_name varchar(255),
         primary key (learning_style_id)
+    )
+2025-08-31 21:58:33 - 
+    create table level_test_results (
+        is_correct boolean not null,
+        max_points integer,
+        points_earned integer,
+        question_number integer not null,
+        response_time_seconds integer,
+        created_at timestamp(6),
+        result_id bigint generated by default as identity,
+        test_id bigint not null,
+        updated_at timestamp(6),
+        difficulty_level varchar(20),
+        question_type varchar(50),
+        skill_category varchar(50),
+        question_audio_url varchar(500),
+        question_image_url varchar(500),
+        user_audio_url varchar(500),
+        correct_answer TEXT,
+        explanation TEXT,
+        question_text TEXT,
+        user_answer TEXT,
+        primary key (result_id)
     )
 Hibernate: 
     create table level_test_results (
@@ -229,14 +768,21 @@ Hibernate:
         user_answer TEXT,
         primary key (result_id)
     )
-Hibernate: 
+2025-08-31 21:58:33 - 
     create table level_tests (
         accuracy_percentage float(53) not null,
         correct_answers integer not null,
         estimated_score integer,
+        fluency_score integer,
+        grammar_score integer,
         is_completed boolean not null,
+        is_voice_test boolean not null,
+        max_score integer,
+        pronunciation_score integer,
         test_duration_seconds integer,
         total_questions integer not null,
+        total_score integer,
+        vocabulary_score integer,
         completed_at timestamp(6),
         created_at timestamp(6),
         started_at timestamp(6),
@@ -246,12 +792,59 @@ Hibernate:
         user_id uuid not null,
         estimated_level varchar(20),
         test_level varchar(20),
-        test_type varchar(50) not null,
+        audio_file_url varchar(255),
         feedback TEXT,
         recommendations TEXT,
         strengths TEXT,
+        transcript_text TEXT,
+        voice_analysis_result JSON,
         weaknesses TEXT,
+        status enum ('CANCELLED','COMPLETED','FAILED','IN_PROGRESS','PENDING') not null,
+        test_type enum ('COMPREHENSIVE','LISTENING','READING','SPEAKING','VOICE','WRITING') not null,
         primary key (test_id)
+    )
+Hibernate: 
+    create table level_tests (
+        accuracy_percentage float(53) not null,
+        correct_answers integer not null,
+        estimated_score integer,
+        fluency_score integer,
+        grammar_score integer,
+        is_completed boolean not null,
+        is_voice_test boolean not null,
+        max_score integer,
+        pronunciation_score integer,
+        test_duration_seconds integer,
+        total_questions integer not null,
+        total_score integer,
+        vocabulary_score integer,
+        completed_at timestamp(6),
+        created_at timestamp(6),
+        started_at timestamp(6),
+        test_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        language_code varchar(10) not null,
+        user_id uuid not null,
+        estimated_level varchar(20),
+        test_level varchar(20),
+        audio_file_url varchar(255),
+        feedback TEXT,
+        recommendations TEXT,
+        strengths TEXT,
+        transcript_text TEXT,
+        voice_analysis_result JSON,
+        weaknesses TEXT,
+        status enum ('CANCELLED','COMPLETED','FAILED','IN_PROGRESS','PENDING') not null,
+        test_type enum ('COMPREHENSIVE','LISTENING','READING','SPEAKING','VOICE','WRITING') not null,
+        primary key (test_id)
+    )
+2025-08-31 21:58:33 - 
+    create table location (
+        location_id integer generated by default as identity,
+        city varchar(255),
+        country varchar(255),
+        timezone varchar(255),
+        primary key (location_id)
     )
 Hibernate: 
     create table location (
@@ -260,6 +853,96 @@ Hibernate:
         country varchar(255),
         timezone varchar(255),
         primary key (location_id)
+    )
+2025-08-31 21:58:33 - 
+    create table matching_feedback (
+        communication_rating integer,
+        language_level_rating integer,
+        overall_rating integer not null,
+        patience_rating integer,
+        punctuality_rating integer,
+        session_quality_score integer,
+        teaching_ability_rating integer,
+        would_match_again boolean,
+        created_at timestamp(6),
+        feedback_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        match_id uuid not null,
+        partner_id uuid not null,
+        reviewer_id uuid not null,
+        reported_issues JSON,
+        suggested_improvements TEXT,
+        written_feedback TEXT,
+        primary key (feedback_id)
+    )
+Hibernate: 
+    create table matching_feedback (
+        communication_rating integer,
+        language_level_rating integer,
+        overall_rating integer not null,
+        patience_rating integer,
+        punctuality_rating integer,
+        session_quality_score integer,
+        teaching_ability_rating integer,
+        would_match_again boolean,
+        created_at timestamp(6),
+        feedback_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        match_id uuid not null,
+        partner_id uuid not null,
+        reviewer_id uuid not null,
+        reported_issues JSON,
+        suggested_improvements TEXT,
+        written_feedback TEXT,
+        primary key (feedback_id)
+    )
+2025-08-31 21:58:33 - 
+    create table matching_queue (
+        estimated_wait_minutes integer,
+        preferred_session_duration integer,
+        priority_score integer,
+        created_at timestamp(6),
+        joined_at timestamp(6),
+        queue_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        target_language varchar(10),
+        user_id uuid not null,
+        language_level varchar(20),
+        matching_preferences JSON,
+        queue_status enum ('CANCELLED','EXPIRED','MATCHED','WAITING') not null,
+        session_type enum ('ANY','CHAT_ONLY','VIDEO_CALL','VOICE_CALL') not null,
+        primary key (queue_id)
+    )
+Hibernate: 
+    create table matching_queue (
+        estimated_wait_minutes integer,
+        preferred_session_duration integer,
+        priority_score integer,
+        created_at timestamp(6),
+        joined_at timestamp(6),
+        queue_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        target_language varchar(10),
+        user_id uuid not null,
+        language_level varchar(20),
+        matching_preferences JSON,
+        queue_status enum ('CANCELLED','EXPIRED','MATCHED','WAITING') not null,
+        session_type enum ('ANY','CHAT_ONLY','VIDEO_CALL','VOICE_CALL') not null,
+        primary key (queue_id)
+    )
+2025-08-31 21:58:33 - 
+    create table matching_request (
+        created_at timestamp(6),
+        expires_at timestamp(6),
+        responded_at timestamp(6),
+        updated_at timestamp(6),
+        matching_request_id uuid not null,
+        receiver_id uuid not null,
+        sender_id uuid not null,
+        message varchar(500),
+        response_message varchar(500),
+        status enum ('ACCEPTED','CANCELLED','EXPIRED','PENDING','REJECTED') not null,
+        primary key (matching_request_id)
     )
 Hibernate: 
     create table matching_request (
@@ -275,12 +958,70 @@ Hibernate:
         status enum ('ACCEPTED','CANCELLED','EXPIRED','PENDING','REJECTED') not null,
         primary key (matching_request_id)
     )
+2025-08-31 21:58:33 - 
+    create table message_read_status (
+        is_deleted boolean not null,
+        created_at timestamp(6),
+        message_id bigint not null,
+        read_at timestamp(6) not null,
+        read_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id uuid not null,
+        primary key (read_id),
+        unique (message_id, user_id)
+    )
+Hibernate: 
+    create table message_read_status (
+        is_deleted boolean not null,
+        created_at timestamp(6),
+        message_id bigint not null,
+        read_at timestamp(6) not null,
+        read_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id uuid not null,
+        primary key (read_id),
+        unique (message_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table motivation (
+        motivation_id integer generated by default as identity,
+        description varchar(255),
+        motivation_name varchar(255),
+        primary key (motivation_id)
+    )
 Hibernate: 
     create table motivation (
         motivation_id integer generated by default as identity,
         description varchar(255),
         motivation_name varchar(255),
         primary key (motivation_id)
+    )
+2025-08-31 21:58:33 - 
+    create table notification_preferences (
+        chat_notifications boolean not null,
+        digest_enabled boolean not null,
+        email_enabled boolean not null,
+        level_test_notifications boolean not null,
+        marketing_notifications boolean not null,
+        matching_notifications boolean not null,
+        notifications_enabled boolean not null,
+        push_enabled boolean not null,
+        quiet_hours_enabled boolean not null,
+        session_notifications boolean not null,
+        session_reminders boolean not null,
+        sms_enabled boolean not null,
+        system_notifications boolean not null,
+        digest_time varchar(5),
+        quiet_hours_end varchar(5),
+        quiet_hours_start varchar(5),
+        created_at timestamp(6),
+        preference_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        notification_language varchar(10),
+        user_id uuid not null unique,
+        digest_frequency varchar(20),
+        timezone varchar(50),
+        primary key (preference_id)
     )
 Hibernate: 
     create table notification_preferences (
@@ -308,6 +1049,36 @@ Hibernate:
         digest_frequency varchar(20),
         timezone varchar(50),
         primary key (preference_id)
+    )
+2025-08-31 21:58:33 - 
+    create table notifications (
+        email_sent boolean not null,
+        is_persistent boolean not null,
+        priority integer not null,
+        push_sent boolean not null,
+        sms_sent boolean not null,
+        created_at timestamp(6),
+        expires_at timestamp(6),
+        notification_id bigint generated by default as identity,
+        read_at timestamp(6),
+        scheduled_at timestamp(6),
+        sent_at timestamp(6),
+        updated_at timestamp(6),
+        user_id uuid not null,
+        category varchar(50),
+        delivery_channels varchar(100),
+        template_id varchar(100),
+        title varchar(200) not null,
+        action_url varchar(500),
+        icon_url varchar(500),
+        image_url varchar(500),
+        action_data JSON,
+        content TEXT not null,
+        sender_user_id varchar(255),
+        template_variables JSON,
+        status enum ('CANCELLED','DELIVERED','EXPIRED','FAILED','PENDING','READ','SENT','UNREAD') not null,
+        type enum ('ACCOUNT_SECURITY','ACHIEVEMENT_UNLOCKED','CHAT_INVITATION','CUSTOM','DAILY_STREAK','FEATURE_ANNOUNCEMENT','FRIEND_REQUEST','LEARNING_MILESTONE','LEVEL_TEST_AVAILABLE','LEVEL_TEST_REMINDER','LEVEL_TEST_RESULT','MATCH_REQUEST_ACCEPTED','MATCH_REQUEST_RECEIVED','MATCH_REQUEST_REJECTED','NEWSLETTER','NEW_MATCH_FOUND','NEW_MESSAGE','PASSWORD_CHANGED','PROMOTIONAL_OFFER','SESSION_CANCELLED','SESSION_COMPLETED','SESSION_REMINDER','SESSION_STARTED','SYSTEM_MAINTENANCE','SYSTEM_UPDATE','WEEKLY_SUMMARY') not null,
+        primary key (notification_id)
     )
 Hibernate: 
     create table notifications (
@@ -339,11 +1110,26 @@ Hibernate:
         type enum ('ACCOUNT_SECURITY','ACHIEVEMENT_UNLOCKED','CHAT_INVITATION','CUSTOM','DAILY_STREAK','FEATURE_ANNOUNCEMENT','FRIEND_REQUEST','LEARNING_MILESTONE','LEVEL_TEST_AVAILABLE','LEVEL_TEST_REMINDER','LEVEL_TEST_RESULT','MATCH_REQUEST_ACCEPTED','MATCH_REQUEST_RECEIVED','MATCH_REQUEST_REJECTED','NEWSLETTER','NEW_MATCH_FOUND','NEW_MESSAGE','PASSWORD_CHANGED','PROMOTIONAL_OFFER','SESSION_CANCELLED','SESSION_COMPLETED','SESSION_REMINDER','SESSION_STARTED','SYSTEM_MAINTENANCE','SYSTEM_UPDATE','WEEKLY_SUMMARY') not null,
         primary key (notification_id)
     )
+2025-08-31 21:58:33 - 
+    create table onboard_group_size (
+        group_size_id integer not null,
+        user_id uuid not null,
+        primary key (group_size_id, user_id)
+    )
 Hibernate: 
     create table onboard_group_size (
         group_size_id integer not null,
         user_id uuid not null,
         primary key (group_size_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table onboard_lang_level (
+        current_level_id integer,
+        lang_id integer not null,
+        lang_level_type integer,
+        target_level_id integer,
+        user_id uuid not null,
+        primary key (lang_id, user_id)
     )
 Hibernate: 
     create table onboard_lang_level (
@@ -354,11 +1140,23 @@ Hibernate:
         user_id uuid not null,
         primary key (lang_id, user_id)
     )
+2025-08-31 21:58:33 - 
+    create table onboard_learning_style (
+        learning_style_id integer not null,
+        user_id uuid not null,
+        primary key (learning_style_id, user_id)
+    )
 Hibernate: 
     create table onboard_learning_style (
         learning_style_id integer not null,
         user_id uuid not null,
         primary key (learning_style_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table onboard_motivation (
+        motivation_id integer not null,
+        user_id uuid not null,
+        primary key (motivation_id, user_id)
     )
 Hibernate: 
     create table onboard_motivation (
@@ -366,11 +1164,25 @@ Hibernate:
         user_id uuid not null,
         primary key (motivation_id, user_id)
     )
+2025-08-31 21:58:33 - 
+    create table onboard_partner (
+        partner_personality_id integer not null,
+        user_id uuid not null,
+        primary key (partner_personality_id, user_id)
+    )
 Hibernate: 
     create table onboard_partner (
         partner_personality_id integer not null,
         user_id uuid not null,
         primary key (partner_personality_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table onboard_schedule (
+        class_time time(6) not null,
+        schedule_id integer not null,
+        user_id uuid not null,
+        day_of_week varchar(255) not null,
+        primary key (class_time, schedule_id, user_id, day_of_week)
     )
 Hibernate: 
     create table onboard_schedule (
@@ -380,12 +1192,26 @@ Hibernate:
         day_of_week varchar(255) not null,
         primary key (class_time, schedule_id, user_id, day_of_week)
     )
+2025-08-31 21:58:33 - 
+    create table onboard_topic (
+        topic_id integer not null,
+        user_id uuid not null,
+        topic_name varchar(255),
+        primary key (topic_id, user_id)
+    )
 Hibernate: 
     create table onboard_topic (
         topic_id integer not null,
         user_id uuid not null,
         topic_name varchar(255),
         primary key (topic_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table onboarding_personality (
+        partner_personality_id integer not null,
+        personality_type_id integer,
+        user_id uuid not null,
+        primary key (partner_personality_id, user_id)
     )
 Hibernate: 
     create table onboarding_personality (
@@ -394,11 +1220,24 @@ Hibernate:
         user_id uuid not null,
         primary key (partner_personality_id, user_id)
     )
+2025-08-31 21:58:33 - 
+    create table onboarding_study_goal (
+        motivation_id integer not null,
+        user_id uuid not null,
+        primary key (motivation_id, user_id)
+    )
 Hibernate: 
     create table onboarding_study_goal (
         motivation_id integer not null,
         user_id uuid not null,
         primary key (motivation_id, user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table partner_parsonality (
+        partner_personality_id integer generated by default as identity,
+        description varchar(255),
+        partner_personality varchar(255),
+        primary key (partner_personality_id)
     )
 Hibernate: 
     create table partner_parsonality (
@@ -407,6 +1246,14 @@ Hibernate:
         partner_personality varchar(255),
         primary key (partner_personality_id)
     )
+2025-08-31 21:58:33 - 
+    create table schedule (
+        schedule_id integer generated by default as identity,
+        schedule_name varchar(255),
+        time_slot varchar(255),
+        day_of_week enum ('FRIDAY','MONDAY','SATURDAY','SUNDAY','THURSDAY','TUESDAY','WEDNESDAY'),
+        primary key (schedule_id)
+    )
 Hibernate: 
     create table schedule (
         schedule_id integer generated by default as identity,
@@ -414,6 +1261,24 @@ Hibernate:
         time_slot varchar(255),
         day_of_week enum ('FRIDAY','MONDAY','SATURDAY','SUNDAY','THURSDAY','TUESDAY','WEDNESDAY'),
         primary key (schedule_id)
+    )
+2025-08-31 21:58:33 - 
+    create table session_bookings (
+        attended boolean not null,
+        feedback_rating integer,
+        reminder_sent boolean not null,
+        booking_id bigint generated by default as identity,
+        cancelled_at timestamp(6),
+        created_at timestamp(6),
+        reminder_sent_at timestamp(6),
+        session_id bigint not null,
+        updated_at timestamp(6),
+        user_id uuid not null,
+        booking_message TEXT,
+        cancellation_reason TEXT,
+        feedback_comment TEXT,
+        status enum ('CANCELLED','CONFIRMED','NO_SHOW','WAITLISTED') not null,
+        primary key (booking_id)
     )
 Hibernate: 
     create table session_bookings (
@@ -432,6 +1297,38 @@ Hibernate:
         feedback_comment TEXT,
         status enum ('CANCELLED','CONFIRMED','NO_SHOW','WAITLISTED') not null,
         primary key (booking_id)
+    )
+2025-08-31 21:58:33 - 
+    create table sessions (
+        current_participants integer not null,
+        duration_minutes integer not null,
+        is_public boolean not null,
+        is_recurring boolean not null,
+        max_participants integer,
+        cancelled_at timestamp(6),
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        recurrence_end_date timestamp(6),
+        scheduled_at timestamp(6) not null,
+        session_id bigint generated by default as identity,
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        language_code varchar(10),
+        guest_user_id uuid,
+        host_user_id uuid not null,
+        level_requirement varchar(20),
+        recurrence_pattern varchar(50),
+        skill_focus varchar(50),
+        meeting_password varchar(100),
+        title varchar(200) not null,
+        meeting_url varchar(500),
+        tags varchar(500),
+        cancellation_reason TEXT,
+        description TEXT,
+        preparation_notes TEXT,
+        session_type enum ('CONVERSATION','GROUP','ONE_ON_ONE','PRACTICE','STUDY_GROUP','WORKSHOP') not null,
+        status enum ('CANCELLED','COMPLETED','IN_PROGRESS','NO_SHOW','SCHEDULED') not null,
+        primary key (session_id)
     )
 Hibernate: 
     create table sessions (
@@ -465,7 +1362,7 @@ Hibernate:
         status enum ('CANCELLED','COMPLETED','IN_PROGRESS','NO_SHOW','SCHEDULED') not null,
         primary key (session_id)
     )
-Hibernate: 
+2025-08-31 21:58:33 - 
     create table system_metrics (
         metric_value float(53) not null,
         created_at timestamp(6),
@@ -481,11 +1378,79 @@ Hibernate:
         primary key (metric_id)
     )
 Hibernate: 
+    create table system_metrics (
+        metric_value float(53) not null,
+        created_at timestamp(6),
+        date timestamp(6) not null,
+        metric_id bigint generated by default as identity,
+        updated_at timestamp(6),
+        aggregation_period varchar(20),
+        metric_unit varchar(20),
+        metric_category varchar(50) not null,
+        metric_name varchar(100) not null,
+        tags varchar(500),
+        description TEXT,
+        primary key (metric_id)
+    )
+2025-08-31 21:58:33 - 
     create table topic (
         topic_id integer generated by default as identity,
         description varchar(255),
         topic_name varchar(255),
         primary key (topic_id)
+    )
+Hibernate: 
+    create table topic (
+        topic_id integer generated by default as identity,
+        description varchar(255),
+        topic_name varchar(255),
+        primary key (topic_id)
+    )
+2025-08-31 21:58:33 - 
+    create table user_achievements (
+        current_progress integer,
+        is_completed boolean,
+        is_reward_claimed boolean,
+        achievement_id bigint not null,
+        completed_at timestamp(6),
+        created_at timestamp(6),
+        reward_claimed_at timestamp(6),
+        updated_at timestamp(6),
+        user_achievement_id bigint generated by default as identity,
+        user_id uuid not null,
+        primary key (user_achievement_id)
+    )
+Hibernate: 
+    create table user_achievements (
+        current_progress integer,
+        is_completed boolean,
+        is_reward_claimed boolean,
+        achievement_id bigint not null,
+        completed_at timestamp(6),
+        created_at timestamp(6),
+        reward_claimed_at timestamp(6),
+        updated_at timestamp(6),
+        user_achievement_id bigint generated by default as identity,
+        user_id uuid not null,
+        primary key (user_achievement_id)
+    )
+2025-08-31 21:58:33 - 
+    create table user_activities (
+        duration_seconds integer,
+        success boolean not null,
+        activity_id bigint generated by default as identity,
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        user_id uuid not null,
+        ip_address varchar(45),
+        activity_category varchar(50) not null,
+        activity_type varchar(100) not null,
+        session_id varchar(200),
+        description TEXT,
+        error_message TEXT,
+        metadata JSON,
+        user_agent TEXT,
+        primary key (activity_id)
     )
 Hibernate: 
     create table user_activities (
@@ -505,6 +1470,19 @@ Hibernate:
         user_agent TEXT,
         primary key (activity_id)
     )
+2025-08-31 21:58:33 - 
+    create table user_match (
+        is_active boolean not null,
+        created_at timestamp(6),
+        deactivated_at timestamp(6),
+        matched_at timestamp(6),
+        updated_at timestamp(6),
+        deactivated_by uuid,
+        user1_id uuid not null,
+        user2_id uuid not null,
+        user_match_id uuid not null,
+        primary key (user_match_id)
+    )
 Hibernate: 
     create table user_match (
         is_active boolean not null,
@@ -517,6 +1495,53 @@ Hibernate:
         user2_id uuid not null,
         user_match_id uuid not null,
         primary key (user_match_id)
+    )
+2025-08-31 21:58:33 - 
+    create table user_status (
+        is_studying boolean not null,
+        created_at timestamp(6),
+        last_seen_at timestamp(6),
+        updated_at timestamp(6),
+        current_session_id uuid,
+        user_id uuid not null,
+        device_info varchar(100),
+        status enum ('AWAY','OFFLINE','ONLINE','STUDYING') not null,
+        primary key (user_id)
+    )
+Hibernate: 
+    create table user_status (
+        is_studying boolean not null,
+        created_at timestamp(6),
+        last_seen_at timestamp(6),
+        updated_at timestamp(6),
+        current_session_id uuid,
+        user_id uuid not null,
+        device_info varchar(100),
+        status enum ('AWAY','OFFLINE','ONLINE','STUDYING') not null,
+        primary key (user_id)
+    )
+2025-08-31 21:58:33 - 
+    create table users (
+        is_onboarding_completed boolean not null,
+        location_id integer,
+        native_lang_id integer,
+        user_disable boolean not null,
+        user_created_at timestamp(6),
+        user_id uuid not null,
+        self_bio varchar(1000),
+        birthday varchar(255),
+        birthyear varchar(255),
+        english_name varchar(255),
+        name varchar(255),
+        profile_image varchar(255),
+        user_identity varchar(255),
+        communication_method enum ('AUDIO_ONLY','HYBRID','VIDEO'),
+        daily_minute enum ('MINUTES_10','MINUTES_15','MINUTES_20','MINUTES_25','MINUTES_30'),
+        gender enum ('FEMALE','MALE','NONE'),
+        learning_expection enum ('CONFIDENCE','CUSTOMIZED_METHOD','HABIT','PRACTICAL_CONVERSATION'),
+        partner_gender enum ('ANY','FEMALE','MALE'),
+        user_identity_type enum ('GOOGLE','NAVER'),
+        primary key (user_id)
     )
 Hibernate: 
     create table users (
@@ -541,29 +1566,273 @@ Hibernate:
         user_identity_type enum ('GOOGLE','NAVER'),
         primary key (user_id)
     )
+2025-08-31 21:58:33 - 
+    create table webrtc_connections (
+        current_round_trip_time float(53),
+        available_incoming_bitrate bigint,
+        available_outgoing_bitrate bigint,
+        bytes_received bigint,
+        bytes_sent bigint,
+        created_at timestamp(6),
+        established_at timestamp(6),
+        id bigint generated by default as identity,
+        last_stats_update timestamp(6),
+        packets_lost bigint,
+        packets_received bigint,
+        packets_sent bigint,
+        terminated_at timestamp(6),
+        updated_at timestamp(6),
+        webrtc_room_id bigint not null,
+        answer_sdp TEXT,
+        from_peer_id varchar(255) not null,
+        ice_candidates JSON,
+        offer_sdp TEXT,
+        termination_reason varchar(255),
+        to_peer_id varchar(255) not null,
+        connection_status enum ('ANSWER_SENT','CLOSED','ESTABLISHED','FAILED','INITIATING','OFFER_SENT') not null,
+        connection_type enum ('HOST','PEER_TO_PEER','PRFLX','RELAY','SRFLX') not null,
+        primary key (id)
+    )
 Hibernate: 
+    create table webrtc_connections (
+        current_round_trip_time float(53),
+        available_incoming_bitrate bigint,
+        available_outgoing_bitrate bigint,
+        bytes_received bigint,
+        bytes_sent bigint,
+        created_at timestamp(6),
+        established_at timestamp(6),
+        id bigint generated by default as identity,
+        last_stats_update timestamp(6),
+        packets_lost bigint,
+        packets_received bigint,
+        packets_sent bigint,
+        terminated_at timestamp(6),
+        updated_at timestamp(6),
+        webrtc_room_id bigint not null,
+        answer_sdp TEXT,
+        from_peer_id varchar(255) not null,
+        ice_candidates JSON,
+        offer_sdp TEXT,
+        termination_reason varchar(255),
+        to_peer_id varchar(255) not null,
+        connection_status enum ('ANSWER_SENT','CLOSED','ESTABLISHED','FAILED','INITIATING','OFFER_SENT') not null,
+        connection_type enum ('HOST','PEER_TO_PEER','PRFLX','RELAY','SRFLX') not null,
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table webrtc_participants (
+        bandwidth_kbps integer,
+        is_camera_enabled boolean not null,
+        is_host boolean not null,
+        is_microphone_enabled boolean not null,
+        is_moderator boolean not null,
+        is_screen_sharing boolean not null,
+        latency_ms integer,
+        packet_loss_percentage float(53),
+        speaking_time_seconds integer,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        joined_at timestamp(6),
+        last_activity_at timestamp(6),
+        left_at timestamp(6),
+        updated_at timestamp(6),
+        webrtc_room_id bigint not null,
+        user_id uuid not null,
+        connection_quality varchar(255),
+        device_info JSON,
+        peer_id varchar(255) not null,
+        connection_status enum ('CONNECTED','CONNECTING','DISCONNECTED','FAILED','RECONNECTING') not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table webrtc_participants (
+        bandwidth_kbps integer,
+        is_camera_enabled boolean not null,
+        is_host boolean not null,
+        is_microphone_enabled boolean not null,
+        is_moderator boolean not null,
+        is_screen_sharing boolean not null,
+        latency_ms integer,
+        packet_loss_percentage float(53),
+        speaking_time_seconds integer,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        joined_at timestamp(6),
+        last_activity_at timestamp(6),
+        left_at timestamp(6),
+        updated_at timestamp(6),
+        webrtc_room_id bigint not null,
+        user_id uuid not null,
+        connection_quality varchar(255),
+        device_info JSON,
+        peer_id varchar(255) not null,
+        connection_status enum ('CONNECTED','CONNECTING','DISCONNECTED','FAILED','RECONNECTING') not null,
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create table webrtc_rooms (
+        current_participants integer,
+        is_recording_enabled boolean,
+        max_participants integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        id bigint generated by default as identity,
+        session_id bigint not null,
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        room_id uuid not null unique,
+        features_enabled JSON,
+        ice_servers JSON,
+        quality_config JSON,
+        recording_url varchar(255),
+        signaling_server_url varchar(255),
+        turn_credential varchar(255),
+        turn_server_url varchar(255),
+        turn_username varchar(255),
+        status enum ('ACTIVE','CREATED','ENDED','ERROR') not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table webrtc_rooms (
+        current_participants integer,
+        is_recording_enabled boolean,
+        max_participants integer,
+        created_at timestamp(6),
+        ended_at timestamp(6),
+        id bigint generated by default as identity,
+        session_id bigint not null,
+        started_at timestamp(6),
+        updated_at timestamp(6),
+        room_id uuid not null unique,
+        features_enabled JSON,
+        ice_servers JSON,
+        quality_config JSON,
+        recording_url varchar(255),
+        signaling_server_url varchar(255),
+        turn_credential varchar(255),
+        turn_server_url varchar(255),
+        turn_username varchar(255),
+        status enum ('ACTIVE','CREATED','ENDED','ERROR') not null,
+        primary key (id)
+    )
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_connection_room 
+       on webrtc_connections (webrtc_room_id)
+Hibernate: 
+    create index idx_webrtc_connection_room 
+       on webrtc_connections (webrtc_room_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_connection_from_to 
+       on webrtc_connections (from_peer_id, to_peer_id)
+Hibernate: 
+    create index idx_webrtc_connection_from_to 
+       on webrtc_connections (from_peer_id, to_peer_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_connection_status 
+       on webrtc_connections (connection_status)
+Hibernate: 
+    create index idx_webrtc_connection_status 
+       on webrtc_connections (connection_status)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_participant_room 
+       on webrtc_participants (webrtc_room_id)
+Hibernate: 
+    create index idx_webrtc_participant_room 
+       on webrtc_participants (webrtc_room_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_participant_user 
+       on webrtc_participants (user_id)
+Hibernate: 
+    create index idx_webrtc_participant_user 
+       on webrtc_participants (user_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_participant_status 
+       on webrtc_participants (connection_status)
+Hibernate: 
+    create index idx_webrtc_participant_status 
+       on webrtc_participants (connection_status)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_room_id 
+       on webrtc_rooms (room_id)
+Hibernate: 
+    create index idx_webrtc_room_id 
+       on webrtc_rooms (room_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_session_id 
+       on webrtc_rooms (session_id)
+Hibernate: 
+    create index idx_webrtc_session_id 
+       on webrtc_rooms (session_id)
+2025-08-31 21:58:33 - 
+    create index idx_webrtc_status 
+       on webrtc_rooms (status)
+Hibernate: 
+    create index idx_webrtc_status 
+       on webrtc_rooms (status)
+2025-08-31 21:58:33 - 
+    alter table if exists chat_files 
+       add constraint FKgfv8vh72qw7i0b0dh2qwny0q 
+       foreign key (message_id) 
+       references chat_message
+Hibernate: 
+    alter table if exists chat_files 
+       add constraint FKgfv8vh72qw7i0b0dh2qwny0q 
+       foreign key (message_id) 
+       references chat_message
+2025-08-31 21:58:33 - 
     alter table if exists chat_image 
        add constraint FKln4tsldh4uog4tf35vrdc7s3u 
        foreign key (message_id) 
        references chat_message
 Hibernate: 
+    alter table if exists chat_image 
+       add constraint FKln4tsldh4uog4tf35vrdc7s3u 
+       foreign key (message_id) 
+       references chat_message
+2025-08-31 21:58:33 - 
     alter table if exists chat_message 
        add constraint FKfvbc4wvhk51y0qtnjrbminxfu 
        foreign key (room_id) 
        references chat_room
 Hibernate: 
     alter table if exists chat_message 
+       add constraint FKfvbc4wvhk51y0qtnjrbminxfu 
+       foreign key (room_id) 
+       references chat_room
+2025-08-31 21:58:33 - 
+    alter table if exists chat_message 
        add constraint FKd3oo2bhroe16913kh5pwtgk3h 
        foreign key (user_id) 
        references users
 Hibernate: 
+    alter table if exists chat_message 
+       add constraint FKd3oo2bhroe16913kh5pwtgk3h 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
     alter table if exists chat_room_participant 
        add constraint FK677gcppc5fneuseoige64fsnm 
        foreign key (room_id) 
        references chat_room
 Hibernate: 
     alter table if exists chat_room_participant 
+       add constraint FK677gcppc5fneuseoige64fsnm 
+       foreign key (room_id) 
+       references chat_room
+2025-08-31 21:58:33 - 
+    alter table if exists chat_room_participant 
        add constraint FKll38sgo5ugtwke3yj395sas9c 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists chat_room_participant 
+       add constraint FKll38sgo5ugtwke3yj395sas9c 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists learning_progress 
+       add constraint FKkex4pny6sl5affwroon8lfbjt 
        foreign key (user_id) 
        references users
 Hibernate: 
@@ -571,29 +1840,119 @@ Hibernate:
        add constraint FKkex4pny6sl5affwroon8lfbjt 
        foreign key (user_id) 
        references users
-Hibernate: 
+2025-08-31 21:58:33 - 
     alter table if exists level_test_results 
        add constraint FKq4e1h2p9bdq9le8s958ixjol0 
        foreign key (test_id) 
        references level_tests
 Hibernate: 
+    alter table if exists level_test_results 
+       add constraint FKq4e1h2p9bdq9le8s958ixjol0 
+       foreign key (test_id) 
+       references level_tests
+2025-08-31 21:58:33 - 
     alter table if exists level_tests 
        add constraint FKsva971gd3msxty925nebtjopm 
        foreign key (user_id) 
        references users
 Hibernate: 
+    alter table if exists level_tests 
+       add constraint FKsva971gd3msxty925nebtjopm 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists matching_feedback 
+       add constraint FKl8g9vrbbfaxbvnknm4ctcr57h 
+       foreign key (partner_id) 
+       references users
+Hibernate: 
+    alter table if exists matching_feedback 
+       add constraint FKl8g9vrbbfaxbvnknm4ctcr57h 
+       foreign key (partner_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists matching_feedback 
+       add constraint FK9saqua62grilh4cmvqqno7hr4 
+       foreign key (reviewer_id) 
+       references users
+Hibernate: 
+    alter table if exists matching_feedback 
+       add constraint FK9saqua62grilh4cmvqqno7hr4 
+       foreign key (reviewer_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists matching_feedback 
+       add constraint FKeris1fg7o43h4n9s9dheiyhk3 
+       foreign key (match_id) 
+       references user_match
+Hibernate: 
+    alter table if exists matching_feedback 
+       add constraint FKeris1fg7o43h4n9s9dheiyhk3 
+       foreign key (match_id) 
+       references user_match
+2025-08-31 21:58:33 - 
+    alter table if exists matching_queue 
+       add constraint FKb1aochfwom2qog941lxaon1eu 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists matching_queue 
+       add constraint FKb1aochfwom2qog941lxaon1eu 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
     alter table if exists matching_request 
        add constraint FK9cx6idxhfxlsrl1urxmanvqjw 
        foreign key (receiver_id) 
        references users
 Hibernate: 
     alter table if exists matching_request 
+       add constraint FK9cx6idxhfxlsrl1urxmanvqjw 
+       foreign key (receiver_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists matching_request 
        add constraint FK4td68kn3no188dt7s9r3khpug 
        foreign key (sender_id) 
        references users
 Hibernate: 
+    alter table if exists matching_request 
+       add constraint FK4td68kn3no188dt7s9r3khpug 
+       foreign key (sender_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists message_read_status 
+       add constraint FKh5nb9u8i7wt3cekv16w0td65j 
+       foreign key (message_id) 
+       references chat_message
+Hibernate: 
+    alter table if exists message_read_status 
+       add constraint FKh5nb9u8i7wt3cekv16w0td65j 
+       foreign key (message_id) 
+       references chat_message
+2025-08-31 21:58:33 - 
+    alter table if exists message_read_status 
+       add constraint FKc4c87dvt76csu6c8lwog8hkfq 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists message_read_status 
+       add constraint FKc4c87dvt76csu6c8lwog8hkfq 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
     alter table if exists notification_preferences 
        add constraint FKt9qjvmcl36i14utm5uptyqg84 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists notification_preferences 
+       add constraint FKt9qjvmcl36i14utm5uptyqg84 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists notifications 
+       add constraint FK9y21adhxn0ayjhfocscqox7bh 
        foreign key (user_id) 
        references users
 Hibernate: 
@@ -601,270 +1960,597 @@ Hibernate:
        add constraint FK9y21adhxn0ayjhfocscqox7bh 
        foreign key (user_id) 
        references users
-Hibernate: 
+2025-08-31 21:58:33 - 
     alter table if exists onboard_lang_level 
        add constraint FK9x0smxgu7j20qn1uxm5bt86y6 
        foreign key (current_level_id) 
        references lang_level_type
 Hibernate: 
     alter table if exists onboard_lang_level 
+       add constraint FK9x0smxgu7j20qn1uxm5bt86y6 
+       foreign key (current_level_id) 
+       references lang_level_type
+2025-08-31 21:58:33 - 
+    alter table if exists onboard_lang_level 
        add constraint FKd1dg7o5qie33mk0nyoob467bo 
        foreign key (lang_level_type) 
        references lang_level_type
 Hibernate: 
+    alter table if exists onboard_lang_level 
+       add constraint FKd1dg7o5qie33mk0nyoob467bo 
+       foreign key (lang_level_type) 
+       references lang_level_type
+2025-08-31 21:58:33 - 
     alter table if exists onboard_lang_level 
        add constraint FKthxauu3lvhy4t8qlx2b8ta6w3 
        foreign key (lang_id) 
        references language
 Hibernate: 
     alter table if exists onboard_lang_level 
+       add constraint FKthxauu3lvhy4t8qlx2b8ta6w3 
+       foreign key (lang_id) 
+       references language
+2025-08-31 21:58:33 - 
+    alter table if exists onboard_lang_level 
        add constraint FKt6uswxidjbva4h04vyu3nshjw 
        foreign key (target_level_id) 
        references lang_level_type
 Hibernate: 
+    alter table if exists onboard_lang_level 
+       add constraint FKt6uswxidjbva4h04vyu3nshjw 
+       foreign key (target_level_id) 
+       references lang_level_type
+2025-08-31 21:58:33 - 
     alter table if exists onboarding_personality 
        add constraint FK2ev6yppx931ywbb1qfw5bdn46 
        foreign key (personality_type_id) 
        references partner_parsonality
 Hibernate: 
+    alter table if exists onboarding_personality 
+       add constraint FK2ev6yppx931ywbb1qfw5bdn46 
+       foreign key (personality_type_id) 
+       references partner_parsonality
+2025-08-31 21:58:33 - 
     alter table if exists onboarding_study_goal 
        add constraint FKo9e7ta0tfva13g89usu7rsibu 
        foreign key (motivation_id) 
        references motivation
 Hibernate: 
+    alter table if exists onboarding_study_goal 
+       add constraint FKo9e7ta0tfva13g89usu7rsibu 
+       foreign key (motivation_id) 
+       references motivation
+2025-08-31 21:58:33 - 
     alter table if exists session_bookings 
        add constraint FKj8jdx7m5t4ainv96udnkqtu5g 
        foreign key (session_id) 
        references sessions
 Hibernate: 
     alter table if exists session_bookings 
+       add constraint FKj8jdx7m5t4ainv96udnkqtu5g 
+       foreign key (session_id) 
+       references sessions
+2025-08-31 21:58:33 - 
+    alter table if exists session_bookings 
        add constraint FKtbkuq0myukk60jr6ittk4is23 
        foreign key (user_id) 
        references users
 Hibernate: 
+    alter table if exists session_bookings 
+       add constraint FKtbkuq0myukk60jr6ittk4is23 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
     alter table if exists sessions 
        add constraint FKnvdpwae6u6n04gndocxm8tk0f 
        foreign key (guest_user_id) 
        references users
 Hibernate: 
     alter table if exists sessions 
+       add constraint FKnvdpwae6u6n04gndocxm8tk0f 
+       foreign key (guest_user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists sessions 
        add constraint FKpjxc5jlmuu7bm7ii06niglwru 
        foreign key (host_user_id) 
+       references users
+Hibernate: 
+    alter table if exists sessions 
+       add constraint FKpjxc5jlmuu7bm7ii06niglwru 
+       foreign key (host_user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists user_achievements 
+       add constraint FK8ipvec6cs8t3g8515thtlsxuf 
+       foreign key (achievement_id) 
+       references achievements
+Hibernate: 
+    alter table if exists user_achievements 
+       add constraint FK8ipvec6cs8t3g8515thtlsxuf 
+       foreign key (achievement_id) 
+       references achievements
+2025-08-31 21:58:33 - 
+    alter table if exists user_achievements 
+       add constraint FK6vt5fpu0uta41vny1x6vpk45k 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists user_achievements 
+       add constraint FK6vt5fpu0uta41vny1x6vpk45k 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists user_activities 
+       add constraint FKbe7yq8t74yxeoarmxlxevoped 
+       foreign key (user_id) 
        references users
 Hibernate: 
     alter table if exists user_activities 
        add constraint FKbe7yq8t74yxeoarmxlxevoped 
        foreign key (user_id) 
        references users
-Hibernate: 
+2025-08-31 21:58:33 - 
     alter table if exists user_match 
        add constraint FK5gyxhrv0juuh0ircqdg5oixxc 
        foreign key (deactivated_by) 
        references users
 Hibernate: 
     alter table if exists user_match 
+       add constraint FK5gyxhrv0juuh0ircqdg5oixxc 
+       foreign key (deactivated_by) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists user_match 
        add constraint FK9m1v9tkypq0vcquv38epukf3d 
        foreign key (user1_id) 
+       references users
+Hibernate: 
+    alter table if exists user_match 
+       add constraint FK9m1v9tkypq0vcquv38epukf3d 
+       foreign key (user1_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists user_match 
+       add constraint FKqwr6stf0f2srne9uid94817h3 
+       foreign key (user2_id) 
        references users
 Hibernate: 
     alter table if exists user_match 
        add constraint FKqwr6stf0f2srne9uid94817h3 
        foreign key (user2_id) 
        references users
+2025-08-31 21:58:33 - 
+    alter table if exists user_status 
+       add constraint FKi21pi0g9yogah1kwedmuhnt5s 
+       foreign key (user_id) 
+       references users
 Hibernate: 
+    alter table if exists user_status 
+       add constraint FKi21pi0g9yogah1kwedmuhnt5s 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
     alter table if exists users 
        add constraint FKscan6s3oplch90k26jpvied7b 
        foreign key (location_id) 
        references location
 Hibernate: 
     alter table if exists users 
+       add constraint FKscan6s3oplch90k26jpvied7b 
+       foreign key (location_id) 
+       references location
+2025-08-31 21:58:33 - 
+    alter table if exists users 
        add constraint FKj2a3j0d6hvujatpeif260d3af 
        foreign key (native_lang_id) 
        references language
-2025-08-29 23:46:21 - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-08-29 23:46:21 - === NCP Storage Configuration Debug ===
-2025-08-29 23:46:21 - ✅ cloud.ncp.storage.region: kr-standard
-2025-08-29 23:46:21 - ✅ cloud.ncp.storage.endpoint: https://kr.object.ncloudstorage.com
-2025-08-29 23:46:21 - ✅ cloud.ncp.storage.access-key: test-ncp***
-2025-08-29 23:46:21 - ✅ cloud.ncp.storage.secret-key: test-ncp***
-2025-08-29 23:46:21 - === NCP Storage Configuration Debug Complete ===
-2025-08-29 23:46:21 - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-08-29 23:46:22 - === JWT Configuration Debug ===
-2025-08-29 23:46:22 - ✅ jwt.secret_key loaded (length: 55 chars)
-2025-08-29 23:46:22 - ✅ JWT SecretKey successfully initialized
-2025-08-29 23:46:22 - === JWT Configuration Debug Complete ===
-2025-08-29 23:46:22 - === ClovaService Configuration Debug ===
-2025-08-29 23:46:22 - ✅ clova.studio.endpoint: https://clovastudio.stream.ntruss.com
-2025-08-29 23:46:22 - ✅ clova.studio.api-key: test-clo***
-2025-08-29 23:46:22 - === ClovaService Configuration Debug Complete ===
-2025-08-29 23:46:23 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-08-29 23:46:23 - === Google OAuth Configuration Debug ===
-2025-08-29 23:46:23 - ✅ google.client_id: test-google-***
-2025-08-29 23:46:23 - ✅ google.client_secret: *** (masked)
-2025-08-29 23:46:23 - ✅ google.redirect_uri: http://localhost:8080/login/oauth2/code/google
-2025-08-29 23:46:23 - === Google OAuth Configuration Debug Complete ===
-2025-08-29 23:46:24 - === Naver OAuth Configuration Debug ===
-2025-08-29 23:46:24 - ✅ naver.client_id: test-nav***
-2025-08-29 23:46:24 - ✅ naver.client_secret: *** (masked)
-2025-08-29 23:46:24 - ✅ naver.redirect_uri: http://localhost:8080/login/oauth2/code/naver
-2025-08-29 23:46:24 - === Naver OAuth Configuration Debug Complete ===
-2025-08-29 23:46:24 - Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
-2025-08-29 23:46:24 - Exposing 1 endpoint beneath base path '/actuator'
-2025-08-29 23:46:24 - No authenticationProviders and no parentAuthenticationManager defined. Returning null.
-2025-08-29 23:46:24 - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
-2025-08-29 23:46:24 - H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
-2025-08-29 23:46:24 - Starting...
-2025-08-29 23:46:24 - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@33f50bbb]]
-2025-08-29 23:46:24 - Started.
-2025-08-29 23:46:24 - Tomcat started on port 8080 (http) with context path '/'
-2025-08-29 23:46:24 - Started Application in 5.61 seconds (process running for 5.82)
-2025-08-29 23:46:38 - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-08-29 23:46:38 - Initializing Servlet 'dispatcherServlet'
-2025-08-29 23:46:38 - Completed initialization in 4 ms
-2025-08-29 23:46:38 - Securing GET /actuator/health
-2025-08-29 23:46:38 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:46:38 - Secured GET /actuator/health
-2025-08-29 23:46:38 - Redis health check failed
-org.springframework.data.redis.RedisConnectionFailureException: Unable to connect to Redis
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.translateException(LettuceConnectionFactory.java:1858)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.getConnection(LettuceConnectionFactory.java:1789)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.getNativeConnection(LettuceConnectionFactory.java:1586)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.lambda$getConnection$0(LettuceConnectionFactory.java:1566)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.doInLock(LettuceConnectionFactory.java:1527)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.getConnection(LettuceConnectionFactory.java:1563)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getSharedReactiveConnection(LettuceConnectionFactory.java:1274)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getReactiveConnection(LettuceConnectionFactory.java:1149)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getReactiveConnection(LettuceConnectionFactory.java:120)
-	at reactor.core.publisher.MonoSupplier.call(MonoSupplier.java:67)
-	at reactor.core.publisher.FluxSubscribeOnCallable$CallableSubscribeOnSubscription.run(FluxSubscribeOnCallable.java:228)
-	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68)
-	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
-	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: io.lettuce.core.RedisConnectionException: Unable to connect to localhost/<unresolved>:6379
-	at io.lettuce.core.RedisConnectionException.create(RedisConnectionException.java:63)
-	at io.lettuce.core.RedisConnectionException.create(RedisConnectionException.java:41)
-	at io.lettuce.core.AbstractRedisClient.getConnection(AbstractRedisClient.java:354)
-	at io.lettuce.core.RedisClient.connect(RedisClient.java:220)
-	at org.springframework.data.redis.connection.lettuce.StandaloneConnectionProvider.lambda$getConnection$1(StandaloneConnectionProvider.java:112)
-	at java.base/java.util.Optional.orElseGet(Optional.java:364)
-	at org.springframework.data.redis.connection.lettuce.StandaloneConnectionProvider.getConnection(StandaloneConnectionProvider.java:112)
-	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.getConnection(LettuceConnectionFactory.java:1787)
-	... 16 common frames omitted
-Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:6379
-Caused by: java.net.ConnectException: Connection refused
-	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
-	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
-	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:973)
-	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:336)
-	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:339)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:784)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
-	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
-	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
-	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-2025-08-29 23:46:54 - Securing GET /api/v1/users/me
-2025-08-29 23:46:54 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:46:54 - Securing GET /error
-2025-08-29 23:46:54 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:05 - Securing GET /api/v1/users/me
-2025-08-29 23:47:05 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:05 - Securing GET /error
-2025-08-29 23:47:05 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:24 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
-2025-08-29 23:47:37 - Securing GET /api/v1/onboarding/languages
-2025-08-29 23:47:37 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:37 - Securing GET /error
-2025-08-29 23:47:37 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:44 - Securing GET /
-2025-08-29 23:47:44 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:44 - Securing GET /error
-2025-08-29 23:47:44 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:52 - Securing GET /h2-console
-2025-08-29 23:47:52 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:47:52 - Securing GET /error
-2025-08-29 23:47:52 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:48:56 - Securing GET /swagger-ui.html
-2025-08-29 23:48:56 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:48:56 - Securing GET /error
-2025-08-29 23:48:56 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:49:12 - Securing GET /swagger-ui/index.html
-2025-08-29 23:49:12 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:49:12 - Securing GET /error
-2025-08-29 23:49:12 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:49:39 - Securing GET /v3/api-docs
-2025-08-29 23:49:39 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-29 23:49:39 - Securing GET /error
-2025-08-29 23:49:39 - Set SecurityContextHolder to anonymous SecurityContext
-2025-08-30 00:17:24 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 2, active threads = 1, queued tasks = 0, completed tasks = 1]
-2025-08-30 00:47:24 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 0, completed tasks = 2]
-2025-08-30 01:17:24 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 0, completed tasks = 3]
-2025-08-30 02:58:31 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h24m39s823ms).
-2025-08-30 03:03:02 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m31s24ms).
-2025-08-30 03:15:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 5, active threads = 1, queued tasks = 0, completed tasks = 4]
-2025-08-30 03:45:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 6, active threads = 1, queued tasks = 0, completed tasks = 5]
-2025-08-30 04:15:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 7, active threads = 1, queued tasks = 0, completed tasks = 6]
-2025-08-30 04:45:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 7]
-2025-08-30 05:15:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 8]
-2025-08-30 05:45:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 9]
-2025-08-30 06:15:35 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 10]
-2025-08-30 06:26:48 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m13s458ms).
-2025-08-30 06:43:58 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m9s930ms).
-2025-08-30 07:03:54 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m56s212ms).
-2025-08-30 07:20:25 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m537ms).
-2025-08-30 07:27:24 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m59s132ms).
-2025-08-30 07:48:00 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m35s826ms).
-2025-08-30 08:00:50 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m50s455ms).
-2025-08-30 08:11:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 11]
-2025-08-30 08:41:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 12]
-2025-08-30 09:11:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 13]
-2025-08-30 09:41:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 14]
-2025-08-30 10:11:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 15]
-2025-08-30 10:41:51 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 16]
-2025-08-30 11:10:05 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m12s438ms).
-2025-08-30 11:27:04 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m28s903ms).
-2025-08-30 11:34:23 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7m18s789ms).
-2025-08-30 11:38:36 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m43s363ms).
-2025-08-30 11:43:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 17]
-2025-08-30 12:13:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 18]
-2025-08-30 12:43:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 19]
-2025-08-30 13:13:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 20]
-2025-08-30 13:43:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 21]
-2025-08-30 14:13:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 22]
-2025-08-30 14:43:34 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 23]
-2025-08-30 16:07:50 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h1m11s850ms).
-2025-08-30 16:09:17 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=56s931ms).
-2025-08-30 16:14:43 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 24]
-2025-08-30 16:44:43 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 25]
-2025-08-30 17:14:43 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 26]
-2025-08-30 17:57:37 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=31m18s763ms).
-2025-08-30 19:06:23 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h8m46s63ms).
-2025-08-30 19:23:24 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m1s371ms).
-2025-08-30 19:40:19 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 27]
-2025-08-30 20:10:19 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 28]
-2025-08-30 20:40:19 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 29]
-2025-08-30 21:10:19 - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 8, active threads = 1, queued tasks = 0, completed tasks = 30]
-2025-08-30 21:37:02 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=9m6s356ms).
-2025-08-30 22:25:33 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=48m31s305ms).
-2025-08-30 22:50:30 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=24m57s279ms).
-2025-08-31 00:02:06 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h11m35s964ms).
-2025-08-31 01:16:55 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h14m49s133ms).
-2025-08-31 01:35:13 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=18m17s734ms).
-2025-08-31 02:00:13 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=24m59s645ms).
-2025-08-31 02:39:17 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=39m4s588ms).
-2025-08-31 03:54:02 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h14m44s649ms).
-2025-08-31 05:04:48 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h10m46s236ms).
-2025-08-31 06:16:05 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h11m16s977ms).
-2025-08-31 07:56:51 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h40m45s914ms).
-2025-08-31 09:03:02 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h6m11s294ms).
-2025-08-31 10:20:35 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h17m33s125ms).
-2025-08-31 11:38:08 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h17m33s66ms).
-2025-08-31 11:55:22 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m13s497ms).
-2025-08-31 12:13:12 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m49s789ms).
-2025-08-31 12:20:03 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m51s141ms).
+Hibernate: 
+    alter table if exists users 
+       add constraint FKj2a3j0d6hvujatpeif260d3af 
+       foreign key (native_lang_id) 
+       references language
+2025-08-31 21:58:33 - 
+    alter table if exists webrtc_connections 
+       add constraint FKmebky170g3u36jym83r9x82lc 
+       foreign key (webrtc_room_id) 
+       references webrtc_rooms
+Hibernate: 
+    alter table if exists webrtc_connections 
+       add constraint FKmebky170g3u36jym83r9x82lc 
+       foreign key (webrtc_room_id) 
+       references webrtc_rooms
+2025-08-31 21:58:33 - 
+    alter table if exists webrtc_participants 
+       add constraint FKck8ati2xn8b91ep5gspivmoyw 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists webrtc_participants 
+       add constraint FKck8ati2xn8b91ep5gspivmoyw 
+       foreign key (user_id) 
+       references users
+2025-08-31 21:58:33 - 
+    alter table if exists webrtc_participants 
+       add constraint FKh7erurmuil2ay8a51v0k7406f 
+       foreign key (webrtc_room_id) 
+       references webrtc_rooms
+Hibernate: 
+    alter table if exists webrtc_participants 
+       add constraint FKh7erurmuil2ay8a51v0k7406f 
+       foreign key (webrtc_room_id) 
+       references webrtc_rooms
+2025-08-31 21:58:33 - 
+    alter table if exists webrtc_rooms 
+       add constraint FK6j5e2xoyofsfhdib6y2uyawh9 
+       foreign key (session_id) 
+       references sessions
+Hibernate: 
+    alter table if exists webrtc_rooms 
+       add constraint FK6j5e2xoyofsfhdib6y2uyawh9 
+       foreign key (session_id) 
+       references sessions
+2025-08-31 21:58:33 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-31 21:58:33 - Initializing JpaMetamodelMappingContext…
+2025-08-31 21:58:33 - Finished initializing JpaMetamodelMappingContext
+2025-08-31 21:58:33 - Looking up named query 'User.userId'
+2025-08-31 21:58:33 - Did not find named query User.userId
+2025-08-31 21:58:33 - Did not find named query User.findPotentialPartners.count
+2025-08-31 21:58:33 - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-31 21:58:34 - Looking up named query 'User.findByUserIdentity'
+2025-08-31 21:58:34 - Did not find named query User.findByUserIdentity
+2025-08-31 21:58:34 - Did not find named query User.findNameByUserId.count
+2025-08-31 21:58:34 - Did not find named query User.countOnlineUsers.count
+2025-08-31 21:58:34 - Did not find named query User.countActiveUsers.count
+2025-08-31 21:58:34 - Did not find named query User.getUsersByNativeLanguage.count
+2025-08-31 21:58:34 - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'healthController' defined in file [/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main/com/studymate/common/controller/HealthController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'customHealthIndicator' defined in file [/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main/com/studymate/common/health/CustomHealthIndicator.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.studymate.domain.user.domain.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesConfig: Could not create query for public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage(); Reason: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+2025-08-31 21:58:34 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-31 21:58:34 - 
+    drop table if exists achievements cascade 
+Hibernate: 
+    drop table if exists achievements cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists ai_messages cascade 
+Hibernate: 
+    drop table if exists ai_messages cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists ai_partners cascade 
+Hibernate: 
+    drop table if exists ai_partners cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists ai_sessions cascade 
+Hibernate: 
+    drop table if exists ai_sessions cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists chat_files cascade 
+Hibernate: 
+    drop table if exists chat_files cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists chat_image cascade 
+Hibernate: 
+    drop table if exists chat_image cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists chat_message cascade 
+Hibernate: 
+    drop table if exists chat_message cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists chat_room cascade 
+Hibernate: 
+    drop table if exists chat_room cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists chat_room_participant cascade 
+Hibernate: 
+    drop table if exists chat_room_participant cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists group_session_participants cascade 
+Hibernate: 
+    drop table if exists group_session_participants cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists group_sessions cascade 
+Hibernate: 
+    drop table if exists group_sessions cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists group_size cascade 
+Hibernate: 
+    drop table if exists group_size cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists lang_level_type cascade 
+Hibernate: 
+    drop table if exists lang_level_type cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists language cascade 
+Hibernate: 
+    drop table if exists language cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists learning_progress cascade 
+Hibernate: 
+    drop table if exists learning_progress cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists learning_style cascade 
+Hibernate: 
+    drop table if exists learning_style cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists level_test_results cascade 
+Hibernate: 
+    drop table if exists level_test_results cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists level_tests cascade 
+Hibernate: 
+    drop table if exists level_tests cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists location cascade 
+Hibernate: 
+    drop table if exists location cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists matching_feedback cascade 
+Hibernate: 
+    drop table if exists matching_feedback cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists matching_queue cascade 
+Hibernate: 
+    drop table if exists matching_queue cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists matching_request cascade 
+Hibernate: 
+    drop table if exists matching_request cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists message_read_status cascade 
+Hibernate: 
+    drop table if exists message_read_status cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists motivation cascade 
+Hibernate: 
+    drop table if exists motivation cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists notification_preferences cascade 
+Hibernate: 
+    drop table if exists notification_preferences cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists notifications cascade 
+Hibernate: 
+    drop table if exists notifications cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_group_size cascade 
+Hibernate: 
+    drop table if exists onboard_group_size cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_lang_level cascade 
+Hibernate: 
+    drop table if exists onboard_lang_level cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_learning_style cascade 
+Hibernate: 
+    drop table if exists onboard_learning_style cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_motivation cascade 
+Hibernate: 
+    drop table if exists onboard_motivation cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_partner cascade 
+Hibernate: 
+    drop table if exists onboard_partner cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_schedule cascade 
+Hibernate: 
+    drop table if exists onboard_schedule cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboard_topic cascade 
+Hibernate: 
+    drop table if exists onboard_topic cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboarding_personality cascade 
+Hibernate: 
+    drop table if exists onboarding_personality cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists onboarding_study_goal cascade 
+Hibernate: 
+    drop table if exists onboarding_study_goal cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists partner_parsonality cascade 
+Hibernate: 
+    drop table if exists partner_parsonality cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists schedule cascade 
+Hibernate: 
+    drop table if exists schedule cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists session_bookings cascade 
+Hibernate: 
+    drop table if exists session_bookings cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists sessions cascade 
+Hibernate: 
+    drop table if exists sessions cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists system_metrics cascade 
+Hibernate: 
+    drop table if exists system_metrics cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists topic cascade 
+Hibernate: 
+    drop table if exists topic cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists user_achievements cascade 
+Hibernate: 
+    drop table if exists user_achievements cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists user_activities cascade 
+Hibernate: 
+    drop table if exists user_activities cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists user_match cascade 
+Hibernate: 
+    drop table if exists user_match cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists user_status cascade 
+Hibernate: 
+    drop table if exists user_status cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists users cascade 
+Hibernate: 
+    drop table if exists users cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists webrtc_connections cascade 
+Hibernate: 
+    drop table if exists webrtc_connections cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists webrtc_participants cascade 
+Hibernate: 
+    drop table if exists webrtc_participants cascade 
+2025-08-31 21:58:34 - 
+    drop table if exists webrtc_rooms cascade 
+Hibernate: 
+    drop table if exists webrtc_rooms cascade 
+2025-08-31 21:58:34 - HikariPool-1 - Shutdown initiated...
+2025-08-31 21:58:34 - HikariPool-1 - Shutdown completed.
+2025-08-31 21:58:34 - Stopping service [Tomcat]
+2025-08-31 21:58:34 - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-31 21:58:34 - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'healthController' defined in file [/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main/com/studymate/common/controller/HealthController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'customHealthIndicator' defined in file [/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main/com/studymate/common/health/CustomHealthIndicator.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.studymate.domain.user.domain.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesConfig: Could not create query for public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage(); Reason: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1222)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1188)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1123)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.studymate.Application.main(Application.java:12)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customHealthIndicator' defined in file [/Users/minhan/Desktop/public-repo/STUDYMATE-SERVER/build/classes/java/main/com/studymate/common/health/CustomHealthIndicator.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.studymate.domain.user.domain.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesConfig: Could not create query for public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage(); Reason: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1683)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1628)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	... 21 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.studymate.domain.user.domain.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesConfig: Could not create query for public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage(); Reason: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1683)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1628)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	... 34 common frames omitted
+Caused by: org.springframework.data.repository.query.QueryCreationException: Could not create query for public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage(); Reason: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+	at org.springframework.data.repository.query.QueryCreationException.create(QueryCreationException.java:101)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:120)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.mapMethodsToQuery(QueryExecutorMethodInterceptor.java:104)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lambda$new$0(QueryExecutorMethodInterceptor.java:92)
+	at java.base/java.util.Optional.map(Optional.java:260)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.<init>(QueryExecutorMethodInterceptor.java:92)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport.getRepository(RepositoryFactorySupport.java:434)
+	at org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport.lambda$afterPropertiesSet$4(RepositoryFactoryBeanSupport.java:350)
+	at org.springframework.data.util.Lazy.getNullable(Lazy.java:135)
+	at org.springframework.data.util.Lazy.get(Lazy.java:113)
+	at org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport.afterPropertiesSet(RepositoryFactoryBeanSupport.java:356)
+	at org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean.afterPropertiesSet(JpaRepositoryFactoryBean.java:132)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822)
+	... 44 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Validation failed for query for method public abstract java.util.List com.studymate.domain.user.domain.repository.UserRepository.getUsersByNativeLanguage()
+	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.validateQuery(SimpleJpaQuery.java:97)
+	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.<init>(SimpleJpaQuery.java:67)
+	at org.springframework.data.jpa.repository.query.JpaQueryFactory.fromMethodWithQueryString(JpaQueryFactory.java:49)
+	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$DeclaredQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:174)
+	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateIfNotFoundQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:254)
+	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$AbstractQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:99)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:116)
+	... 56 common frames omitted
+Caused by: java.lang.IllegalArgumentException: org.hibernate.query.sqm.UnknownPathException: Could not resolve attribute 'name' of 'com.studymate.domain.onboarding.entity.Language' [SELECT u.nativeLanguage.name, COUNT(u) FROM User u WHERE u.nativeLanguage IS NOT NULL GROUP BY u.nativeLanguage.name ORDER BY COUNT(u) DESC]
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:143)
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:167)
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:173)
+	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:886)
+	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:796)
+	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:143)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.orm.jpa.ExtendedEntityManagerCreator$ExtendedEntityManagerInvocationHandler.invoke(ExtendedEntityManagerCreator.java:364)
+	at jdk.proxy2/jdk.proxy2.$Proxy185.createQuery(Unknown Source)
+	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.validateQuery(SimpleJpaQuery.java:91)
+	... 62 common frames omitted
+Caused by: org.hibernate.query.sqm.UnknownPathException: Could not resolve attribute 'name' of 'com.studymate.domain.onboarding.entity.Language' [SELECT u.nativeLanguage.name, COUNT(u) FROM User u WHERE u.nativeLanguage IS NOT NULL GROUP BY u.nativeLanguage.name ORDER BY COUNT(u) DESC]
+	at org.hibernate.query.hql.internal.StandardHqlTranslator.translate(StandardHqlTranslator.java:88)
+	at org.hibernate.query.internal.QueryInterpretationCacheStandardImpl.createHqlInterpretation(QueryInterpretationCacheStandardImpl.java:145)
+	at org.hibernate.query.internal.QueryInterpretationCacheStandardImpl.resolveHqlInterpretation(QueryInterpretationCacheStandardImpl.java:132)
+	at org.hibernate.query.spi.QueryEngine.interpretHql(QueryEngine.java:54)
+	at org.hibernate.internal.AbstractSharedSessionContract.interpretHql(AbstractSharedSessionContract.java:832)
+	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:878)
+	... 69 common frames omitted
+Caused by: org.hibernate.query.sqm.PathElementException: Could not resolve attribute 'name' of 'com.studymate.domain.onboarding.entity.Language'
+	at org.hibernate.query.sqm.SqmPathSource.getSubPathSource(SqmPathSource.java:95)
+	at org.hibernate.query.sqm.tree.domain.AbstractSqmPath.get(AbstractSqmPath.java:198)
+	at org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath.resolvePathPart(SqmEntityValuedSimplePath.java:56)
+	at org.hibernate.query.hql.internal.DomainPathPart.resolvePathPart(DomainPathPart.java:42)
+	at org.hibernate.query.hql.internal.BasicDotIdentifierConsumer.consumeIdentifier(BasicDotIdentifierConsumer.java:92)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimplePath(SemanticQueryBuilder.java:5465)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitGeneralPathFragment(SemanticQueryBuilder.java:5298)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitGeneralPathExpression(SemanticQueryBuilder.java:1891)
+	at org.hibernate.grammars.hql.HqlParser$GeneralPathExpressionContext.accept(HqlParser.java:8268)
+	at org.antlr.v4.runtime.tree.AbstractParseTreeVisitor.visitChildren(AbstractParseTreeVisitor.java:46)
+	at org.hibernate.grammars.hql.HqlParserBaseVisitor.visitBarePrimaryExpression(HqlParserBaseVisitor.java:812)
+	at org.hibernate.grammars.hql.HqlParser$BarePrimaryExpressionContext.accept(HqlParser.java:7726)
+	at org.antlr.v4.runtime.tree.AbstractParseTreeVisitor.visitChildren(AbstractParseTreeVisitor.java:46)
+	at org.hibernate.grammars.hql.HqlParserBaseVisitor.visitExpressionOrPredicate(HqlParserBaseVisitor.java:945)
+	at org.hibernate.grammars.hql.HqlParser$ExpressionOrPredicateContext.accept(HqlParser.java:8468)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSelectableNode(SemanticQueryBuilder.java:1435)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSelection(SemanticQueryBuilder.java:1412)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSelectClause(SemanticQueryBuilder.java:1405)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuery(SemanticQueryBuilder.java:1254)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuerySpecExpression(SemanticQueryBuilder.java:1040)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuerySpecExpression(SemanticQueryBuilder.java:277)
+	at org.hibernate.grammars.hql.HqlParser$QuerySpecExpressionContext.accept(HqlParser.java:2134)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimpleQueryGroup(SemanticQueryBuilder.java:1025)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimpleQueryGroup(SemanticQueryBuilder.java:277)
+	at org.hibernate.grammars.hql.HqlParser$SimpleQueryGroupContext.accept(HqlParser.java:2005)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSelectStatement(SemanticQueryBuilder.java:492)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitStatement(SemanticQueryBuilder.java:451)
+	at org.hibernate.query.hql.internal.SemanticQueryBuilder.buildSemanticModel(SemanticQueryBuilder.java:324)
+	at org.hibernate.query.hql.internal.StandardHqlTranslator.translate(StandardHqlTranslator.java:71)
+	... 74 common frames omitted
+
+> Task :bootRun FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bootRun'.
+> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+4 actionable tasks: 1 executed, 3 up-to-date

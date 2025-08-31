@@ -1,5 +1,6 @@
 package com.studymate.domain.user.util;
 
+import com.studymate.auth.jwt.JwtUtils;
 import com.studymate.domain.user.domain.dao.UserDao;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;

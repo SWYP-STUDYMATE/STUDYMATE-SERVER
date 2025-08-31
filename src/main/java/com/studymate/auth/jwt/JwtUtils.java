@@ -4,9 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -61,5 +63,22 @@ public class JwtUtils {
             log.error("JWT validation error: {}", e.getMessage());
         }
         return false;
+    }
+    
+    // Wrapper methods for backward compatibility
+    public boolean validateToken(String token) {
+        return validateJwtToken(token);
+    }
+    
+    public String generateRefreshToken(UUID userId) {
+        return generateTokenFromUserId(userId);
+    }
+    
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

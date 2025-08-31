@@ -7,7 +7,7 @@ import com.studymate.domain.onboarding.domain.dto.response.PartnerPersonalityRes
 import com.studymate.domain.onboarding.domain.type.PartnerGenderType;
 import com.studymate.domain.onboarding.service.OnboardPartnerService;
 import com.studymate.domain.user.util.CustomUserDetails;
-import com.studymate.domain.user.util.JwtUtils;
+import com.studymate.auth.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
