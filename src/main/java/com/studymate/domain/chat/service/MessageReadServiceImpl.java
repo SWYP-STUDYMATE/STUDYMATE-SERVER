@@ -100,7 +100,7 @@ public class MessageReadServiceImpl implements MessageReadService {
 
         // 채팅방 참가자 수 조회
         int totalParticipants = participantRepository
-                .countBychatRoomAndJoinedAtIsNotNull(message.getChatRoom());
+                .countByChatRoom(message.getChatRoom());
 
         List<MessageReadStatusResponse.ReaderInfo> readers = readStatuses.stream()
                 .map(status -> MessageReadStatusResponse.ReaderInfo.builder()
@@ -193,7 +193,7 @@ public class MessageReadServiceImpl implements MessageReadService {
                     
                     // 마지막 메시지 정보 조회
                     Optional<ChatMessage> lastMessage = messageRepository
-                            .findTopByRoomIdOrderByCreatedAtDesc(room.getId());
+                            .findTopByChatRoom_IdOrderByCreatedAtDesc(room.getId());
                     
                     UnreadMessageSummary.UnreadMessageSummaryBuilder builder = UnreadMessageSummary.builder()
                             .roomId(room.getId())

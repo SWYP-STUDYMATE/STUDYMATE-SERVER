@@ -105,7 +105,7 @@ public interface MessageReadStatusRepository extends JpaRepository<MessageReadSt
      */
     @Query("""
         SELECT p.user FROM ChatRoomParticipant p
-        WHERE p.chatRoom.id = :roomId
+        WHERE p.room.id = :roomId
         AND p.user != :sender
         AND NOT EXISTS (
             SELECT mrs FROM MessageReadStatus mrs
