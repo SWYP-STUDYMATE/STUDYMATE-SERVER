@@ -8,7 +8,6 @@ import com.studymate.domain.user.domain.dto.response.OnlineStatusResponse;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,26 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class UserStatusServiceImpl implements UserStatusService {
 
     private final UserStatusRepository userStatusRepository;
     private final UserRepository userRepository;
-    
-    @Autowired(required = false)
-    private RedisTemplate<String, Object> redisTemplate;
-    
-    public UserStatusServiceImpl(UserStatusRepository userStatusRepository, UserRepository userRepository) {
-        this.userStatusRepository = userStatusRepository;
-        this.userRepository = userRepository;
-    }
+    private final RedisTemplate<String, Object> redisTemplate;
     
     private static final String USER_STATUS_PREFIX = "user:status:";
     private static final String ONLINE_USERS_KEY = "users:online";
@@ -47,10 +39,8 @@ public class UserStatusServiceImpl implements UserStatusService {
         userStatus.setOnline(deviceInfo);
         userStatusRepository.save(userStatus);
         
-        // Redis 캐시 업데이트 (Redis가 있을 때만)
-        if (redisTemplate != null) {
-            updateRedisCache(userStatus);
-        }
+        // Redis 캐시 업데이트
+        updateRedisCache(userStatus);
         
         log.debug("User {} set to online with device: {}", userId, deviceInfo);
     }
@@ -61,10 +51,8 @@ public class UserStatusServiceImpl implements UserStatusService {
         userStatus.setOffline();
         userStatusRepository.save(userStatus);
         
-        // Redis에서 제거 (Redis가 있을 때만)
-        if (redisTemplate != null) {
-            removeFromRedisCache(userId);
-        }
+        // Redis에서 제거
+        removeFromRedisCache(userId);
         
         log.debug("User {} set to offline", userId);
     }
@@ -75,10 +63,8 @@ public class UserStatusServiceImpl implements UserStatusService {
         userStatus.setStudying(sessionId);
         userStatusRepository.save(userStatus);
         
-        // Redis 캐시 업데이트 (Redis가 있을 때만)
-        if (redisTemplate != null) {
-            updateRedisCache(userStatus);
-        }
+        // Redis 캐시 업데이트
+        updateRedisCache(userStatus);
         
         log.debug("User {} set to studying with session: {}", userId, sessionId);
     }
@@ -90,10 +76,8 @@ public class UserStatusServiceImpl implements UserStatusService {
         userStatus.setLastSeenAt(LocalDateTime.now());
         userStatusRepository.save(userStatus);
         
-        // Redis 캐시 업데이트 (Redis가 있을 때만)
-        if (redisTemplate != null) {
-            updateRedisCache(userStatus);
-        }
+        // Redis 캐시 업데이트
+        updateRedisCache(userStatus);
         
         log.debug("User {} set to away", userId);
     }
@@ -101,13 +85,10 @@ public class UserStatusServiceImpl implements UserStatusService {
     @Override
     @Transactional(readOnly = true)
     public OnlineStatusResponse getUserStatus(UUID userId) {
-        // 먼저 Redis에서 확인 (Redis가 있을 때만)
-        OnlineStatusResponse cachedStatus = null;
-        if (redisTemplate != null) {
-            cachedStatus = getCachedStatus(userId);
-            if (cachedStatus != null) {
-                return cachedStatus;
-            }
+        // 먼저 Redis에서 확인
+        OnlineStatusResponse cachedStatus = getCachedStatus(userId);
+        if (cachedStatus != null) {
+            return cachedStatus;
         }
         
         // Redis에 없으면 DB에서 조회
@@ -123,8 +104,8 @@ public class UserStatusServiceImpl implements UserStatusService {
         
         OnlineStatusResponse response = convertToResponse(userStatus);
         
-        // 온라인 상태라면 Redis에 캐시 (Redis가 있을 때만)
-        if (response.isOnline() && redisTemplate != null) {
+        // 온라인 상태라면 Redis에 캐시
+        if (response.isOnline()) {
             updateRedisCache(userStatus);
         }
         

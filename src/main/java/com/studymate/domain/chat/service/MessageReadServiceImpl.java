@@ -14,7 +14,6 @@ import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class MessageReadServiceImpl implements MessageReadService {
 
@@ -34,22 +34,7 @@ public class MessageReadServiceImpl implements MessageReadService {
     private final ChatRoomRepository roomRepository;
     private final ChatRoomParticipantRepository participantRepository;
     private final UserRepository userRepository;
-    
-    @Autowired(required = false)
-    private RedisTemplate<String, Object> redisTemplate;
-    
-    public MessageReadServiceImpl(
-            MessageReadStatusRepository readStatusRepository,
-            ChatMessageRepository messageRepository,
-            ChatRoomRepository roomRepository,
-            ChatRoomParticipantRepository participantRepository,
-            UserRepository userRepository) {
-        this.readStatusRepository = readStatusRepository;
-        this.messageRepository = messageRepository;
-        this.roomRepository = roomRepository;
-        this.participantRepository = participantRepository;
-        this.userRepository = userRepository;
-    }
+    private final RedisTemplate<String, Object> redisTemplate;
     
     private static final String UNREAD_COUNT_PREFIX = "unread:count:";
     private static final String LAST_READ_PREFIX = "last:read:";
@@ -115,7 +100,7 @@ public class MessageReadServiceImpl implements MessageReadService {
 
         // 채팅방 참가자 수 조회
         int totalParticipants = participantRepository
-                .countByChatRoom(message.getChatRoom());
+                .countBychatRoomAndJoinedAtIsNotNull(message.getChatRoom());
 
         List<MessageReadStatusResponse.ReaderInfo> readers = readStatuses.stream()
                 .map(status -> MessageReadStatusResponse.ReaderInfo.builder()
@@ -159,17 +144,11 @@ public class MessageReadServiceImpl implements MessageReadService {
     @Override
     @Transactional(readOnly = true)
     public long getUnreadMessageCount(Long roomId, UUID userId) {
-        // 캐시에서 먼저 확인 (Redis가 있을 때만)
+        // 캐시에서 먼저 확인
         String cacheKey = UNREAD_COUNT_PREFIX + roomId + ":" + userId;
-        if (redisTemplate != null) {
-            try {
-                Long cachedCount = (Long) redisTemplate.opsForValue().get(cacheKey);
-                if (cachedCount != null) {
-                    return cachedCount;
-                }
-            } catch (Exception e) {
-                log.warn("Redis cache lookup failed for unread count: {}", e.getMessage());
-            }
+        Long cachedCount = (Long) redisTemplate.opsForValue().get(cacheKey);
+        if (cachedCount != null) {
+            return cachedCount;
         }
 
         // 마지막 읽음 시간 조회
@@ -185,14 +164,8 @@ public class MessageReadServiceImpl implements MessageReadService {
             unreadCount = messageRepository.countByRoomIdAndSenderIdNot(roomId, userId);
         }
 
-        // 캐시에 저장 (5분) - Redis가 있을 때만
-        if (redisTemplate != null) {
-            try {
-                redisTemplate.opsForValue().set(cacheKey, unreadCount, 5, TimeUnit.MINUTES);
-            } catch (Exception e) {
-                log.warn("Redis cache save failed for unread count: {}", e.getMessage());
-            }
-        }
+        // 캐시에 저장 (5분)
+        redisTemplate.opsForValue().set(cacheKey, unreadCount, 5, TimeUnit.MINUTES);
 
         return unreadCount;
     }
@@ -220,7 +193,7 @@ public class MessageReadServiceImpl implements MessageReadService {
                     
                     // 마지막 메시지 정보 조회
                     Optional<ChatMessage> lastMessage = messageRepository
-                            .findTopByChatRoom_IdOrderByCreatedAtDesc(room.getId());
+                            .findTopByRoomIdOrderByCreatedAtDesc(room.getId());
                     
                     UnreadMessageSummary.UnreadMessageSummaryBuilder builder = UnreadMessageSummary.builder()
                             .roomId(room.getId())
@@ -267,29 +240,17 @@ public class MessageReadServiceImpl implements MessageReadService {
     @Transactional(readOnly = true)
     public LocalDateTime getLastReadTime(Long roomId, UUID userId) {
         String cacheKey = LAST_READ_PREFIX + roomId + ":" + userId;
-        
-        // 캐시에서 먼저 확인 (Redis가 있을 때만)
-        if (redisTemplate != null) {
-            try {
-                LocalDateTime cachedTime = (LocalDateTime) redisTemplate.opsForValue().get(cacheKey);
-                if (cachedTime != null) {
-                    return cachedTime;
-                }
-            } catch (Exception e) {
-                log.warn("Redis cache lookup failed for last read time: {}", e.getMessage());
-            }
+        LocalDateTime cachedTime = (LocalDateTime) redisTemplate.opsForValue().get(cacheKey);
+        if (cachedTime != null) {
+            return cachedTime;
         }
 
         Optional<LocalDateTime> lastReadTime = readStatusRepository
                 .findLastReadTimeByRoomIdAndUserId(roomId, userId);
         
         LocalDateTime result = lastReadTime.orElse(null);
-        if (result != null && redisTemplate != null) {
-            try {
-                redisTemplate.opsForValue().set(cacheKey, result, 10, TimeUnit.MINUTES);
-            } catch (Exception e) {
-                log.warn("Redis cache save failed for last read time: {}", e.getMessage());
-            }
+        if (result != null) {
+            redisTemplate.opsForValue().set(cacheKey, result, 10, TimeUnit.MINUTES);
         }
         
         return result;
@@ -313,25 +274,13 @@ public class MessageReadServiceImpl implements MessageReadService {
     // Private helper methods
 
     private void updateUnreadCountCache(Long roomId, UUID userId) {
-        if (redisTemplate != null) {
-            try {
-                String cacheKey = UNREAD_COUNT_PREFIX + roomId + ":" + userId;
-                redisTemplate.delete(cacheKey); // 캐시 무효화하여 다음 조회시 재계산
-            } catch (Exception e) {
-                log.warn("Redis cache deletion failed for unread count: {}", e.getMessage());
-            }
-        }
+        String cacheKey = UNREAD_COUNT_PREFIX + roomId + ":" + userId;
+        redisTemplate.delete(cacheKey); // 캐시 무효화하여 다음 조회시 재계산
     }
 
     private void updateLastReadTimeCache(UUID roomId, UUID userId, LocalDateTime readTime) {
-        if (redisTemplate != null) {
-            try {
-                String cacheKey = LAST_READ_PREFIX + roomId + ":" + userId;
-                redisTemplate.opsForValue().set(cacheKey, readTime, 10, TimeUnit.MINUTES);
-            } catch (Exception e) {
-                log.warn("Redis cache save failed for last read time: {}", e.getMessage());
-            }
-        }
+        String cacheKey = LAST_READ_PREFIX + roomId + ":" + userId;
+        redisTemplate.opsForValue().set(cacheKey, readTime, 10, TimeUnit.MINUTES);
     }
 
     // 중복 메서드 제거됨

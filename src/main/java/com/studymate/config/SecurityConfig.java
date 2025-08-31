@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.studymate.domain.user.domain.dao.UserDao;
 import com.studymate.domain.user.util.JwtAuthenticationFilter;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 

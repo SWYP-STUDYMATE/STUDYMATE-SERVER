@@ -11,7 +11,7 @@ import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
 import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
 import com.studymate.domain.onboarding.service.OnboardScheduleService;
 import com.studymate.domain.user.util.CustomUserDetails;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

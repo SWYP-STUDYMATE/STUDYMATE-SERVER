@@ -15,8 +15,8 @@ public interface ChatRoomParticipantRepository extends JpaRepository<ChatRoomPar
     List<ChatRoomParticipant> findByUserUserId(UUID userId);
     Optional<ChatRoomParticipant> findByRoomIdAndUserUserId(Long roomId, UUID userId);
     
-    @Query("SELECT COUNT(p) FROM ChatRoomParticipant p WHERE p.room = :chatRoom")
-    int countByChatRoom(@Param("chatRoom") ChatRoom chatRoom);
+    @Query("SELECT COUNT(p) FROM ChatRoomParticipant p WHERE p.room = :chatRoom AND p.joinedAt IS NOT NULL")
+    int countBychatRoomAndJoinedAtIsNotNull(@Param("chatRoom") ChatRoom chatRoom);
     
     @Query("SELECT p.room FROM ChatRoomParticipant p WHERE p.user.userId = :userId")
     List<ChatRoom> findRoomsByUserId(@Param("userId") UUID userId);

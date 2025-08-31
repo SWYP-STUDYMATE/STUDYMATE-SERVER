@@ -10,7 +10,7 @@ import com.studymate.domain.onboarding.domain.dto.response.MotivationResponse;
 import com.studymate.domain.onboarding.domain.dto.response.TopicResponse;
 import com.studymate.domain.onboarding.service.OnboardInterestService;
 import com.studymate.domain.user.util.CustomUserDetails;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

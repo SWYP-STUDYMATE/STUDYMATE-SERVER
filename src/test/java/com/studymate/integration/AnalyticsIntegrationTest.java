@@ -3,7 +3,7 @@ package com.studymate.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

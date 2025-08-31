@@ -107,8 +107,8 @@ public interface UserMatchRepository extends JpaRepository<UserMatch, UUID> {
     @Query("SELECT um FROM UserMatch um " +
            "WHERE (um.user1 = :user OR um.user2 = :user) " +
            "AND um.isActive = true " +
-           "AND um.matchedAt > :since " +
-           "ORDER BY um.matchedAt DESC")
+           "AND um.lastContactAt > :since " +
+           "ORDER BY um.lastContactAt DESC")
     List<UserMatch> findRecentActiveMatches(@Param("user") User user, 
                                           @Param("since") java.time.LocalDateTime since);
 
@@ -118,7 +118,7 @@ public interface UserMatchRepository extends JpaRepository<UserMatch, UUID> {
     @Query("SELECT um FROM UserMatch um " +
            "WHERE (um.user1 = :user OR um.user2 = :user) " +
            "AND um.isActive = true " +
-           "AND (um.matchedAt IS NULL OR um.matchedAt < :threshold) " +
+           "AND (um.lastContactAt IS NULL OR um.lastContactAt < :threshold) " +
            "ORDER BY um.matchedAt DESC")
     List<UserMatch> findInactiveMatches(@Param("user") User user, 
                                        @Param("threshold") java.time.LocalDateTime threshold);
@@ -138,8 +138,8 @@ public interface UserMatchRepository extends JpaRepository<UserMatch, UUID> {
      * 언어별 매칭 통계 (특정 사용자의 매칭 파트너들의 언어 분포)
      */
     @Query("SELECT " +
-           "CASE WHEN um.user1 = :user THEN um.user2.nativeLanguage.languageName " +
-           "ELSE um.user1.nativeLanguage.languageName END AS partnerLanguage, " +
+           "CASE WHEN um.user1 = :user THEN um.user2.nativeLanguage.name " +
+           "ELSE um.user1.nativeLanguage.name END AS partnerLanguage, " +
            "COUNT(um) " +
            "FROM UserMatch um " +
            "WHERE (um.user1 = :user OR um.user2 = :user) " +

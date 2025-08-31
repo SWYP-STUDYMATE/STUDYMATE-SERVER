@@ -20,7 +20,7 @@ import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.oauth.GoogleUserInfo;
 import com.studymate.domain.user.oauth.NaverUserInfo;
 import com.studymate.domain.user.oauth.OAuthUserInfo;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 import com.studymate.redis.entity.RefreshToken;
 import com.studymate.redis.repository.RefreshTokenRepository;
 

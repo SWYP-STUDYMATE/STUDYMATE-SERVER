@@ -18,5 +18,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.chatRoom.id = :roomId AND m.sender.userId != :userId")
     long countByRoomIdAndSenderIdNot(@Param("roomId") Long roomId, @Param("userId") UUID userId);
     
-    Optional<ChatMessage> findTopByChatRoom_IdOrderByCreatedAtDesc(Long roomId);
+    Optional<ChatMessage> findTopByRoomIdOrderByCreatedAtDesc(Long roomId);
 }

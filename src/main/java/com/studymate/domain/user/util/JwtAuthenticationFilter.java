@@ -1,6 +1,5 @@
 package com.studymate.domain.user.util;
 
-import com.studymate.auth.jwt.JwtUtils;
 import com.studymate.domain.user.domain.dao.UserDao;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
@@ -37,9 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String path = request.getRequestURI();
-        String token = resolveToken(request);
+        String token = jwtUtils.resolveToken(request);
 
-        if (token != null && jwtUtils.validateJwtToken(token)) {
+        if (token != null && jwtUtils.validateToken(token)) {
             try {
                 UUID userId = jwtUtils.getUserIdFromToken(token);
                 User user = userDao.findByUserId(userId)
@@ -64,13 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader("Authorization");
-        if (bearer != null && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
-    }
+
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

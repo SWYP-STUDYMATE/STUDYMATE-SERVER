@@ -7,7 +7,7 @@ import com.studymate.domain.matching.entity.MatchingRequest;
 import com.studymate.domain.matching.repository.MatchingRequestRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
-import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.user.util.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
