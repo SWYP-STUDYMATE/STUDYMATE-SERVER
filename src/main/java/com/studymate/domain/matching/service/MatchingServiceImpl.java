@@ -207,6 +207,22 @@ public class MatchingServiceImpl implements MatchingService {
                 .build();
 
         userMatchRepository.save(userMatch);
+
+        // 관련된 대기열 항목들을 MATCHED 상태로 업데이트
+        List<MatchingQueue> senderQueue = matchingQueueRepository.findByUserOrderByJoinedAtDesc(request.getSender())
+                .stream()
+                .filter(queue -> MatchingQueue.QueueStatus.WAITING.equals(queue.getStatus()))
+                .toList();
+        List<MatchingQueue> receiverQueue = matchingQueueRepository.findByUserOrderByJoinedAtDesc(request.getReceiver())
+                .stream()
+                .filter(queue -> MatchingQueue.QueueStatus.WAITING.equals(queue.getStatus()))
+                .toList();
+        
+        senderQueue.forEach(queue -> queue.updateStatus(MatchingQueue.QueueStatus.MATCHED));
+        receiverQueue.forEach(queue -> queue.updateStatus(MatchingQueue.QueueStatus.MATCHED));
+        
+        matchingQueueRepository.saveAll(senderQueue);
+        matchingQueueRepository.saveAll(receiverQueue);
     }
 
     @Override

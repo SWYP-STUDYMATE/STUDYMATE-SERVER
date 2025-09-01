@@ -49,6 +49,9 @@ public class MatchingQueue extends BaseTimeEntity {
     @Column(name = "joined_at")
     private LocalDateTime joinedAt;
 
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt; // 매칭 완료 또는 취소된 시간
+
     @Column(name = "estimated_wait_minutes")
     private Integer estimatedWaitMinutes;
 
@@ -91,6 +94,10 @@ public class MatchingQueue extends BaseTimeEntity {
 
     public void updateStatus(QueueStatus newStatus) {
         this.status = newStatus;
+        // WAITING 상태가 아닌 경우 (매칭됨, 만료됨, 취소됨) completedAt 설정
+        if (!QueueStatus.WAITING.equals(newStatus) && this.completedAt == null) {
+            this.completedAt = LocalDateTime.now();
+        }
     }
 
     public void updateEstimatedWaitTime(Integer minutes) {
