@@ -178,19 +178,19 @@ jobs:
             # Configuration is already embedded in JAR - no need to create application.properties here
             echo "Application configuration is embedded in the JAR file"
             
-            # Create .env file with Docker-specific settings and NCP cloud services
+            # Create .env file with Docker-specific settings for local containers
             cat > .env << EOF
             REGISTRY_URL=${{ secrets.NCP_REGISTRY_URL }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
-            # NCP Cloud Database settings (override local containers)
-            DB_HOST=db-36iljh.languagemate.vpc-cdb.ntruss.com
+            # Local Docker Database settings
+            DB_HOST=db
             DB_PORT=3306
-            DB_NAME=studymate_db
-            DB_USER=languagemate
-            DB_PASSWORD=studymate10!
-            DB_ROOT_PASSWORD=studymate10!
-            # NCP Cloud Redis settings
-            REDIS_HOST=redisc-36ill7.vpc-cdb.ntruss.com
+            DB_NAME=studymate
+            DB_USER=studymate
+            DB_PASSWORD=studymate123!
+            DB_ROOT_PASSWORD=studymate123!
+            # Local Docker Redis settings
+            REDIS_HOST=redis
             REDIS_PORT=6379
             REDIS_PASSWORD=
             BACKUP_RETENTION_DAYS=7
@@ -220,14 +220,14 @@ jobs:
             mkdir -p ./data/{mysql,redis}
             mkdir -p ./logs ./uploads
             
-            # Pull latest images (only app service, skip local DB/Redis)
-            docker-compose -f docker-compose.prod.yml pull app
+            # Pull latest images
+            docker-compose -f docker-compose.prod.yml pull
             
             # Stop existing services
             docker-compose -f docker-compose.prod.yml down
             
-            # Start only application service (using external NCP DB/Redis)
-            docker-compose -f docker-compose.prod.yml up -d app watchtower
+            # Start all services including local MySQL and Redis
+            docker-compose -f docker-compose.prod.yml up -d
             
             # Wait for services to start
             echo "Waiting for services to start..."
@@ -235,7 +235,7 @@ jobs:
             
             # Check service status  
             echo "=== docker-compose Status ==="
-            docker-compose -f docker-compose.prod.yml ps app watchtower
+            docker-compose -f docker-compose.prod.yml ps
             
             echo "=== Application Logs (last 50 lines) ==="
             docker-compose -f docker-compose.prod.yml logs --tail 50 app
@@ -253,11 +253,11 @@ jobs:
             done
             
             # Final status check
-            if docker-compose -f docker-compose.prod.yml ps app | grep -q "Up"; then
+            if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
               echo "Deployment successful!"
             else
               echo "Deployment failed!"
-              docker-compose -f docker-compose.prod.yml logs app
+              docker-compose -f docker-compose.prod.yml logs
               exit 1
             fi
             
