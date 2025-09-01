@@ -30,9 +30,13 @@ jobs:
           server.port=8080
           
           spring.application.name=live
-          spring.datasource.url=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+          spring.datasource.url=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&maxReconnects=3&initialTimeout=10
           spring.datasource.username=studymate
           spring.datasource.password=studymate123!
+          spring.datasource.hikari.connection-timeout=60000
+          spring.datasource.hikari.initialization-fail-timeout=60000
+          spring.datasource.hikari.validation-timeout=3000
+          spring.datasource.hikari.leak-detection-threshold=60000
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=true
           
@@ -226,24 +230,25 @@ jobs:
             # Stop existing services
             docker-compose -f docker-compose.prod.yml down
             
-            # Start databases first
-            echo "Starting MySQL and Redis..."
-            docker-compose -f docker-compose.prod.yml up -d db redis
+            # Start all services with restart policy
+            echo "Starting all services..."
+            docker-compose -f docker-compose.prod.yml up -d
             
-            # Wait for databases to be healthy
-            echo "Waiting for MySQL to be ready..."
-            timeout 300 bash -c 'until docker-compose -f docker-compose.prod.yml exec -T db mysqladmin ping -h localhost -u studymate -pstudymate123! --silent; do sleep 5; done'
+            # Wait longer for services to stabilize
+            echo "Waiting for services to stabilize..."
+            sleep 60
             
-            echo "Waiting for Redis to be ready..."
-            timeout 60 bash -c 'until docker-compose -f docker-compose.prod.yml exec -T redis redis-cli ping | grep -q PONG; do sleep 2; done'
-            
-            # Now start the application
-            echo "Starting application..."
-            docker-compose -f docker-compose.prod.yml up -d app
-            
-            # Wait for application to start
-            echo "Waiting for application to start..."
-            sleep 30
+            # Check if MySQL is accessible from app container
+            echo "Testing database connectivity..."
+            for i in {1..30}; do
+              if docker-compose -f docker-compose.prod.yml exec -T app nc -z db 3306; then
+                echo "Database connection available"
+                break
+              else
+                echo "Waiting for database... ($i/30)"
+                sleep 5
+              fi
+            done
             
             # Check service status  
             echo "=== docker-compose Status ==="

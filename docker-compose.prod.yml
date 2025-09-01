@@ -9,6 +9,7 @@ services:
     depends_on:
       - db
       - redis
+    restart: on-failure:5
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
