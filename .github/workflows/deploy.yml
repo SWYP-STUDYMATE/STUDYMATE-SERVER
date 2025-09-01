@@ -53,8 +53,8 @@ jobs:
           cloud.ncp.storage.secret-key=${NCP_SECRET_KEY:}
           cloud.ncp.storage.bucket-name=${NCP_BUCKET_NAME:languagemate-profile-img}
           
-          google.client_id=${{ secrets.GOOGLE_CLIENT_ID }}
-          google.client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          google.client_id=your-google-client-id-temporary
+          google.client_secret=your-google-client-secret-temporary
           google.redirect_uri=https://api.languagemate.kr/login/oauth2/code/google
           
           clova.studio.api-key=${CLOVA_STUDIO_API_KEY:nv-4ca906c1bf814a59a0fd629d0beec6aaH11S}
