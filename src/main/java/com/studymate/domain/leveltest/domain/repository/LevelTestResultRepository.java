@@ -57,6 +57,6 @@ public interface LevelTestResultRepository extends JpaRepository<LevelTestResult
     @Query("SELECT SUM(ltr.maxPoints) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId")
     Optional<Integer> getTotalMaxPointsByTestId(@Param("testId") Long testId);
 
-    @Query("SELECT AVG(ltr.responseTimeMs) / 1000.0 FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId AND ltr.responseTimeMs IS NOT NULL")
+    @Query("SELECT AVG(ltr.responseTimeSeconds) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId AND ltr.responseTimeSeconds IS NOT NULL")
     Optional<Double> getAverageResponseTimeByTestId(@Param("testId") Long testId);
 }
