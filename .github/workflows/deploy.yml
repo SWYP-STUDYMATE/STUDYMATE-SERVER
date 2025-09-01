@@ -226,11 +226,23 @@ jobs:
             # Stop existing services
             docker-compose -f docker-compose.prod.yml down
             
-            # Start all services including local MySQL and Redis
-            docker-compose -f docker-compose.prod.yml up -d
+            # Start databases first
+            echo "Starting MySQL and Redis..."
+            docker-compose -f docker-compose.prod.yml up -d db redis
             
-            # Wait for services to start
-            echo "Waiting for services to start..."
+            # Wait for databases to be healthy
+            echo "Waiting for MySQL to be ready..."
+            timeout 300 bash -c 'until docker-compose -f docker-compose.prod.yml exec -T db mysqladmin ping -h localhost -u studymate -pstudymate123! --silent; do sleep 5; done'
+            
+            echo "Waiting for Redis to be ready..."
+            timeout 60 bash -c 'until docker-compose -f docker-compose.prod.yml exec -T redis redis-cli ping | grep -q PONG; do sleep 2; done'
+            
+            # Now start the application
+            echo "Starting application..."
+            docker-compose -f docker-compose.prod.yml up -d app
+            
+            # Wait for application to start
+            echo "Waiting for application to start..."
             sleep 30
             
             # Check service status  
