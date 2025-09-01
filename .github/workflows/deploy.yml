@@ -178,43 +178,64 @@ jobs:
             # Configuration is already embedded in JAR - no need to create application.properties here
             echo "Application configuration is embedded in the JAR file"
             
-            # Create .env file with Docker-specific settings
+            # Create .env file with Docker-specific settings and NCP cloud services
             cat > .env << EOF
             REGISTRY_URL=${{ secrets.NCP_REGISTRY_URL }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            # NCP Cloud Database settings (override local containers)
+            DB_HOST=db-36iljh.languagemate.vpc-cdb.ntruss.com
+            DB_PORT=3306
+            DB_NAME=studymate_db
+            DB_USER=languagemate
+            DB_PASSWORD=studymate10!
+            DB_ROOT_PASSWORD=studymate10!
+            # NCP Cloud Redis settings
+            REDIS_HOST=redisc-36ill7.vpc-cdb.ntruss.com
+            REDIS_PORT=6379
+            REDIS_PASSWORD=
             BACKUP_RETENTION_DAYS=7
             # NCP Object Storage settings
             NCP_REGION=kr-standard
             NCP_OBJECT_STORAGE_ENDPOINT=https://kr.object.ncloudstorage.com
-            NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }}
-            NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }}
+            NCP_ACCESS_KEY=ncp_iam_BPAMKR1FHfq8OtlptO2s
+            NCP_SECRET_KEY=ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
             NCP_BUCKET_NAME=languagemate-profile-img
+            # OAuth settings for POC
+            NAVER_CLIENT_ID=EzXpYAkIVhX1ViFQ5edo
+            NAVER_CLIENT_SECRET=Zml5tphcOJ
+            NAVER_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/naver
+            GOOGLE_CLIENT_ID=1068056726433-kf4s0t3jj6iis0aep2kvtgfcebfmfquj.apps.googleusercontent.com
+            GOOGLE_CLIENT_SECRET=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
+            GOOGLE_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/google
+            # JWT settings
+            JWT_SECRET=c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
+            JWT_ACCESS_TOKEN_EXPIRATION=3600000
+            JWT_REFRESH_TOKEN_EXPIRATION=604800000
+            # Clova Studio settings
+            CLOVA_API_KEY=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
+            CLOVA_STUDIO_ENDPOINT=https://clovastudio.stream.ntruss.com
             EOF
             
             # 데이터 디렉토리 생성 (현재 사용자 권한으로)
             mkdir -p ./data/{mysql,redis}
             mkdir -p ./logs ./uploads
             
-            # Pull latest images
-            docker-compose -f docker-compose.prod.yml pull
+            # Pull latest images (only app service, skip local DB/Redis)
+            docker-compose -f docker-compose.prod.yml pull app
             
             # Stop existing services
             docker-compose -f docker-compose.prod.yml down
             
-            # Start services with new configuration
-            docker-compose -f docker-compose.prod.yml up -d
+            # Start only application service (using external NCP DB/Redis)
+            docker-compose -f docker-compose.prod.yml up -d app watchtower
             
             # Wait for services to start
             echo "Waiting for services to start..."
             sleep 30
             
-            # Check service status
+            # Check service status  
             echo "=== docker-compose Status ==="
-            docker-compose -f docker-compose.prod.yml ps
+            docker-compose -f docker-compose.prod.yml ps app watchtower
             
             echo "=== Application Logs (last 50 lines) ==="
             docker-compose -f docker-compose.prod.yml logs --tail 50 app
@@ -232,11 +253,11 @@ jobs:
             done
             
             # Final status check
-            if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+            if docker-compose -f docker-compose.prod.yml ps app | grep -q "Up"; then
               echo "Deployment successful!"
             else
               echo "Deployment failed!"
-              docker-compose -f docker-compose.prod.yml logs
+              docker-compose -f docker-compose.prod.yml logs app
               exit 1
             fi
             
