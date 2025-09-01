@@ -4,11 +4,7 @@ services:
   app:
     image: ${REGISTRY_URL}/${IMAGE_NAME}:latest
     container_name: studymate-app
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-      - redis
+    network_mode: host
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
@@ -47,8 +43,6 @@ services:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
     restart: unless-stopped
-    networks:
-      - studymate-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
