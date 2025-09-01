@@ -126,9 +126,10 @@ services:
       - ./scripts/backup.sh:/backup.sh:ro
     command: >
       sh -c "
-      apk add --no-cache dcron &&
+      apt-get update &&
+      apt-get install -y cron &&
       echo '0 2 * * * /backup.sh' | crontab - &&
-      crond -f -l 2
+      cron -f
       "
     restart: unless-stopped
     networks:
