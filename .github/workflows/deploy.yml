@@ -30,9 +30,9 @@ jobs:
           server.port=8080
           
           spring.application.name=live
-          spring.datasource.url=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-          spring.datasource.username=studymate
-          spring.datasource.password=StudyMate2025!User
+          spring.datasource.url=jdbc:mysql://db-36iljh.languagemate.vpc-cdb.ntruss.com:3306/studymate_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+          spring.datasource.username=languagemate
+          spring.datasource.password=studymate10!
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=true
           
@@ -41,26 +41,26 @@ jobs:
           naver.authorization_grant_type=authorization_code
           naver.redirect_uri=https://api.languagemate.kr/login/oauth2/code/naver
           
-          jwt.secret_key=${JWT_SECRET:c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl}
+          jwt.secret_key=c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
           
-          redis.host=redis
+          redis.host=redisc-36ill7.vpc-cdb.ntruss.com
           redis.port=6379
-          redis.password=StudyMate2025!Redis
+          redis.password=
           
-          cloud.ncp.storage.region=${NCP_REGION:kr-standard}
-          cloud.ncp.storage.endpoint=${NCP_OBJECT_STORAGE_ENDPOINT:https://kr.object.ncloudstorage.com}
-          cloud.ncp.storage.access-key=${NCP_ACCESS_KEY:}
-          cloud.ncp.storage.secret-key=${NCP_SECRET_KEY:}
-          cloud.ncp.storage.bucket-name=${NCP_BUCKET_NAME:languagemate-profile-img}
+          cloud.ncp.storage.region=kr-standard
+          cloud.ncp.storage.endpoint=https://kr.object.ncloudstorage.com
+          cloud.ncp.storage.access-key=ncp_iam_BPAMKR1FHfq8OtlptO2s
+          cloud.ncp.storage.secret-key=ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
+          cloud.ncp.storage.bucket-name=languagemate-profile-img
           
-          google.client_id=your-google-client-id-temporary
-          google.client_secret=your-google-client-secret-temporary
+          google.client_id=1068056726433-kf4s0t3jj6iis0aep2kvtgfcebfmfquj.apps.googleusercontent.com
+          google.client_secret=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
           google.redirect_uri=https://api.languagemate.kr/login/oauth2/code/google
           
-          clova.studio.api-key=${CLOVA_STUDIO_API_KEY:nv-4ca906c1bf814a59a0fd629d0beec6aaH11S}
-          clova.studio.endpoint=${CLOVA_STUDIO_ENDPOINT:https://clovastudio.stream.ntruss.com/v1/chat-completions/HCX-003}
-          clova.studio.model=${CLOVA_STUDIO_MODEL:HCX-003}
-          clova.studio.max-tokens=${CLOVA_STUDIO_MAX_TOKENS:1000}
+          clova.studio.api-key=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
+          clova.studio.endpoint=https://clovastudio.stream.ntruss.com/v1/chat-completions/HCX-003
+          clova.studio.model=HCX-003
+          clova.studio.max-tokens=1000
           
           management.endpoints.web.exposure.include=health,info
           management.endpoint.health.show-details=always
