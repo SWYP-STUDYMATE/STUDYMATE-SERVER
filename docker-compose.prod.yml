@@ -110,30 +110,30 @@ services:
       timeout: 10s
       retries: 3
 
-  # 데이터베이스 백업 서비스
-  db-backup:
-    image: mysql:8.0
-    container_name: studymate-backup
-    depends_on:
-      - db
-    environment:
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=studymate
-      - BACKUP_RETENTION_DAYS=7
-    volumes:
-      - ./backups:/backups
-      - ./scripts/backup.sh:/backup.sh:ro
-    command: >
-      sh -c "
-      apt-get update &&
-      apt-get install -y cron &&
-      echo '0 2 * * * /backup.sh' | crontab - &&
-      cron -f
-      "
-    restart: unless-stopped
-    networks:
-      - studymate-network
+  # 데이터베이스 백업 서비스 (임시 비활성화 - 별도 구성 필요)
+  # db-backup:
+  #   image: mysql:8.0
+  #   container_name: studymate-backup
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - MYSQL_USER=${DB_USER}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_DATABASE=studymate
+  #     - BACKUP_RETENTION_DAYS=7
+  #   volumes:
+  #     - ./backups:/backups
+  #     - ./scripts/backup.sh:/backup.sh:ro
+  #   command: >
+  #     sh -c "
+  #     apt-get update &&
+  #     apt-get install -y cron &&
+  #     echo '0 2 * * * /backup.sh' | crontab - &&
+  #     cron -f
+  #     "
+  #   restart: unless-stopped
+  #   networks:
+  #     - studymate-network
 
   # 모니터링 (선택사항)
   watchtower:
