@@ -7,17 +7,24 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure:5
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
       # Database Configuration (MySQL) - 하드코딩
-      - DB_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      - DB_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&maxReconnects=5&initialTimeout=10
       - DB_DRIVER=com.mysql.cj.jdbc.Driver
       - DB_USERNAME=studymate
       - DB_PASSWORD=studymate123!
+      # HikariCP Connection Pool Settings
+      - HIKARI_CONNECTION_TIMEOUT=60000
+      - HIKARI_INITIALIZATION_FAIL_TIMEOUT=60000
+      - HIKARI_VALIDATION_TIMEOUT=3000
+      - HIKARI_LEAK_DETECTION_THRESHOLD=60000
       # JPA Configuration
       - JPA_DDL_AUTO=update
       - JPA_SHOW_SQL=true
@@ -50,7 +57,6 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
-    restart: unless-stopped
     networks:
       - studymate-network
     healthcheck:
@@ -73,9 +79,6 @@ services:
       - TZ=Asia/Seoul
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./backups:/backups
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-      - ./config/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -88,10 +91,11 @@ services:
     networks:
       - studymate-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "studymate", "-pstudymate123!"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pstudymate123!"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
@@ -112,9 +116,10 @@ services:
       - studymate-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # 데이터베이스 백업 서비스 (임시 비활성화 - 별도 구성 필요)
   # db-backup:

@@ -214,21 +214,34 @@ jobs:
             echo "Starting all services..."
             docker-compose -f docker-compose.prod.yml up -d
             
-            # Wait longer for services to stabilize
-            echo "Waiting for services to stabilize..."
-            sleep 60
+            # Wait for services to be healthy (healthcheck-based)
+            echo "Waiting for services to become healthy..."
             
-            # Check if MySQL is accessible from app container
-            echo "Testing database connectivity..."
-            for i in {1..30}; do
-              if docker-compose -f docker-compose.prod.yml exec -T app nc -z db 3306; then
-                echo "Database connection available"
+            # Wait for MySQL to be healthy
+            for i in {1..60}; do
+              if docker-compose -f docker-compose.prod.yml ps db | grep "healthy"; then
+                echo "✅ MySQL is healthy"
                 break
               else
-                echo "Waiting for database... ($i/30)"
+                echo "Waiting for MySQL to be healthy... ($i/60)"
                 sleep 5
               fi
             done
+            
+            # Wait for Redis to be healthy
+            for i in {1..30}; do
+              if docker-compose -f docker-compose.prod.yml ps redis | grep "healthy"; then
+                echo "✅ Redis is healthy" 
+                break
+              else
+                echo "Waiting for Redis to be healthy... ($i/30)"
+                sleep 3
+              fi
+            done
+            
+            # Additional wait for app startup after dependencies are healthy
+            echo "Dependencies are healthy. Waiting additional time for app startup..."
+            sleep 30
             
             # Check service status  
             echo "=== docker-compose Status ==="
