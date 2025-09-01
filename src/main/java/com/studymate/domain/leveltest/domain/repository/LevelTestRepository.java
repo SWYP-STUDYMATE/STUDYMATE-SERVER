@@ -32,7 +32,7 @@ public interface LevelTestRepository extends JpaRepository<LevelTest, Long> {
 
     @Query("SELECT lt FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.testType = :testType AND lt.isCompleted = true ORDER BY lt.completedAt DESC")
     List<LevelTest> findCompletedTestsByUserIdAndType(@Param("userId") UUID userId, 
-                                                     @Param("testType") String testType);
+                                                     @Param("testType") LevelTest.TestType testType);
 
     @Query("SELECT lt FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.isCompleted = false ORDER BY lt.createdAt DESC")
     List<LevelTest> findIncompleteTestsByUserId(@Param("userId") UUID userId);
@@ -43,7 +43,7 @@ public interface LevelTestRepository extends JpaRepository<LevelTest, Long> {
     @Query("SELECT lt FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.languageCode = :languageCode AND lt.testType = :testType AND lt.isCompleted = true ORDER BY lt.completedAt DESC LIMIT 1")
     Optional<LevelTest> findLatestCompletedTest(@Param("userId") UUID userId, 
                                               @Param("languageCode") String languageCode, 
-                                              @Param("testType") String testType);
+                                              @Param("testType") LevelTest.TestType testType);
 
     @Query("SELECT AVG(lt.accuracyPercentage) FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.languageCode = :languageCode AND lt.isCompleted = true AND lt.accuracyPercentage IS NOT NULL")
     Optional<Double> getAverageAccuracyByUserAndLanguage(@Param("userId") UUID userId, @Param("languageCode") String languageCode);
