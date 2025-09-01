@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   app:
@@ -7,8 +7,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
