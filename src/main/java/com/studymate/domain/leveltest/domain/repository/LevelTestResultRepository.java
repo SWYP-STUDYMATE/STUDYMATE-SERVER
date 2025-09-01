@@ -34,11 +34,21 @@ public interface LevelTestResultRepository extends JpaRepository<LevelTestResult
     List<LevelTestResult> findByTestIdAndDifficultyLevel(@Param("testId") Long testId, 
                                                         @Param("difficultyLevel") String difficultyLevel);
 
-    @Query("SELECT AVG(CAST(ltr.isCorrect AS double)) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId AND ltr.skillCategory = :skillCategory")
-    Optional<Double> getAccuracyByTestIdAndSkillCategory(@Param("testId") Long testId, 
-                                                        @Param("skillCategory") String skillCategory);
+    @Query("SELECT " +
+           "CASE WHEN COUNT(ltr) > 0 THEN " +
+           "CAST(SUM(CASE WHEN ltr.isCorrect = true THEN 1 ELSE 0 END) AS double) / COUNT(ltr) * 100 " +
+           "ELSE NULL END " +
+           "FROM LevelTestResult ltr " +
+           "WHERE ltr.levelTest.testId = :testId AND ltr.skillCategory = :skillCategory")
+    Optional<Double> getAccuracyByTestIdAndSkillCategory(@Param("testId") Long testId, @Param("skillCategory") String skillCategory);
 
-    @Query("SELECT ltr.skillCategory, AVG(CAST(ltr.isCorrect AS double)) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId GROUP BY ltr.skillCategory")
+    @Query("SELECT ltr.skillCategory, " +
+           "CASE WHEN COUNT(ltr) > 0 THEN " +
+           "CAST(SUM(CASE WHEN ltr.isCorrect = true THEN 1 ELSE 0 END) AS double) / COUNT(ltr) * 100 " +
+           "ELSE 0.0 END " +
+           "FROM LevelTestResult ltr " +
+           "WHERE ltr.levelTest.testId = :testId " +
+           "GROUP BY ltr.skillCategory")
     List<Object[]> getAccuracyBySkillCategory(@Param("testId") Long testId);
 
     @Query("SELECT SUM(ltr.pointsEarned) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId")
@@ -47,6 +57,6 @@ public interface LevelTestResultRepository extends JpaRepository<LevelTestResult
     @Query("SELECT SUM(ltr.maxPoints) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId")
     Optional<Integer> getTotalMaxPointsByTestId(@Param("testId") Long testId);
 
-    @Query("SELECT AVG(ltr.responseTimeSeconds) FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId AND ltr.responseTimeSeconds IS NOT NULL")
+    @Query("SELECT AVG(ltr.responseTimeMs) / 1000.0 FROM LevelTestResult ltr WHERE ltr.levelTest.testId = :testId AND ltr.responseTimeMs IS NOT NULL")
     Optional<Double> getAverageResponseTimeByTestId(@Param("testId") Long testId);
 }

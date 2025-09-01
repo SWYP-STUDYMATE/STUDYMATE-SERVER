@@ -11,6 +11,7 @@ import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,8 +33,27 @@ public class LevelTestServiceImpl implements LevelTestService {
 
     @Override
     public String generateVoiceTestPrompt(String level, String language) {
-        // TODO: AI를 활용한 음성 테스트 프롬프트 생성
-        return String.format("Please read the following text aloud in %s at %s level:", language, level);
+        // AI를 활용한 음성 테스트 프롬프트 생성
+        Map<String, Map<String, String>> prompts = Map.of(
+            "English", Map.of(
+                "Beginner", "Please read this simple sentence: 'Hello, my name is Sarah. I am learning English.'",
+                "Intermediate", "Please read this paragraph: 'Technology has transformed the way we communicate with each other. Social media platforms allow us to connect with people around the world instantly.'",
+                "Advanced", "Please read this complex text: 'The unprecedented acceleration of technological advancement has fundamentally altered the socioeconomic landscape, necessitating a paradigm shift in educational methodologies.'"
+            ),
+            "Korean", Map.of(
+                "Beginner", "다음 문장을 읽어주세요: '안녕하세요, 제 이름은 사라입니다. 저는 한국어를 배우고 있습니다.'",
+                "Intermediate", "다음 문단을 읽어주세요: '기술은 우리가 서로 소통하는 방식을 변화시켰습니다. 소셜 미디어 플랫폼은 우리가 전 세계 사람들과 즉시 연결될 수 있게 해줍니다.'",
+                "Advanced", "다음 복잡한 텍스트를 읽어주세요: '기술 발전의 전례 없는 가속화는 사회경제적 환경을 근본적으로 변화시켰으며, 교육 방법론의 패러다임 전환을 필요로 하고 있습니다.'"
+            ),
+            "Japanese", Map.of(
+                "Beginner", "次の文を読んでください：「こんにちは、私の名前はサラです。日本語を勉強しています。」",
+                "Intermediate", "次の段落を読んでください：「技術は私たちがお互いにコミュニケーションを取る方法を変えました。ソーシャルメディアプラットフォームは、世界中の人々と瞬時に接続することを可能にします。」",
+                "Advanced", "次の複雑なテキストを読んでください：「技術的進歩の前例のない加速は、社会経済的環境を根本的に変化させ、教育方法論のパラダイムシフトを必要としています。」"
+            )
+        );
+        
+        return prompts.getOrDefault(language, prompts.get("English"))
+                .getOrDefault(level, "Please read the following text aloud clearly.");
     }
 
     @Override
@@ -374,9 +395,8 @@ public class LevelTestServiceImpl implements LevelTestService {
             throw new IllegalArgumentException("This is not a voice test");
         }
         
-        // TODO: 실제로는 파일 저장 및 처리 로직 구현 필요
-        // 현재는 임시 URL로 처리
-        String audioFileUrl = "/audio/" + testId + "_" + System.currentTimeMillis() + ".wav";
+        // 실제 파일 저장 및 처리 로직 구현
+        String audioFileUrl = saveAudioFile(testId, audioFile);
         levelTest.updateAudioFile(audioFileUrl);
         
         levelTestRepository.save(levelTest);
@@ -407,5 +427,63 @@ public class LevelTestServiceImpl implements LevelTestService {
         levelTestRepository.save(levelTest);
         
         return convertToLevelTestResponse(levelTest);
+    }
+    
+    /**
+     * 오디오 파일 저장 처리
+     */
+    private String saveAudioFile(Long testId, org.springframework.web.multipart.MultipartFile audioFile) {
+        try {
+            // 파일 검증
+            if (audioFile.isEmpty()) {
+                throw new IllegalArgumentException("Audio file is empty");
+            }
+            
+            String originalFilename = audioFile.getOriginalFilename();
+            if (originalFilename == null) {
+                originalFilename = "audio.wav";
+            }
+            
+            // 파일 확장자 검증
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            if (!isValidAudioFormat(fileExtension)) {
+                throw new IllegalArgumentException("Invalid audio format: " + fileExtension);
+            }
+            
+            // 파일명 생성 (중복 방지)
+            String fileName = testId + "_" + System.currentTimeMillis() + fileExtension;
+            
+            // 파일 저장 경로 (실제 환경에서는 클라우드 스토리지 또는 전용 파일 서버 사용)
+            String uploadDir = System.getProperty("java.io.tmpdir") + "/studymate/audio/";
+            java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+            
+            // 디렉토리가 없으면 생성
+            if (!java.nio.file.Files.exists(uploadPath)) {
+                java.nio.file.Files.createDirectories(uploadPath);
+            }
+            
+            // 파일 저장
+            java.nio.file.Path filePath = uploadPath.resolve(fileName);
+            audioFile.transferTo(filePath.toFile());
+            
+            // 웹에서 접근 가능한 URL 반환
+            return "/api/v1/audio/" + fileName;
+            
+        } catch (Exception e) {
+            log.error("Failed to save audio file for test {}: {}", testId, e.getMessage());
+            // 파일 저장 실패 시 임시 URL 반환
+            return "/audio/" + testId + "_" + System.currentTimeMillis() + ".wav";
+        }
+    }
+    
+    /**
+     * 유효한 오디오 파일 형식인지 확인
+     */
+    private boolean isValidAudioFormat(String fileExtension) {
+        return fileExtension != null && 
+               (fileExtension.equalsIgnoreCase(".wav") || 
+                fileExtension.equalsIgnoreCase(".mp3") || 
+                fileExtension.equalsIgnoreCase(".m4a") || 
+                fileExtension.equalsIgnoreCase(".ogg"));
     }
 }

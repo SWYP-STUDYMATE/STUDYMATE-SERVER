@@ -2,6 +2,12 @@ package com.studymate.domain.chat.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.studymate.domain.chat.repository.ChatMessageRepository;
+import com.studymate.domain.chat.entity.ChatMessage;
+import com.studymate.domain.chat.entity.ChatRoom;
+import com.studymate.domain.user.entity.User;
+import com.studymate.domain.chat.repository.ChatRoomRepository;
+import com.studymate.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +27,9 @@ public class OfflineMessageSyncService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
 
     // Redis 키 패턴
     private static final String SYNC_QUEUE_PREFIX = "chat:sync:";
@@ -361,16 +370,16 @@ public class OfflineMessageSyncService {
     
     private boolean syncMessage(UUID userId, MessageSyncItem message) {
         // 실제 메시지 동기화 로직
-        // TODO: 실제 메시지 저장/업데이트 구현
-        
         try {
-            // 메시지를 데이터베이스에 저장하거나 업데이트
-            // 예: chatMessageRepository.save(convertToEntity(message));
+            // 메시지 엔티티로 변환 후 저장
+            ChatMessage chatMessage = convertToEntity(message);
+            chatMessageRepository.save(chatMessage);
             
             // 동기화 완료 후 큐에서 제거
             String syncKey = buildSyncQueueKey(userId, message.getSyncId());
             redisTemplate.delete(syncKey);
             
+            log.debug("Successfully synced message {} for user {}", message.getSyncId(), userId);
             return true;
         } catch (Exception e) {
             log.error("Failed to sync message {}: {}", message.getMessageId(), e.getMessage());
@@ -521,6 +530,27 @@ public class OfflineMessageSyncService {
     
     private String buildDeviceSyncKey(UUID userId, String deviceId) {
         return DEVICE_SYNC_PREFIX + userId + ":" + deviceId;
+    }
+    
+    /**
+     * MessageSyncItem을 ChatMessage 엔티티로 변환
+     */
+    private ChatMessage convertToEntity(MessageSyncItem syncItem) {
+        // 채팅방 조회 - String을 Long으로 변환
+        Long roomId = Long.parseLong(syncItem.getRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Chat room not found: " + syncItem.getRoomId()));
+        
+        // 발신자 조회
+        User sender = userRepository.findById(syncItem.getSenderId())
+                .orElseThrow(() -> new IllegalArgumentException("Sender not found: " + syncItem.getSenderId()));
+        
+        return ChatMessage.builder()
+                .id(Long.parseLong(syncItem.getMessageId())) // String을 Long으로 변환
+                .chatRoom(chatRoom)
+                .sender(sender)
+                .message(syncItem.getContent()) // content -> message 필드
+                .build();
     }
     
     // === 내부 데이터 클래스들 ===

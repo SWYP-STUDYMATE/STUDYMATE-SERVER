@@ -37,7 +37,7 @@ public interface GroupSessionParticipantRepository extends JpaRepository<GroupSe
     @Query("SELECT gsp FROM GroupSessionParticipant gsp WHERE gsp.userId = :userId AND gsp.status = 'JOINED'")
     List<GroupSessionParticipant> findActiveSessionsByUser(@Param("userId") UUID userId);
     
-    @Query("SELECT AVG(gsp.rating) FROM GroupSessionParticipant gsp WHERE gsp.sessionId = :sessionId AND gsp.rating IS NOT NULL")
+    @Query("SELECT AVG(CAST(gsp.rating AS double)) FROM GroupSessionParticipant gsp WHERE gsp.sessionId = :sessionId AND gsp.rating IS NOT NULL")
     Double getAverageSessionRating(@Param("sessionId") UUID sessionId);
     
     @Query("SELECT COUNT(gsp) FROM GroupSessionParticipant gsp WHERE gsp.sessionId = :sessionId AND gsp.rating IS NOT NULL")

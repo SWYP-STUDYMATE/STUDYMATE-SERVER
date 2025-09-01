@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.domain.chat.entity.ChatMessage;
 import com.studymate.domain.chat.repository.ChatMessageRepository;
+import com.studymate.domain.chat.repository.MessageReadStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,6 +24,7 @@ public class MessageRetryService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
+    private final MessageReadStatusRepository messageReadStatusRepository;
     private final ObjectMapper objectMapper;
 
     // Redis 키 패턴
@@ -180,9 +182,12 @@ public class MessageRetryService {
      * 사용자의 미읽은 메시지 개수 조회
      */
     public int getUnreadMessageCount(Long roomId, UUID userId) {
-        // 실제 repository 메서드가 없으므로 임시로 0 반환 (TODO: repository 메서드 구현 필요)
-        // return (int) chatMessageRepository.countByChatRoomIdAndSenderUserIdNot(roomId, userId);
-        return 0;
+        // 마지막 읽음 시간을 기준으로 안읽은 메시지 수를 조회
+        LocalDateTime lastReadTime = messageReadStatusRepository
+                .findLastReadTimeByRoomIdAndUserId(roomId, userId)
+                .orElse(LocalDateTime.of(1970, 1, 1, 0, 0)); // 읽은 기록이 없으면 1970년 기준
+        
+        return (int) messageReadStatusRepository.countUnreadMessagesInRoom(roomId, userId, lastReadTime);
     }
 
     /**

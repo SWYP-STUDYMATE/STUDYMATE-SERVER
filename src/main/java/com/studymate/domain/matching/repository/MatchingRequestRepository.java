@@ -67,4 +67,9 @@ public interface MatchingRequestRepository extends JpaRepository<MatchingRequest
      * 사용자의 받은 대기중인 요청 개수
      */
     long countByReceiverAndStatus(User receiver, MatchingStatus status);
+    
+    /**
+     * 사용자가 받은 모든 요청 개수
+     */
+    long countByReceiver(User receiver);
 }

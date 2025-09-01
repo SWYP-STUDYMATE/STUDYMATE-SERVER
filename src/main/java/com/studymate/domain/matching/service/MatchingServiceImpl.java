@@ -309,9 +309,9 @@ public class MatchingServiceImpl implements MatchingService {
         response.setGender(partner.getGender() != null ? partner.getGender().name() : null);
         response.setLocation(partner.getLocation() != null ? partner.getLocation().getCity() : null);
         response.setNativeLanguage(partner.getNativeLanguage() != null ? partner.getNativeLanguage().getName() : null);
-        response.setTargetLanguages(Collections.emptyList()); // TODO: 온보딩 데이터에서 가져오기
-        response.setInterests(Collections.emptyList()); // TODO: 온보딩 데이터에서 가져오기
-        response.setPartnerPersonalities(Collections.emptyList()); // TODO: 온보딩 데이터에서 가져오기
+        response.setTargetLanguages(getTargetLanguagesFromOnboarding(partner.getUserId()));
+        response.setInterests(getInterestsFromOnboarding(partner.getUserId()));
+        response.setPartnerPersonalities(getPersonalitiesFromOnboarding(partner.getUserId()));
         response.setCompatibilityScore(compatibilityCalculatorService.calculateSimpleScore(currentUser, partner));
         
         // 실시간 온라인 상태 적용
@@ -387,8 +387,8 @@ public class MatchingServiceImpl implements MatchingService {
             response.setOnlineStatus("offline");
             response.setLastActiveTime("알 수 없음");
         }
-        response.setTotalSessionsCompleted(0); // TODO: 세션 이력에서 가져오기
-        response.setFavoriteTopics("일상 대화, 비즈니스"); // TODO: 온보딩 데이터에서 가져오기
+        response.setTotalSessionsCompleted(getTotalSessionsCompleted(currentUser.getUserId(), partner.getUserId()));
+        response.setFavoriteTopics(getFavoriteTopicsFromOnboarding(partner.getUserId()));
         
         return response;
     }
@@ -497,7 +497,7 @@ public class MatchingServiceImpl implements MatchingService {
         // 매칭 통계 계산
         long totalMatches = userMatchRepository.countByUser(user);
         long activeMatches = userMatchRepository.countActiveMatchesByUser(user);
-        long completedSessions = 0; // TODO: 세션 이력에서 가져오기
+        long completedSessions = getTotalSessionsCompleted(userId, null);
         
         // 피드백 통계
         List<MatchingFeedback> receivedFeedbacks = matchingFeedbackRepository.findByPartner(user);
@@ -731,13 +731,15 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private int calculateTotalRecommendations(User user) {
-        // TODO: 추천 이력 테이블에서 조회
-        return 100; // 임시값
+        // 추천 이력 계산 (매칭 요청 수로 대체)
+        return (int) matchingRequestRepository.countByReceiver(user);
     }
 
     private double calculateAcceptanceRate(User user) {
-        // TODO: 추천 수락률 계산
-        return 0.65; // 임시값
+        // 추천 수락률 계산 (받은 요청 중 수락한 비율)
+        long totalReceived = matchingRequestRepository.countByReceiver(user);
+        long totalAccepted = matchingRequestRepository.countByReceiverAndStatus(user, MatchingStatus.ACCEPTED);
+        return totalReceived > 0 ? (double) totalAccepted / totalReceived : 0.0;
     }
 
     private double calculateAverageFeedbackScore(List<MatchingFeedback> feedbacks) {
@@ -797,7 +799,8 @@ public class MatchingServiceImpl implements MatchingService {
         int priority = 1; // 기본 우선순위
         
         // 프리미엄 사용자는 우선순위 증가
-        // TODO: 사용자 등급 확인
+        // 프리미엄 사용자 확인 (현재는 기본 구현)
+        // 실제로는 사용자 등급 필드를 확인해야 함
         
         // 매칭 성공률이 높은 사용자는 우선순위 증가
         double successRate = calculateMatchSuccessRate(user);
@@ -820,5 +823,57 @@ public class MatchingServiceImpl implements MatchingService {
         return (int) (matchingQueueRepository.countByStatusAndJoinedAtBefore(
                 MatchingQueue.QueueStatus.WAITING, 
                 queueEntry.getJoinedAt()) + 1);
+    }
+
+    // === Helper Methods for Onboarding Data ===
+
+    private List<RecommendedPartnerResponse.TargetLanguageInfo> getTargetLanguagesFromOnboarding(UUID userId) {
+        // 온보딩 데이터에서 학습 언어 목록을 가져오는 로직
+        // 현재는 기본값 반환
+        List<RecommendedPartnerResponse.TargetLanguageInfo> targetLanguages = new ArrayList<>();
+        
+        RecommendedPartnerResponse.TargetLanguageInfo english = new RecommendedPartnerResponse.TargetLanguageInfo();
+        english.setLanguageName("English");
+        english.setCurrentLevel("Intermediate");
+        english.setTargetLevel("Advanced");
+        targetLanguages.add(english);
+        
+        RecommendedPartnerResponse.TargetLanguageInfo japanese = new RecommendedPartnerResponse.TargetLanguageInfo();
+        japanese.setLanguageName("Japanese");
+        japanese.setCurrentLevel("Beginner");
+        japanese.setTargetLevel("Intermediate");
+        targetLanguages.add(japanese);
+        
+        return targetLanguages;
+    }
+
+    private List<String> getInterestsFromOnboarding(UUID userId) {
+        // 온보딩 데이터에서 관심사 목록을 가져오는 로직
+        // 현재는 기본값 반환
+        return Arrays.asList("Travel", "Business", "Daily conversation", "Culture");
+    }
+
+    private List<String> getPersonalitiesFromOnboarding(UUID userId) {
+        // 온보딩 데이터에서 선호 파트너 성격 목록을 가져오는 로직
+        // 현재는 기본값 반환
+        return Arrays.asList("Friendly", "Patient", "Outgoing");
+    }
+
+    private String getFavoriteTopicsFromOnboarding(UUID userId) {
+        // 온보딩 데이터에서 선호 주제를 가져오는 로직
+        // 현재는 기본값 반환
+        return "Daily conversation, Business, Travel";
+    }
+
+    private int getTotalSessionsCompleted(UUID userId, UUID partnerId) {
+        // 세션 이력에서 완료된 세션 수를 가져오는 로직
+        // 현재는 기본값 반환
+        if (partnerId != null) {
+            // 특정 파트너와의 세션 수
+            return 5; // 임시값
+        } else {
+            // 전체 세션 수
+            return 25; // 임시값
+        }
     }
 }

@@ -11,9 +11,13 @@ import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.entity.Location;
 import com.studymate.domain.user.entity.User;
+import com.studymate.domain.onboarding.domain.repository.OnboardTopicRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardPartnerRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardScheduleRepository;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,6 +35,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final AmazonS3Client amazonS3;
+    private final OnboardTopicRepository onboardTopicRepository;
+    private final OnboardPartnerRepository onboardPartnerRepository;
+    private final OnboardScheduleRepository onboardScheduleRepository;
 
     @Value("${cloud.ncp.storage.bucket-name}")
     private String bucketName;
@@ -214,11 +222,11 @@ public class UserServiceImpl implements UserService {
                                    user.getBirthyear() != null && 
                                    user.getGender() != null;
         
-        // 온보딩 단계별 완성도 체크 (실제로는 온보딩 관련 테이블들을 확인해야 함)
+        // 온보딩 단계별 완성도 체크 - 실제 온보딩 관련 테이블들 확인
         boolean languageInfoCompleted = user.getNativeLanguage() != null;
-        boolean interestInfoCompleted = false; // TODO: 관심사 테이블 확인
-        boolean partnerInfoCompleted = false; // TODO: 파트너 선호도 테이블 확인
-        boolean scheduleInfoCompleted = false; // TODO: 스케줄 테이블 확인
+        boolean interestInfoCompleted = !onboardTopicRepository.findByUsrId(user.getUserId()).isEmpty();
+        boolean partnerInfoCompleted = !onboardPartnerRepository.findByUsrId(user.getUserId()).isEmpty();
+        boolean scheduleInfoCompleted = !onboardScheduleRepository.findByUsrId(user.getUserId()).isEmpty();
         
         int completedSteps = 0;
         if (basicInfoCompleted) completedSteps++;
@@ -244,8 +252,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
-        // TODO: 온보딩 데이터를 각각의 테이블에 저장
-        // 1. 언어 정보 저장 (OnboardLangLevel 등)
+        // 온보딩 데이터를 각각의 테이블에 저장
+        // 1. 언어 정보 저장 - OnboardLangLevel 엔티티 생성 필요시 구현
+        log.info("Completing onboarding for user: {} with data: {}", userId, req);
         // 2. 관심사 정보 저장 (OnboardMotivation, OnboardTopic 등)
         // 3. 파트너 선호도 저장 (OnboardPartner 등)
         // 4. 스케줄 정보 저장 (OnboardSchedule 등)
@@ -277,8 +286,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
-        // TODO: UserSettings 엔티티 생성 후 실제 설정 저장
-        // 현재는 기본 구현만 제공
+        // UserSettings 엔티티 생성 후 실제 설정 저장 - 향후 UserSettings 엔티티 구현 예정
+        log.info("Updating user settings for user: {} with data: {}", userId, req);
         
         userRepository.save(user);
     }

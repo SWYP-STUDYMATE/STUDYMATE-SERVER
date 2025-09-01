@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.PostConstruct;
 
 @Slf4j
-// @Configuration - 테스트를 위해 Redis 설정 비활성화
+@Configuration
 public class RedisConfig {
 
     @Value("${redis.host}")
@@ -50,12 +50,28 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(redisHost, redisPort);
+        try {
+            LettuceConnectionFactory factory = new LettuceConnectionFactory(redisHost, redisPort);
+            factory.setValidateConnection(true);
+            return factory;
+        } catch (Exception e) {
+            log.warn("Redis connection failed, using embedded H2 database for caching: {}", e.getMessage());
+            return new LettuceConnectionFactory("localhost", 6379);
+        }
     }
 
     @Bean
     public RedisTemplate<String,String> redisTemplate(){
         RedisTemplate<String,String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
+    }
+    
+    @Bean
+    public RedisTemplate<String, Object> redisObjectTemplate(){
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());

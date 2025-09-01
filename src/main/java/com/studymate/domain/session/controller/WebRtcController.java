@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@RestController
+// @RestController - WebRTC는 Cloudflare Workers에서 P2P로 처리됨
 @RequestMapping("/api/v1/webrtc")
 @RequiredArgsConstructor
 @Tag(name = "WebRTC", description = "WebRTC 세션 관리 API")

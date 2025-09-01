@@ -77,7 +77,10 @@ public class MessageReadServiceImpl implements MessageReadService {
     @Override
     @Transactional
     public void markRoomMessagesAsRead(Long roomId, UUID userId, LocalDateTime readUntil) {
-        // TODO: 채팅방의 특정 시간까지 모든 메시지를 읽음 처리
+        User reader = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        readStatusRepository.bulkMarkAsRead(roomId, reader, readUntil);
         log.debug("Marked room {} messages as read for user {} until {}", roomId, userId, readUntil);
     }
 
@@ -111,11 +114,13 @@ public class MessageReadServiceImpl implements MessageReadService {
                         .build())
                 .collect(Collectors.toList());
 
-        // 읽지 않은 사용자 목록 (임시로 빈 리스트 - TODO: repository 메서드 구현 필요)
-        // List<User> unreadUsers = readStatusRepository.findUnreadUsersByMessage(
-        //         messageId, message.getChatRoom().getId(), message.getSender());
+        // 읽지 않은 사용자 목록 조회
+        List<User> unreadUsers = readStatusRepository.findUnreadUsersByMessage(
+                messageId, message.getChatRoom().getId(), message.getSender());
         
-        List<UUID> unreadUserIds = new ArrayList<>(); // 임시로 빈 리스트
+        List<UUID> unreadUserIds = unreadUsers.stream()
+                .map(User::getUserId)
+                .collect(Collectors.toList());
 
         LocalDateTime firstReadAt = readStatuses.stream()
                 .map(MessageReadStatus::getReadAt)
