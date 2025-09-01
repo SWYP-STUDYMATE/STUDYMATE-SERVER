@@ -75,7 +75,7 @@ public interface WebRtcRoomRepository extends JpaRepository<WebRtcRoom, Long> {
     /**
      * 특정 기간 동안의 평균 세션 시간 (분)
      */
-    @Query("SELECT AVG(FUNCTION('TIMESTAMPDIFF', MINUTE, w.startedAt, COALESCE(w.endedAt, CURRENT_TIMESTAMP))) " +
+    @Query("SELECT AVG(CAST(FUNCTION('TIMESTAMPDIFF', MINUTE, w.startedAt, COALESCE(w.endedAt, CURRENT_TIMESTAMP)) AS double)) " +
            "FROM WebRtcRoom w " +
            "WHERE w.startedAt BETWEEN :startTime AND :endTime " +
            "AND w.startedAt IS NOT NULL")
