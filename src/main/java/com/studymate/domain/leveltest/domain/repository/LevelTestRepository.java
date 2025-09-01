@@ -45,7 +45,7 @@ public interface LevelTestRepository extends JpaRepository<LevelTest, Long> {
                                               @Param("languageCode") String languageCode, 
                                               @Param("testType") String testType);
 
-    @Query("SELECT AVG(lt.totalAccuracy) FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.languageCode = :languageCode AND lt.isCompleted = true AND lt.totalAccuracy IS NOT NULL")
+    @Query("SELECT AVG(lt.accuracyPercentage) FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.languageCode = :languageCode AND lt.isCompleted = true AND lt.accuracyPercentage IS NOT NULL")
     Optional<Double> getAverageAccuracyByUserAndLanguage(@Param("userId") UUID userId, @Param("languageCode") String languageCode);
 
     @Query("SELECT COUNT(lt) FROM LevelTest lt WHERE lt.user.userId = :userId AND lt.isCompleted = true")
