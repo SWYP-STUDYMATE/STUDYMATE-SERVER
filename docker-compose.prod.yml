@@ -16,15 +16,17 @@ services:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
       # Database Configuration (MySQL) - 하드코딩
-      - DB_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&maxReconnects=5&initialTimeout=10
-      - DB_DRIVER=com.mysql.cj.jdbc.Driver
-      - DB_USERNAME=studymate
-      - DB_PASSWORD=studymate123!
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&maxReconnects=10&initialTimeout=15
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_DATASOURCE_USERNAME=studymate
+      - SPRING_DATASOURCE_PASSWORD=studymate123!
       # HikariCP Connection Pool Settings
-      - HIKARI_CONNECTION_TIMEOUT=60000
-      - HIKARI_INITIALIZATION_FAIL_TIMEOUT=60000
-      - HIKARI_VALIDATION_TIMEOUT=3000
-      - HIKARI_LEAK_DETECTION_THRESHOLD=60000
+      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=60000
+      - SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT=120000
+      - SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT=5000
+      - SPRING_DATASOURCE_HIKARI_LEAK_DETECTION_THRESHOLD=60000
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=20
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=5
       # JPA Configuration
       - JPA_DDL_AUTO=update
       - JPA_SHOW_SQL=true
@@ -70,6 +72,8 @@ services:
     image: mysql:8.0
     container_name: studymate-mysql
     platform: linux/x86_64
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=studymate123!
       - MYSQL_DATABASE=studymate
@@ -91,11 +95,11 @@ services:
     networks:
       - studymate-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pstudymate123!"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-pstudymate123!", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 40s
 
   redis:
     image: redis:7-alpine
@@ -165,3 +169,6 @@ networks:
   studymate-network:
     driver: bridge
     name: studymate-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
