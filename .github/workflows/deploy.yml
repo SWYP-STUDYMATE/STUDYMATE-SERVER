@@ -47,11 +47,11 @@ jobs:
           redis.port=6379
           redis.password=StudyMate2025!Redis
           
-          cloud.ncp.storage.region=kr-standard
-          cloud.ncp.storage.endpoint=https://kr.object.ncloudstorage.com
-          cloud.ncp.storage.access-key=ncp_iam_BPAMKR1FHfq8OtlptO2s
-          cloud.ncp.storage.secret-key=ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
-          cloud.ncp.storage.bucket-name=languagemate-profile-img
+          cloud.ncp.storage.region=${NCP_REGION:kr-standard}
+          cloud.ncp.storage.endpoint=${NCP_OBJECT_STORAGE_ENDPOINT:https://kr.object.ncloudstorage.com}
+          cloud.ncp.storage.access-key=${NCP_ACCESS_KEY:}
+          cloud.ncp.storage.secret-key=${NCP_SECRET_KEY:}
+          cloud.ncp.storage.bucket-name=${NCP_BUCKET_NAME:languagemate-profile-img}
           
           google.client_id=${{ secrets.GOOGLE_CLIENT_ID }}
           google.client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}
@@ -187,6 +187,12 @@ jobs:
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             BACKUP_RETENTION_DAYS=7
+            # NCP Object Storage settings
+            NCP_REGION=kr-standard
+            NCP_OBJECT_STORAGE_ENDPOINT=https://kr.object.ncloudstorage.com
+            NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }}
+            NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }}
+            NCP_BUCKET_NAME=languagemate-profile-img
             EOF
             
             # 데이터 디렉토리 생성 (현재 사용자 권한으로)
