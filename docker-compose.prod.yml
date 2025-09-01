@@ -12,12 +12,15 @@ services:
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
-      # Database Configuration
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=studymate
+      # Database Configuration (MySQL)
+      - DB_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      - DB_DRIVER=com.mysql.cj.jdbc.Driver
       - DB_USERNAME=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      # JPA Configuration
+      - JPA_DDL_AUTO=update
+      - JPA_SHOW_SQL=true
+      - JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
       # Redis Configuration
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -65,6 +68,7 @@ services:
       - MYSQL_DATABASE=studymate
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_HOST=%
       - TZ=Asia/Seoul
     volumes:
       - mysql-data:/var/lib/mysql
