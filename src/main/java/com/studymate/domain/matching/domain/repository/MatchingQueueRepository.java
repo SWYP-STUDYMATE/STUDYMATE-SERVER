@@ -65,7 +65,7 @@ public interface MatchingQueueRepository extends JpaRepository<MatchingQueue, Lo
      * 평균 대기 시간 계산 (분)
      * joinedAt부터 completedAt까지의 시간으로 정확한 대기시간 계산
      */
-    @Query("SELECT AVG(FUNCTION('TIMESTAMPDIFF', MINUTE, mq.joinedAt, mq.completedAt)) " +
+    @Query("SELECT AVG(CAST(FUNCTION('TIMESTAMPDIFF', MINUTE, mq.joinedAt, mq.completedAt) AS double)) " +
            "FROM MatchingQueue mq " +
            "WHERE mq.status = :status " +
            "AND mq.completedAt IS NOT NULL")
