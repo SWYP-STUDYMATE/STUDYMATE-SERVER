@@ -13,11 +13,11 @@ services:
     environment:
       # Spring Boot Profile
       - SPRING_PROFILES_ACTIVE=prod
-      # Database Configuration (MySQL)
+      # Database Configuration (MySQL) - 하드코딩
       - DB_URL=jdbc:mysql://db:3306/studymate?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
       - DB_DRIVER=com.mysql.cj.jdbc.Driver
-      - DB_USERNAME=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=studymate
+      - DB_PASSWORD=studymate123!
       # JPA Configuration
       - JPA_DDL_AUTO=update
       - JPA_SHOW_SQL=true
@@ -25,26 +25,26 @@ services:
       # Redis Configuration
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      # OAuth Configuration
-      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
-      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
-      - NAVER_REDIRECT_URI=${NAVER_REDIRECT_URI}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
-      # JWT Configuration
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-3600000}
-      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
-      # NCP Object Storage
-      - NCP_REGION=${NCP_REGION:-kr-standard}
-      - NCP_OBJECT_STORAGE_ENDPOINT=${NCP_OBJECT_STORAGE_ENDPOINT}
-      - NCP_ACCESS_KEY=${NCP_ACCESS_KEY}
-      - NCP_SECRET_KEY=${NCP_SECRET_KEY}
-      - NCP_BUCKET_NAME=${NCP_BUCKET_NAME}
-      # Clova Studio API
-      - CLOVA_STUDIO_ENDPOINT=${CLOVA_STUDIO_ENDPOINT}
-      - CLOVA_API_KEY=${CLOVA_API_KEY}
+      # OAuth Configuration - 하드코딩
+      - NAVER_CLIENT_ID=EzXpYAkIVhX1ViFQ5edo
+      - NAVER_CLIENT_SECRET=Zml5tphcOJ
+      - NAVER_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/naver
+      - GOOGLE_CLIENT_ID=1068056726433-kf4s0t3jj6iis0aep2kvtgfcebfmfquj.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/google
+      # JWT Configuration - 하드코딩
+      - JWT_SECRET=c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
+      - JWT_ACCESS_TOKEN_EXPIRATION=3600000
+      - JWT_REFRESH_TOKEN_EXPIRATION=604800000
+      # NCP Object Storage - 하드코딩
+      - NCP_REGION=kr-standard
+      - NCP_OBJECT_STORAGE_ENDPOINT=https://kr.object.ncloudstorage.com
+      - NCP_ACCESS_KEY=ncp_iam_BPAMKR1FHfq8OtlptO2s
+      - NCP_SECRET_KEY=ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
+      - NCP_BUCKET_NAME=languagemate-profile-img
+      # Clova Studio API - 하드코딩
+      - CLOVA_STUDIO_ENDPOINT=https://clovastudio.stream.ntruss.com
+      - CLOVA_API_KEY=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
       # Timezone
       - TZ=Asia/Seoul
     volumes:
@@ -65,10 +65,10 @@ services:
     container_name: studymate-mysql
     platform: linux/x86_64
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=studymate123!
       - MYSQL_DATABASE=studymate
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=studymate
+      - MYSQL_PASSWORD=studymate123!
       - MYSQL_ROOT_HOST=%
       - TZ=Asia/Seoul
     volumes:

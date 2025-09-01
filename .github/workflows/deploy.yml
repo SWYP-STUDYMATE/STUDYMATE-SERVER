@@ -182,42 +182,10 @@ jobs:
             # Configuration is already embedded in JAR - no need to create application.properties here
             echo "Application configuration is embedded in the JAR file"
             
-            # Create .env file with Docker-specific settings for local containers
+            # Create minimal .env file with only registry info (모든 설정은 docker-compose에 하드코딩됨)
             cat > .env << EOF
             REGISTRY_URL=${{ secrets.NCP_REGISTRY_URL }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
-            # Local Docker Database settings
-            DB_HOST=db
-            DB_PORT=3306
-            DB_NAME=studymate
-            DB_USER=studymate
-            DB_PASSWORD=studymate123!
-            DB_ROOT_PASSWORD=studymate123!
-            # Local Docker Redis settings
-            REDIS_HOST=redis
-            REDIS_PORT=6379
-            REDIS_PASSWORD=
-            BACKUP_RETENTION_DAYS=7
-            # NCP Object Storage settings
-            NCP_REGION=kr-standard
-            NCP_OBJECT_STORAGE_ENDPOINT=https://kr.object.ncloudstorage.com
-            NCP_ACCESS_KEY=ncp_iam_BPAMKR1FHfq8OtlptO2s
-            NCP_SECRET_KEY=ncp_iam_BPKMKRIVHA3Sg1Rd0nLEMJLBS3mLodofDT
-            NCP_BUCKET_NAME=languagemate-profile-img
-            # OAuth settings for POC
-            NAVER_CLIENT_ID=EzXpYAkIVhX1ViFQ5edo
-            NAVER_CLIENT_SECRET=Zml5tphcOJ
-            NAVER_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/naver
-            GOOGLE_CLIENT_ID=1068056726433-kf4s0t3jj6iis0aep2kvtgfcebfmfquj.apps.googleusercontent.com
-            GOOGLE_CLIENT_SECRET=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
-            GOOGLE_REDIRECT_URI=https://api.languagemate.kr/login/oauth2/code/google
-            # JWT settings
-            JWT_SECRET=c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
-            JWT_ACCESS_TOKEN_EXPIRATION=3600000
-            JWT_REFRESH_TOKEN_EXPIRATION=604800000
-            # Clova Studio settings
-            CLOVA_API_KEY=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
-            CLOVA_STUDIO_ENDPOINT=https://clovastudio.stream.ntruss.com
             EOF
             
             # 로그 및 업로드 디렉토리 생성
