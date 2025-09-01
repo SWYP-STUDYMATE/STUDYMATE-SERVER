@@ -51,7 +51,7 @@ public interface GroupSessionRepository extends JpaRepository<GroupSession, UUID
     
     @Query("SELECT AVG(CAST(gsp.rating AS double)) " +
            "FROM GroupSessionParticipant gsp " +
-           "JOIN GroupSession gs ON gsp.sessionId = gs.sessionId " +
+           "JOIN GroupSession gs ON gsp.sessionId = gs.id " +
            "WHERE gs.hostUserId = :userId " +
            "AND gsp.rating IS NOT NULL")
     Double getAverageHostRating(@Param("userId") UUID userId);
