@@ -88,7 +88,7 @@ services:
     networks:
       - studymate-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "studymate", "-pstudymate123!"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -153,16 +153,8 @@ services:
 volumes:
   mysql-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/ubuntu/studymate-data/mysql
   redis-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/ubuntu/studymate-data/redis
 
 networks:
   studymate-network:
