@@ -63,11 +63,13 @@ public interface MatchingQueueRepository extends JpaRepository<MatchingQueue, Lo
 
     /**
      * 평균 대기 시간 계산 (분)
+     * UserMatch와 JOIN하여 매칭 완료 시간을 기준으로 계산
      */
-    @Query("SELECT AVG(FUNCTION('TIMESTAMPDIFF', MINUTE, mq.joinedAt, mq.matchedAt)) " +
+    @Query("SELECT AVG(FUNCTION('TIMESTAMPDIFF', MINUTE, mq.joinedAt, um.matchedAt)) " +
            "FROM MatchingQueue mq " +
+           "JOIN UserMatch um ON (mq.user = um.user1 OR mq.user = um.user2) " +
            "WHERE mq.status = :status " +
-           "AND mq.matchedAt IS NOT NULL")
+           "AND um.matchedAt IS NOT NULL")
     Double calculateAverageWaitTime(@Param("status") MatchingQueue.QueueStatus status);
 
     /**
