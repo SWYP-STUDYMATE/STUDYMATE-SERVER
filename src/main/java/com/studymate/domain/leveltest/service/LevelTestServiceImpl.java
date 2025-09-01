@@ -151,7 +151,7 @@ public class LevelTestServiceImpl implements LevelTestService {
         
         for (String language : testedLanguages) {
             // 최신 레벨
-            Optional<LevelTest> latestTest = levelTestRepository.findLatestCompletedTest(userId, language, "COMPREHENSIVE");
+            Optional<LevelTest> latestTest = levelTestRepository.findLatestCompletedTest(userId, language, LevelTest.TestType.COMPREHENSIVE);
             if (latestTest.isPresent()) {
                 latestLevels.put(language, latestTest.get().getEstimatedLevel());
             }

@@ -56,9 +56,11 @@ public class WebRtcRoom extends BaseTimeEntity {
     @Column(name = "max_participants")
     private Integer maxParticipants;
     
+    @Builder.Default
     @Column(name = "current_participants")
     private Integer currentParticipants = 0;
     
+    @Builder.Default
     @Column(name = "is_recording_enabled")
     private Boolean isRecordingEnabled = false;
     

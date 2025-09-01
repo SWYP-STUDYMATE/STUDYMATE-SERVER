@@ -60,18 +60,23 @@ public class WebRtcConnection extends BaseTimeEntity {
     private String terminationReason;
     
     // Connection quality metrics
+    @Builder.Default
     @Column(name = "bytes_sent")
     private Long bytesSent = 0L;
     
+    @Builder.Default
     @Column(name = "bytes_received")
     private Long bytesReceived = 0L;
     
+    @Builder.Default
     @Column(name = "packets_sent")
     private Long packetsSent = 0L;
     
+    @Builder.Default
     @Column(name = "packets_received")
     private Long packetsReceived = 0L;
     
+    @Builder.Default
     @Column(name = "packets_lost")
     private Long packetsLost = 0L;
     

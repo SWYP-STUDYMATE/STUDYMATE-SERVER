@@ -38,7 +38,9 @@ public class AdvancedMatchingFilterRequest {
     private String gender; // MALE, FEMALE, ANY
     
     // 온라인 상태 필터
+    @Builder.Default
     private Boolean onlineOnly = false;
+    @Builder.Default
     private Boolean studyingOnly = false;
     
     // 호환성 점수 필터
@@ -76,12 +78,15 @@ public class AdvancedMatchingFilterRequest {
     private Integer maxDaysInactive;
     
     // 정렬 옵션
+    @Builder.Default
     private String sortBy = "compatibility"; // compatibility, lastActive, joinDate, sessionCount
+    @Builder.Default
     private String sortDirection = "desc"; // asc, desc
     
     // 결과 제한
     @Min(value = 1, message = "최소 결과 수는 1입니다")
     @Max(value = 100, message = "최대 결과 수는 100입니다")
+    @Builder.Default
     private Integer limit = 20;
     
     // 제외할 사용자 목록 (이미 매칭 요청 보낸 사용자 등)

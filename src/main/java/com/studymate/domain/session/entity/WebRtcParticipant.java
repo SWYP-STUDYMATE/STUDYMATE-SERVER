@@ -39,18 +39,23 @@ public class WebRtcParticipant extends BaseTimeEntity {
     @Column(name = "connection_status", nullable = false)
     private ConnectionStatus connectionStatus;
     
+    @Builder.Default
     @Column(name = "is_host", nullable = false)
     private Boolean isHost = false;
     
+    @Builder.Default
     @Column(name = "is_moderator", nullable = false)
     private Boolean isModerator = false;
     
+    @Builder.Default
     @Column(name = "is_screen_sharing", nullable = false)
     private Boolean isScreenSharing = false;
     
+    @Builder.Default
     @Column(name = "is_camera_enabled", nullable = false)
     private Boolean isCameraEnabled = true;
     
+    @Builder.Default
     @Column(name = "is_microphone_enabled", nullable = false)
     private Boolean isMicrophoneEnabled = true;
     
@@ -75,6 +80,7 @@ public class WebRtcParticipant extends BaseTimeEntity {
     @Column(name = "left_at")
     private LocalDateTime leftAt;
     
+    @Builder.Default
     @Column(name = "speaking_time_seconds")
     private Integer speakingTimeSeconds = 0;
     
