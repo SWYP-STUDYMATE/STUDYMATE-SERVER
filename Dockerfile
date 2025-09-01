@@ -1,5 +1,5 @@
 # Use the JAR file built by GitHub Actions
-FROM amazoncorretto:17-alpine-jdk
+FROM amazoncorretto:21-alpine-jdk
 WORKDIR /app
 
 # Copy the pre-built jar file
