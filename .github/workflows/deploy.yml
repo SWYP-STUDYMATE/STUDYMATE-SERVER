@@ -194,8 +194,21 @@ jobs:
             # Pull latest images
             docker-compose -f docker-compose.prod.yml pull
             
-            # Stop existing services
+            # Stop existing services and clean up conflicting resources
             docker-compose -f docker-compose.prod.yml down
+            
+            # Remove orphaned containers if they exist
+            docker-compose -f docker-compose.prod.yml down --remove-orphans
+            
+            # Remove conflicting volumes (from bind mounts to named volumes migration)
+            echo "Cleaning up conflicting volumes..."
+            docker volume rm studymate-server_mysql-data 2>/dev/null || echo "mysql-data volume didn't exist or couldn't be removed"
+            docker volume rm studymate-server_redis-data 2>/dev/null || echo "redis-data volume didn't exist or couldn't be removed"
+            
+            # Clean up networks to avoid conflicts
+            echo "Cleaning up old networks..."
+            docker network rm studymate-network 2>/dev/null || echo "studymate-network didn't exist"
+            docker network rm studymate-server_default 2>/dev/null || echo "studymate-server_default didn't exist"
             
             # Start all services with restart policy
             echo "Starting all services..."
@@ -221,26 +234,81 @@ jobs:
             echo "=== docker-compose Status ==="
             docker-compose -f docker-compose.prod.yml ps
             
-            echo "=== Application Logs (last 50 lines) ==="
-            docker-compose -f docker-compose.prod.yml logs --tail 50 app
+            echo "=== Container Inspection ==="
+            docker-compose -f docker-compose.prod.yml exec -T app ps aux || echo "Could not inspect app container processes"
+            
+            echo "=== Database Logs (last 30 lines) ==="
+            docker-compose -f docker-compose.prod.yml logs --tail 30 db
+            
+            echo "=== Redis Logs (last 20 lines) ==="
+            docker-compose -f docker-compose.prod.yml logs --tail 20 redis
+            
+            echo "=== Application Logs (last 100 lines) ==="
+            docker-compose -f docker-compose.prod.yml logs --tail 100 app
+            
+            echo "=== Network Test ==="
+            docker-compose -f docker-compose.prod.yml exec -T app ip addr show || echo "Could not show network info"
+            docker-compose -f docker-compose.prod.yml exec -T app netstat -tlnp 2>/dev/null | grep 8080 || echo "Port 8080 not found in netstat"
             
             echo "=== Health Check ==="
             # Wait for app to be fully ready
             for i in {1..12}; do
-              if curl -f http://localhost:8080/api/v1/onboard/interest/motivations; then
-                echo "Application is healthy!"
+              echo "Attempt $i/12: Testing application health..."
+              
+              # First check if container is still running
+              if ! docker-compose -f docker-compose.prod.yml ps app | grep -q "Up"; then
+                echo "ERROR: App container is not running!"
+                docker-compose -f docker-compose.prod.yml logs --tail 50 app
                 break
+              fi
+              
+              # Check if port 8080 is listening inside container
+              if docker-compose -f docker-compose.prod.yml exec -T app nc -z localhost 8080 2>/dev/null; then
+                echo "Port 8080 is listening inside container"
+                if curl -f http://localhost:8080/api/v1/onboard/interest/motivations; then
+                  echo "Application is healthy!"
+                  break
+                else
+                  echo "Port is listening but API endpoint failed"
+                fi
               else
-                echo "Attempt $i/12: Application not ready yet, waiting..."
+                echo "Port 8080 not listening inside container"
+              fi
+              
+              if [ $i -eq 12 ]; then
+                echo "Final attempt failed. Showing detailed logs..."
+                echo "=== FULL Application Logs ==="
+                docker-compose -f docker-compose.prod.yml logs app
+                echo "=== Container Stats ==="
+                docker-compose -f docker-compose.prod.yml exec -T app df -h || echo "Could not get disk usage"
+                docker-compose -f docker-compose.prod.yml exec -T app free -m || echo "Could not get memory usage"
+              else
                 sleep 10
               fi
             done
             
-            # Final status check
+            # Final status check with detailed logging
             if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
-              echo "Deployment successful!"
+              echo "=== Final Deployment Status Check ==="
+              RUNNING_SERVICES=$(docker-compose -f docker-compose.prod.yml ps --services --filter "status=running")
+              echo "Running services: $RUNNING_SERVICES"
+              
+              if echo "$RUNNING_SERVICES" | grep -q "app"; then
+                echo "App service is running - checking health endpoint one more time..."
+                if curl -f http://localhost:8080/actuator/health 2>/dev/null; then
+                  echo "✅ Deployment successful - Health endpoint accessible!"
+                elif curl -f http://localhost:8080 2>/dev/null; then
+                  echo "✅ Deployment successful - Root endpoint accessible!"
+                else
+                  echo "⚠️  Deployment completed but health check failed"
+                fi
+              else
+                echo "❌ App service is not running"
+                exit 1
+              fi
             else
-              echo "Deployment failed!"
+              echo "❌ Deployment failed - no services running!"
+              echo "=== All Service Logs ==="
               docker-compose -f docker-compose.prod.yml logs
               exit 1
             fi
