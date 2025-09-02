@@ -43,9 +43,9 @@ public class SecurityConfig {
                                                 // 1) OPTIONS, 로그인/토큰 엔드포인트
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers("/api/v1/login/**", "/api/v1/auth/**").permitAll()
-                                                .requestMatchers("/health", "/actuator/health").permitAll()
+                                                .requestMatchers("/health", "/api/v1/health", "/actuator/health").permitAll()
                                         // OAuth2 콜백 경로 허용
-                                        .requestMatchers("/login/oauth2/code/**").permitAll()
+                                        .requestMatchers("/login/oauth2/code/**", "/api/v1/login/oauth2/code/**").permitAll()
 
 
                                                 // 인증 없이 접근 가능한 옵션 조회용 API
