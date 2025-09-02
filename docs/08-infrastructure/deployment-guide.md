@@ -197,7 +197,30 @@ docker-compose -f docker-compose.prod.yml exec -T db mysql -u root -p
 
 ### 일반적인 문제 해결
 
-#### 1. 컨테이너가 시작되지 않는 경우
+#### 1. HikariCP "Sealed Pool" 오류 (✅ 해결됨)
+**증상**: Spring Boot 애플리케이션이 시작되지 않고 HikariCP 관련 오류 발생
+```
+java.lang.IllegalStateException: The configuration of the pool is sealed once started
+Property: spring.datasource.hikari.initialization-fail-timeout
+```
+
+**원인**: `initialization-fail-timeout` 속성이 HikariCP 풀 시작 후에 설정되려고 시도
+
+**해결방법**: 
+- GitHub Actions 워크플로우에서 해당 속성 제거
+- `.github/workflows/deploy.yml` 파일의 `spring.datasource.hikari.initialization-fail-timeout=60000` 라인 삭제
+
+**권장 HikariCP 설정**:
+```properties
+spring.datasource.hikari.connection-timeout=60000
+spring.datasource.hikari.validation-timeout=3000
+spring.datasource.hikari.leak-detection-threshold=60000
+spring.datasource.hikari.maximum-pool-size=20
+spring.datasource.hikari.minimum-idle=5
+# initialization-fail-timeout 사용 금지
+```
+
+#### 2. 컨테이너가 시작되지 않는 경우
 ```bash
 # 로그 확인
 docker-compose -f docker-compose.prod.yml logs
