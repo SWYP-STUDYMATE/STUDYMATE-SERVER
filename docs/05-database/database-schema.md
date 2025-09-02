@@ -37,16 +37,17 @@ erDiagram
         text self_bio
         int birth_year
         varchar(10) birth_day
-        int location_id FK
+        bigint location_id FK
         datetime created_at
         datetime updated_at
     }
     
     LOCATIONS {
-        int location_id PK
-        varchar(255) country
-        varchar(255) city
-        varchar(100) timezone
+        bigint id PK
+        varchar(255) name
+        varchar(50) code
+        datetime created_at
+        datetime updated_at
     }
     
     ONBOARD_LANGUAGES {
@@ -122,7 +123,7 @@ erDiagram
     }
     
     CHAT_ROOMS {
-        bigint id PK "Long"
+        bigint id PK
         varchar(255) room_name
         enum room_type
         json metadata
@@ -139,7 +140,7 @@ erDiagram
     }
     
     CHAT_MESSAGES {
-        bigint id PK "Long"
+        bigint id PK
         bigint room_id FK
         varchar(36) sender_id FK
         enum message_type
@@ -232,6 +233,64 @@ erDiagram
     USERS ||--o{ USER_ACHIEVEMENTS : earns
     ACHIEVEMENTS ||--o{ USER_ACHIEVEMENTS : granted_to
     ACHIEVEMENTS ||--o{ ACHIEVEMENTS : prerequisite_for
+    
+    NOTIFICATIONS {
+        bigint notification_id PK
+        varchar(36) user_id FK
+        enum type
+        varchar(200) title
+        text content
+        varchar(500) action_url
+        json action_data
+        varchar(500) image_url
+        varchar(500) icon_url
+        enum status
+        int priority
+        varchar(50) category
+        datetime scheduled_at
+        datetime sent_at
+        datetime read_at
+        datetime expires_at
+        boolean is_persistent
+        varchar(255) sender_user_id
+        varchar(100) template_id
+        json template_variables
+        varchar(100) delivery_channels
+        boolean push_sent
+        boolean email_sent
+        boolean sms_sent
+        datetime created_at
+        datetime updated_at
+    }
+    
+    NOTIFICATION_PREFERENCES {
+        bigint preference_id PK
+        varchar(36) user_id UK,FK
+        boolean notifications_enabled
+        boolean push_enabled
+        boolean email_enabled
+        boolean sms_enabled
+        boolean session_notifications
+        boolean session_reminders
+        boolean matching_notifications
+        boolean chat_notifications
+        boolean level_test_notifications
+        boolean system_notifications
+        boolean marketing_notifications
+        boolean quiet_hours_enabled
+        varchar(5) quiet_hours_start
+        varchar(5) quiet_hours_end
+        varchar(50) timezone
+        varchar(10) notification_language
+        boolean digest_enabled
+        varchar(20) digest_frequency
+        varchar(5) digest_time
+        datetime created_at
+        datetime updated_at
+    }
+    
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--|| NOTIFICATION_PREFERENCES : has
 ```
 
 ---
@@ -324,7 +383,7 @@ INSERT INTO language_levels (level_name, level_code, level_order) VALUES
 #### chat_rooms (채팅방)
 | 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
 |--------|-------------|----------|------|
-| `id` | VARCHAR(36) | PK | UUID 형태의 채팅방 ID |
+| `id` | BIGINT | PK, AUTO_INCREMENT | 채팅방 ID |
 | `room_name` | VARCHAR(255) | NOT NULL | 채팅방 이름 |
 | `room_type` | ENUM | NOT NULL | DIRECT, GROUP |
 | `metadata` | JSON | NULL | 추가 메타데이터 |
@@ -334,9 +393,9 @@ INSERT INTO language_levels (level_name, level_code, level_order) VALUES
 #### chat_messages (채팅 메시지)
 | 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
 |--------|-------------|----------|------|
-| `id` | VARCHAR(36) | PK | UUID 형태의 메시지 ID |
-| `room_id` | VARCHAR(36) | FK, NOT NULL | 채팅방 ID |
-| `sender_id` | VARCHAR(36) | FK, NOT NULL | 발신자 ID |
+| `id` | BIGINT | PK, AUTO_INCREMENT | 메시지 ID |
+| `room_id` | BIGINT | FK, NOT NULL | 채팅방 ID |
+| `sender_id` | VARCHAR(36) | FK, NOT NULL | 발신자 ID (사용자 UUID) |
 | `message_type` | ENUM | NOT NULL | TEXT, IMAGE, VOICE, FILE |
 | `content` | TEXT | NULL | 메시지 내용 |
 | `file_url` | VARCHAR(255) | NULL | 첨부파일 URL |
@@ -583,6 +642,79 @@ ADD COLUMN location_id BIGINT;
 -- 외래키 제약조건 추가
 ALTER TABLE users 
 ADD FOREIGN KEY (location_id) REFERENCES locations(id);
+```
+
+### 9. 알림 시스템 테이블
+
+#### notifications (알림)
+| 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
+|--------|-------------|----------|------|
+| `notification_id` | BIGINT | PK, AUTO_INCREMENT | 알림 식별자 |
+| `user_id` | VARCHAR(36) | FK, NOT NULL | 사용자 ID |
+| `type` | ENUM | NOT NULL | SYSTEM, SESSION, MATCHING, CHAT, LEVEL_TEST, MARKETING, REMINDER |
+| `title` | VARCHAR(200) | NOT NULL | 알림 제목 |
+| `content` | TEXT | NOT NULL | 알림 내용 |
+| `action_url` | VARCHAR(500) | NULL | 액션 URL |
+| `action_data` | JSON | NULL | 액션 데이터 |
+| `image_url` | VARCHAR(500) | NULL | 이미지 URL |
+| `icon_url` | VARCHAR(500) | NULL | 아이콘 URL |
+| `status` | ENUM | DEFAULT 'UNREAD' | UNREAD, READ, SENT, DELIVERED, FAILED |
+| `priority` | INT | DEFAULT 1 | 우선순위 (1:LOW, 2:NORMAL, 3:HIGH, 4:URGENT) |
+| `category` | VARCHAR(50) | NULL | 카테고리 (SYSTEM, SESSION, MATCHING, CHAT, LEVEL_TEST) |
+| `scheduled_at` | DATETIME | NULL | 예약 발송 시간 |
+| `sent_at` | DATETIME | NULL | 발송 시간 |
+| `read_at` | DATETIME | NULL | 읽은 시간 |
+| `expires_at` | DATETIME | NULL | 만료 시간 |
+| `is_persistent` | BOOLEAN | DEFAULT TRUE | 영구 보관 여부 |
+| `sender_user_id` | VARCHAR(255) | NULL | 발송자 ID (시스템인 경우 NULL) |
+| `template_id` | VARCHAR(100) | NULL | 템플릿 ID |
+| `template_variables` | JSON | NULL | 템플릿 변수 |
+| `delivery_channels` | VARCHAR(100) | NULL | 전송 채널 (PUSH,EMAIL,SMS) |
+| `push_sent` | BOOLEAN | DEFAULT FALSE | 푸시 전송 여부 |
+| `email_sent` | BOOLEAN | DEFAULT FALSE | 이메일 전송 여부 |
+| `sms_sent` | BOOLEAN | DEFAULT FALSE | SMS 전송 여부 |
+| `created_at` | DATETIME | DEFAULT NOW() | 생성일시 |
+| `updated_at` | DATETIME | ON UPDATE NOW() | 수정일시 |
+
+**인덱스:**
+```sql
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_status ON notifications(status);
+CREATE INDEX idx_notifications_type_category ON notifications(type, category);
+CREATE INDEX idx_notifications_scheduled_at ON notifications(scheduled_at);
+CREATE INDEX idx_notifications_expires_at ON notifications(expires_at);
+```
+
+#### notification_preferences (알림 설정)
+| 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
+|--------|-------------|----------|------|
+| `preference_id` | BIGINT | PK, AUTO_INCREMENT | 설정 식별자 |
+| `user_id` | VARCHAR(36) | UK, FK, NOT NULL | 사용자 ID |
+| `notifications_enabled` | BOOLEAN | DEFAULT TRUE | 전체 알림 활성화 |
+| `push_enabled` | BOOLEAN | DEFAULT TRUE | 푸시 알림 활성화 |
+| `email_enabled` | BOOLEAN | DEFAULT TRUE | 이메일 알림 활성화 |
+| `sms_enabled` | BOOLEAN | DEFAULT FALSE | SMS 알림 활성화 |
+| `session_notifications` | BOOLEAN | DEFAULT TRUE | 세션 알림 |
+| `session_reminders` | BOOLEAN | DEFAULT TRUE | 세션 리마인더 |
+| `matching_notifications` | BOOLEAN | DEFAULT TRUE | 매칭 알림 |
+| `chat_notifications` | BOOLEAN | DEFAULT TRUE | 채팅 알림 |
+| `level_test_notifications` | BOOLEAN | DEFAULT TRUE | 레벨테스트 알림 |
+| `system_notifications` | BOOLEAN | DEFAULT TRUE | 시스템 알림 |
+| `marketing_notifications` | BOOLEAN | DEFAULT FALSE | 마케팅 알림 |
+| `quiet_hours_enabled` | BOOLEAN | DEFAULT FALSE | 방해금지 시간 활성화 |
+| `quiet_hours_start` | VARCHAR(5) | NULL | 방해금지 시작시간 (HH:MM) |
+| `quiet_hours_end` | VARCHAR(5) | NULL | 방해금지 종료시간 (HH:MM) |
+| `timezone` | VARCHAR(50) | NULL | 시간대 (Asia/Seoul) |
+| `notification_language` | VARCHAR(10) | DEFAULT 'ko' | 알림 언어 (ko, en, ja, zh) |
+| `digest_enabled` | BOOLEAN | DEFAULT FALSE | 요약 알림 활성화 |
+| `digest_frequency` | VARCHAR(20) | DEFAULT 'DAILY' | 요약 주기 (DAILY, WEEKLY) |
+| `digest_time` | VARCHAR(5) | DEFAULT '09:00' | 요약 발송 시간 (HH:MM) |
+| `created_at` | DATETIME | DEFAULT NOW() | 생성일시 |
+| `updated_at` | DATETIME | ON UPDATE NOW() | 수정일시 |
+
+**인덱스:**
+```sql
+CREATE UNIQUE INDEX idx_notification_preferences_user ON notification_preferences(user_id);
 ```
 
 ### 초기 마스터 데이터
