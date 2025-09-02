@@ -23,6 +23,9 @@ public class JwtUtils {
 
     @Value("${jwt.expiration:86400}")
     private int jwtExpirationMs;
+    
+    @Value("${jwt.refresh.expiration:604800}")
+    private int refreshTokenExpirationMs;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -71,7 +74,12 @@ public class JwtUtils {
     }
     
     public String generateRefreshToken(UUID userId) {
-        return generateTokenFromUserId(userId);
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + refreshTokenExpirationMs * 1000L))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
     }
     
     public String resolveToken(HttpServletRequest request) {

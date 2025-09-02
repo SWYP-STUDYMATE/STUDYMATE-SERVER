@@ -166,5 +166,77 @@ log.info("Token refresh completed, new tokens stored");
 
 ---
 
+## 🔄 추가 수정사항 (2차)
+
+### 3. JWT 토큰 만료 시간 불일치 문제
+**파일**: `/src/main/java/com/studymate/auth/jwt/JwtUtils.java`
+
+**문제점**: 
+- refresh token과 access token이 동일한 만료 시간 사용 (86400초 = 24시간)
+- refresh token은 더 긴 만료 시간을 가져야 함
+
+**해결책**:
+```java
+// 추가된 설정
+@Value("${jwt.refresh.expiration:604800}")  // 7일
+private int refreshTokenExpirationMs;
+
+// 수정된 generateRefreshToken()
+public String generateRefreshToken(UUID userId) {
+    return Jwts.builder()
+        .setSubject(userId.toString())
+        .setIssuedAt(new Date())
+        .setExpiration(new Date((new Date()).getTime() + refreshTokenExpirationMs * 1000L))
+        .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+        .compact();
+}
+```
+
+### 4. LoginController API 경로 불일치
+**파일**: `/src/main/java/com/studymate/domain/user/controller/LoginController.java`
+
+**문제점**:
+- OAuth 콜백 경로에 `/api/v1` 프리픽스 누락
+- 클라이언트가 `/api/v1/login/oauth2/code/naver`로 요청하지만 서버는 `/login/oauth2/code/naver`로 매핑
+
+**해결책**:
+```java
+// 수정 전
+@RequestMapping
+public class LoginController {
+    @GetMapping("api/v1/login/naver")  // 불일치
+    @GetMapping("/login/oauth2/code/naver")  // 불일치
+
+// 수정 후  
+@RequestMapping("/api/v1")
+public class LoginController {
+    @GetMapping("/login/naver")  // → /api/v1/login/naver
+    @GetMapping("/login/oauth2/code/naver")  // → /api/v1/login/oauth2/code/naver
+```
+
+### 5. 로깅 강화
+**TokenServiceImpl**에 상세 로깅 추가:
+```java
+log.debug("Token refresh 요청 시작");
+log.warn("Refresh token 유효성 검사 실패");
+log.warn("Redis에서 refresh token을 찾을 수 없음 - userId: {}", userId);
+log.info("Token refresh 성공 - userId: {}", userId);
+```
+
+## ✅ 최종 검증 항목
+
+### 토큰 갱신 플로우
+1. **Access Token 만료** (24시간) → 401 에러
+2. **Refresh Token 검증** (7일 유효)
+3. **새 토큰 발급** → access token + refresh token 모두 갱신
+4. **Redis 저장** → 새 refresh token으로 교체 (7일 TTL)
+5. **원본 요청 재시도** → 성공
+
+### API 경로 일치성
+- ✅ **로그인 시작**: `/api/v1/login/naver`
+- ✅ **OAuth 콜백**: `/api/v1/login/oauth2/code/naver`  
+- ✅ **토큰 갱신**: `/api/v1/auth/refresh`
+
 **해결 완료**: 2025-01-02  
-**다음 단계**: 추가 API 경로 표준화 완료
+**최종 업데이트**: 2025-01-02 (2차 수정)  
+**다음 단계**: 사용자 테스트 및 모니터링
