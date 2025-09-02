@@ -19,7 +19,7 @@ public class HealthController {
 
     private final CustomHealthIndicator customHealthIndicator;
 
-    @GetMapping("/health")
+    @GetMapping("/api/v1/health")
     public ResponseEntity<ApiResponse<Map<String, Object>>> health() {
         
         Map<String, Object> healthData = new HashMap<>();

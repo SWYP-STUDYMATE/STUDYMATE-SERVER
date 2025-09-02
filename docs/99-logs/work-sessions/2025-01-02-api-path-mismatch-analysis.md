@@ -161,13 +161,17 @@ docker-compose -f docker-compose.prod.yml logs app | grep "404\|Not Found"
 - [x] 클라이언트 baseURL 수정 (`/api/v1` 추가)
 - [x] 사용자 정보 조회 API 경로 문제 해결
 - [x] API 경로 전체 분석 완료
+- [x] HealthController 경로 수정 (`/health` → `/api/v1/health`)
+- [x] ChatRoomController 경로 수정 (`/api/v1/chat/*`)
+- [x] ChatController 경로 수정
+- [x] ChatMessageController 경로 수정
+- [x] WebSocket SockJS URL 토큰 파라미터 제거 
+- [x] NotificationController 경로 확인 (`/api/v1/notifications`)
+- [x] UserController 온보딩 상태 경로 확인 (`/api/v1/user/onboarding-status`)
 
-### 진행 필요 항목 ⏳
-- [ ] ChatRoomController 경로 수정 (`/api/v1/chat/*`)
-- [ ] ChatController 경로 수정  
+### 진행 필요 항목 ⏳  
 - [ ] ClovaController 경로 수정
 - [ ] 토큰 갱신 API 경로 확인
-- [ ] Health Check API 경로 수정
 - [ ] 수정 후 전체 API 테스트
 
 ### 문서화 항목 📚  
