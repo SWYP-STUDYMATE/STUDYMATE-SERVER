@@ -93,6 +93,31 @@ curl -I https://api.languagemate.kr/api/v1/login/google
 - 외부 OAuth 설정 변경 전까지는 404 에러 발생 가능
 - 설정 변경 후 정상 작동 예상
 
+## 🚨 추가 수정 사항 (2차)
+
+### 3. SecurityConfig Health 엔드포인트 허용 추가
+**파일**: `src/main/java/com/studymate/config/SecurityConfig.java`
+
+**문제점**: 
+- 클라이언트가 `/api/v1/health` 경로로 요청하지만 SecurityConfig에서 `/health`만 허용
+- 401 Unauthorized 에러 발생
+
+**해결책**:
+```java
+// 수정 전
+.requestMatchers("/health", "/actuator/health").permitAll()
+
+// 수정 후
+.requestMatchers("/health", "/api/v1/health", "/actuator/health").permitAll()
+
+// OAuth 콜백 경로도 추가
+.requestMatchers("/login/oauth2/code/**", "/api/v1/login/oauth2/code/**").permitAll()
+```
+
+**결과**: 
+- ✅ Health check 엔드포인트 401 에러 해결
+- ✅ OAuth 콜백 보안 설정 완료
+
 ---
 
 **다음 단계**: 외부 OAuth 제공업체에서 Callback URL/Redirect URI 업데이트

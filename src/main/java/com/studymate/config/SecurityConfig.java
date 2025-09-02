@@ -42,27 +42,27 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(authz -> authz
                                                 // 1) OPTIONS, 로그인/토큰 엔드포인트
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                                .requestMatchers("/api/v1/login/**", "/api/v1/auth/**").permitAll()
-                                                .requestMatchers("/health", "/api/v1/health", "/actuator/health").permitAll()
+                                                .requestMatchers("/v1/login/**", "/api/v1/login/**", "/v1/auth/**", "/api/v1/auth/**").permitAll()
+                                                .requestMatchers("/health", "/v1/health", "/api/v1/health", "/actuator/health").permitAll()
                                         // OAuth2 콜백 경로 허용
-                                        .requestMatchers("/login/oauth2/code/**", "/api/v1/login/oauth2/code/**").permitAll()
+                                        .requestMatchers("/login/oauth2/code/**", "/v1/login/oauth2/code/**", "/api/v1/login/oauth2/code/**").permitAll()
 
 
                                                 // 인증 없이 접근 가능한 옵션 조회용 API
-                                                .requestMatchers("/api/v1/onboard/interest/motivations",
-                                                                "/api/v1/onboard/interest/topics",
-                                                                "/api/v1/onboard/interest/learning-styles",
-                                                                "/api/v1/onboard/interest/learning-expectations",
-                                                                "/api/v1/onboard/language/languages",
-                                                                "/api/v1/onboard/language/level-types-language",
-                                                                "/api/v1/onboard/language/level-types-partner",
-                                                                "/api/v1/onboard/partner/gender-type",
-                                                                "/api/v1/onboard/partner/personalities",
-                                                                "/api/v1/onboard/schedule/communication-methods",
-                                                                "/api/v1/onboard/schedule/daily-methods",
-                                                                "/api/v1/onboard/schedule/group-sizes",
-                                                                "/api/v1/user/locations",
-                                                                "/api/v1/user/gender-type")
+                                                .requestMatchers("/v1/onboard/interest/motivations", "/api/v1/onboard/interest/motivations",
+                                                                "/v1/onboard/interest/topics", "/api/v1/onboard/interest/topics",
+                                                                "/v1/onboard/interest/learning-styles", "/api/v1/onboard/interest/learning-styles",
+                                                                "/v1/onboard/interest/learning-expectations", "/api/v1/onboard/interest/learning-expectations",
+                                                                "/v1/onboard/language/languages", "/api/v1/onboard/language/languages",
+                                                                "/v1/onboard/language/level-types-language", "/api/v1/onboard/language/level-types-language",
+                                                                "/v1/onboard/language/level-types-partner", "/api/v1/onboard/language/level-types-partner",
+                                                                "/v1/onboard/partner/gender-type", "/api/v1/onboard/partner/gender-type",
+                                                                "/v1/onboard/partner/personalities", "/api/v1/onboard/partner/personalities",
+                                                                "/v1/onboard/schedule/communication-methods", "/api/v1/onboard/schedule/communication-methods",
+                                                                "/v1/onboard/schedule/daily-methods", "/api/v1/onboard/schedule/daily-methods",
+                                                                "/v1/onboard/schedule/group-sizes", "/api/v1/onboard/schedule/group-sizes",
+                                                                "/v1/user/locations", "/api/v1/user/locations",
+                                                                "/v1/user/gender-type", "/api/v1/user/gender-type")
                                                 .permitAll()
                                                 // 2) SockJS/WebSocket 핸드셰이크 경로
                                                 .requestMatchers("/ws/**").permitAll()
