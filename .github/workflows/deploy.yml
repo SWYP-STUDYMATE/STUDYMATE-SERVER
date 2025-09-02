@@ -34,7 +34,6 @@ jobs:
           spring.datasource.username=studymate
           spring.datasource.password=studymate123!
           spring.datasource.hikari.connection-timeout=60000
-          spring.datasource.hikari.initialization-fail-timeout=60000
           spring.datasource.hikari.validation-timeout=3000
           spring.datasource.hikari.leak-detection-threshold=60000
           spring.jpa.hibernate.ddl-auto=update
