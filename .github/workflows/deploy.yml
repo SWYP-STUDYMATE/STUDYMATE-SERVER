@@ -42,7 +42,7 @@ jobs:
           naver.client_id=EzXpYAkIVhX1ViFQ5edo
           naver.client_secret=Zml5tphcOJ
           naver.authorization_grant_type=authorization_code
-          naver.redirect_uri=https://api.languagemate.kr/login/oauth2/code/naver
+          naver.redirect_uri=https://api.languagemate.kr/api/v1/login/oauth2/code/naver
           
           jwt.secret_key=c3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRlc3R1ZHltYXRl
           
@@ -58,7 +58,7 @@ jobs:
           
           google.client_id=1068056726433-kf4s0t3jj6iis0aep2kvtgfcebfmfquj.apps.googleusercontent.com
           google.client_secret=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
-          google.redirect_uri=https://api.languagemate.kr/login/oauth2/code/google
+          google.redirect_uri=https://api.languagemate.kr/api/v1/login/oauth2/code/google
           
           clova.studio.api-key=nv-4ca906c1bf814a59a0fd629d0beec6aaH11S
           clova.studio.endpoint=https://clovastudio.stream.ntruss.com/v1/chat-completions/HCX-003

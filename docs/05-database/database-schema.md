@@ -194,6 +194,44 @@ erDiagram
     CHAT_ROOMS ||--o{ CHAT_MESSAGES : contains
     
     SESSIONS ||--o{ SESSION_PARTICIPANTS : has_many
+    
+    ACHIEVEMENTS {
+        bigint achievement_id PK
+        varchar(100) achievement_key UK
+        varchar(200) title
+        text description
+        enum category
+        enum type
+        enum tier
+        int target_value
+        varchar(50) target_unit
+        int xp_reward
+        varchar(500) badge_icon_url
+        varchar(10) badge_color
+        boolean is_active
+        boolean is_hidden
+        int sort_order
+        bigint prerequisite_achievement_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    
+    USER_ACHIEVEMENTS {
+        bigint user_achievement_id PK
+        varchar(36) user_id FK
+        bigint achievement_id FK
+        int current_progress
+        boolean is_completed
+        datetime completed_at
+        boolean is_reward_claimed
+        datetime reward_claimed_at
+        datetime created_at
+        datetime updated_at
+    }
+    
+    USERS ||--o{ USER_ACHIEVEMENTS : earns
+    ACHIEVEMENTS ||--o{ USER_ACHIEVEMENTS : granted_to
+    ACHIEVEMENTS ||--o{ ACHIEVEMENTS : prerequisite_for
 ```
 
 ---
@@ -354,6 +392,71 @@ CREATE INDEX idx_chat_messages_sender ON chat_messages(sender_id);
 **인덱스:**
 ```sql
 CREATE INDEX idx_level_tests_user_created ON level_tests(user_id, created_at DESC);
+```
+
+### 6. 성취 시스템 테이블
+
+#### achievements (성취/업적 마스터)
+| 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
+|--------|-------------|----------|------|
+| `achievement_id` | BIGINT | PK, AUTO_INCREMENT | 성취 식별자 |
+| `achievement_key` | VARCHAR(100) | UK, NOT NULL | 성취 고유키 (FIRST_SESSION) |
+| `title` | VARCHAR(200) | NOT NULL | 성취 제목 |
+| `description` | TEXT | NULL | 성취 설명 |
+| `category` | ENUM | NOT NULL | LEARNING, SOCIAL, ENGAGEMENT, SKILL, TIME, MILESTONE, SPECIAL |
+| `type` | ENUM | NOT NULL | COUNT, STREAK, ACCUMULATE, THRESHOLD, MILESTONE, COMBINATION |
+| `tier` | ENUM | NOT NULL | BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, LEGENDARY |
+| `target_value` | INT | NULL | 목표값 (10회, 7일 등) |
+| `target_unit` | VARCHAR(50) | NULL | 목표 단위 (sessions, days, points) |
+| `xp_reward` | INT | NULL | 경험치 보상 |
+| `badge_icon_url` | VARCHAR(500) | NULL | 배지 아이콘 URL |
+| `badge_color` | VARCHAR(10) | NULL | 배지 색상 코드 |
+| `is_active` | BOOLEAN | DEFAULT TRUE | 활성화 여부 |
+| `is_hidden` | BOOLEAN | DEFAULT FALSE | 숨김 여부 (달성 전까지) |
+| `sort_order` | INT | NULL | 정렬 순서 |
+| `prerequisite_achievement_id` | BIGINT | FK | 선행 성취 조건 |
+| `created_at` | DATETIME | DEFAULT NOW() | 생성일시 |
+| `updated_at` | DATETIME | ON UPDATE NOW() | 수정일시 |
+
+**인덱스:**
+```sql
+CREATE INDEX idx_achievements_category_active ON achievements(category, is_active);
+CREATE INDEX idx_achievements_tier ON achievements(tier);
+```
+
+#### user_achievements (사용자 성취 진행도)
+| 컬럼명 | 데이터 타입 | 제약조건 | 설명 |
+|--------|-------------|----------|------|
+| `user_achievement_id` | BIGINT | PK, AUTO_INCREMENT | 사용자 성취 식별자 |
+| `user_id` | VARCHAR(36) | FK, NOT NULL | 사용자 ID |
+| `achievement_id` | BIGINT | FK, NOT NULL | 성취 ID |
+| `current_progress` | INT | DEFAULT 0 | 현재 진행도 |
+| `is_completed` | BOOLEAN | DEFAULT FALSE | 달성 여부 |
+| `completed_at` | DATETIME | NULL | 달성 일시 |
+| `is_reward_claimed` | BOOLEAN | DEFAULT FALSE | 보상 수령 여부 |
+| `reward_claimed_at` | DATETIME | NULL | 보상 수령 일시 |
+| `created_at` | DATETIME | DEFAULT NOW() | 생성일시 |
+| `updated_at` | DATETIME | ON UPDATE NOW() | 수정일시 |
+
+**유니크 제약조건:**
+```sql
+ALTER TABLE user_achievements ADD UNIQUE KEY uk_user_achievement (user_id, achievement_id);
+```
+
+**인덱스:**
+```sql
+CREATE INDEX idx_user_achievements_user_completed ON user_achievements(user_id, is_completed);
+CREATE INDEX idx_user_achievements_completed_at ON user_achievements(completed_at);
+```
+
+**초기 성취 데이터 예시:**
+```sql
+INSERT INTO achievements (achievement_key, title, description, category, type, tier, target_value, target_unit, xp_reward, sort_order) VALUES 
+('FIRST_SESSION', '첫 대화', '첫 번째 언어교환 세션을 완료하세요', 'MILESTONE', 'COUNT', 'BRONZE', 1, 'sessions', 50, 1),
+('WEEK_STREAK', '일주일 연속', '7일 연속으로 언어교환을 하세요', 'ENGAGEMENT', 'STREAK', 'SILVER', 7, 'days', 200, 2),
+('SESSION_MASTER', '세션 마스터', '총 100회의 세션을 완료하세요', 'LEARNING', 'COUNT', 'GOLD', 100, 'sessions', 1000, 3),
+('EARLY_BIRD', '이른 새', '오전 8시 이전에 세션을 시작하세요', 'SPECIAL', 'MILESTONE', 'BRONZE', 1, 'early_sessions', 100, 4),
+('SOCIAL_BUTTERFLY', '소셜 나비', '10명의 다른 파트너와 대화하세요', 'SOCIAL', 'COUNT', 'SILVER', 10, 'partners', 300, 5);
 ```
 
 ---
