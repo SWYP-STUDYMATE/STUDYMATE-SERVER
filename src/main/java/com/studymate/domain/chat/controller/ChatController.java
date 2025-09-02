@@ -65,7 +65,7 @@ public class ChatController {
         );
     }
 
-    @PostMapping("/api/chat/rooms/{roomId}/images")
+    @PostMapping("/api/v1/chat/rooms/{roomId}/images")
     public ResponseDto<List<String>> uploadChatImage(
             @PathVariable Long roomId,
             @RequestParam("files") List<MultipartFile> files
@@ -74,7 +74,7 @@ public class ChatController {
         return ResponseDto.of(imageUrls, "이미지 업로드 성공");
     }
 
-    @PostMapping("/api/chat/rooms/{roomId}/audio")
+    @PostMapping("/api/v1/chat/rooms/{roomId}/audio")
     public ResponseDto<String> uploadChatAudio(
             @PathVariable Long roomId,
             @RequestParam("file") MultipartFile file

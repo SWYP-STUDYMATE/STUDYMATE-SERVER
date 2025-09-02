@@ -1,9 +1,17 @@
 # 🔗 STUDYMATE 프론트엔드-백엔드 연동 가이드
 
 ## 📅 문서 정보
-- **최종 업데이트**: 2025-08-27
+- **최종 업데이트**: 2025-01-02 (API 경로 표준화 반영)
 - **작성자**: System Architecture Team
 - **목적**: 프론트엔드와 백엔드 간 통신 방법 및 데이터 흐름 가이드
+
+## ⚠️ 긴급 업데이트 (2025-01-02)
+**API 경로 불일치 문제 해결**: 클라이언트-서버 API 경로 불일치로 인한 "사용자 정보 조회 실패" 문제가 해결되었습니다.
+
+### 변경 사항
+- **클라이언트 baseURL**: `/api` → `/api/v1` (자동 프리픽스 추가)
+- **채팅 API 경로**: `/api/chat/*` → `/api/v1/chat/*` 표준화
+- **모든 API**: `/api/v1/` 프리픽스로 일관성 확보
 
 ---
 
@@ -42,9 +50,20 @@
 ```javascript
 const api = axios.create({
   // 프로덕션: 리버스 프록시 via Cloudflare
-  // 개발: Vite proxy 설정
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  // 개발: Vite proxy 설정  
+  // API v1 경로를 baseURL에 명시하여 백엔드와 일치시킴
+  baseURL: (import.meta.env.VITE_API_URL || "/api") + "/v1",
 });
+```
+
+**중요**: baseURL에 `/v1`이 자동 추가되므로 API 호출 시 별도로 명시하지 않음
+```javascript
+// ✅ 올바른 사용법
+api.get("/user/name")           → https://api.languagemate.kr/api/v1/user/name
+api.post("/chat/rooms", data)   → https://api.languagemate.kr/api/v1/chat/rooms
+
+// ❌ 잘못된 사용법 (중복 경로)
+api.get("/api/v1/user/name")    → https://api.languagemate.kr/api/v1/api/v1/user/name
 ```
 
 **환경별 URL**
