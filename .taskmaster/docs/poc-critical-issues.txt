@@ -1,0 +1,37 @@
+# STUDYMATE POC 핵심 정합성 이슈 수정
+
+## 프로젝트 개요
+POC 구현을 위해 기능 동작에 필수적인 핵심 정합성 문제들만 선별하여 수정
+
+## 핵심 문제 (POC 필수)
+
+### 1. User 엔티티 스키마 불일치 수정 (Priority 1)
+**문제**: User 엔티티에 email 필드 누락
+**해결**: User 엔티티에 email 필드 추가 및 userIdentity와의 관계 정리
+**파일**: `src/main/java/com/studymate/domain/user/entity/User.java`
+
+### 2. Location 테이블 구조 통일 (Priority 1)
+**문제**: 스키마(name, code) vs 실제 엔티티(country, city, timeZone) 완전 불일치
+**해결**: 스키마 문서를 실제 구현에 맞춰 업데이트 또는 엔티티 수정
+**파일**: `docs/05-database/database-schema.md`, `src/main/java/com/studymate/domain/user/entity/Location.java`
+
+### 3. API 엔드포인트 누락 수정 (Priority 1)
+**문제**: 클라이언트에서 호출하는 `/user/profile` 엔드포인트가 서버에 없음
+**해결**: 누락된 API 엔드포인트 구현 또는 클라이언트 호출 경로 수정
+**파일**: `src/main/java/com/studymate/domain/user/controller/UserController.java`
+
+### 4. Chat 테이블 ID 타입 통일 (Priority 2)
+**문제**: ChatRoom, ChatMessage ID 타입이 스키마(UUID) vs 실제(Long) 불일치
+**해결**: POC에서는 Long 유지하고 스키마 문서 업데이트
+**파일**: `docs/05-database/database-schema.md`
+
+## 성공 기준
+- [ ] User 프로필 조회 API 정상 동작
+- [ ] Location 관련 기능 정상 동작  
+- [ ] 채팅 기능 기본 동작 확인
+- [ ] 클라이언트-서버 API 호출 에러 해결
+
+## 제약사항
+- 최소한의 변경으로 기능 동작 확보
+- 운영 데이터 영향 최소화
+- 빠른 POC 검증 우선

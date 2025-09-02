@@ -291,4 +291,35 @@ public class UserServiceImpl implements UserService {
         
         userRepository.save(user);
     }
+    
+    @Override
+    public UserProfileResponse getUserProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        LocationResponse locationResponse = null;
+        if (user.getLocation() != null) {
+            Location location = user.getLocation();
+            locationResponse = new LocationResponse(
+                location.getLocationId(),
+                location.getCountry(),
+                location.getCity(),
+                location.getTimeZone()
+            );
+        }
+        
+        return new UserProfileResponse(
+                user.getUserId(),
+                user.getName(),
+                user.getEnglishName(),
+                user.getEmail(),
+                user.getBirthday(),
+                user.getBirthyear(),
+                user.getUserGenderType(),
+                user.getProfileImage(),
+                user.getSelfBio(),
+                locationResponse,
+                user.getIsOnboardingCompleted()
+        );
+    }
 }

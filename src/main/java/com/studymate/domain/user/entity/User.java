@@ -30,6 +30,9 @@ public class User {
     @Column(name = "USER_IDENTITY")
     private String userIdentity;
 
+    @Column(name = "EMAIL", unique = true)
+    private String email;
+
     @Column(name = "USER_CREATED_AT")
     private LocalDateTime userCreatedAt;
 
@@ -128,8 +131,8 @@ public class User {
     }
 
     public String getEmail() {
-        // OAuth 로그인에서 email 정보는 userIdentity에 저장됨
-        return this.userIdentity;
+        // 스키마 일치를 위한 email 필드가 있으면 사용, 없으면 userIdentity 사용
+        return this.email != null ? this.email : this.userIdentity;
     }
 
     public String getBirthyear() {

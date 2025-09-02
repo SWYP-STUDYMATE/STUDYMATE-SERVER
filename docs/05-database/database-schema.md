@@ -37,17 +37,16 @@ erDiagram
         text self_bio
         int birth_year
         varchar(10) birth_day
-        bigint location_id FK
+        int location_id FK
         datetime created_at
         datetime updated_at
     }
     
     LOCATIONS {
-        bigint id PK
-        varchar(255) name
-        varchar(50) code
-        datetime created_at
-        datetime updated_at
+        int location_id PK
+        varchar(255) country
+        varchar(255) city
+        varchar(100) timezone
     }
     
     ONBOARD_LANGUAGES {
@@ -123,7 +122,7 @@ erDiagram
     }
     
     CHAT_ROOMS {
-        varchar(36) id PK "UUID"
+        bigint id PK "Long"
         varchar(255) room_name
         enum room_type
         json metadata
@@ -132,7 +131,7 @@ erDiagram
     }
     
     CHAT_PARTICIPANTS {
-        varchar(36) room_id PK,FK
+        bigint room_id PK,FK
         varchar(36) user_id PK,FK
         enum participant_role
         datetime joined_at
@@ -140,8 +139,8 @@ erDiagram
     }
     
     CHAT_MESSAGES {
-        varchar(36) id PK "UUID"
-        varchar(36) room_id FK
+        bigint id PK "Long"
+        bigint room_id FK
         varchar(36) sender_id FK
         enum message_type
         text content

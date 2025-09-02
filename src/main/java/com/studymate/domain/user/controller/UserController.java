@@ -86,11 +86,17 @@ public class UserController {
     }
 
     @GetMapping("/profile")
+    public UserProfileResponse getUserProfile(@AuthenticationPrincipal CustomUserDetails principal
+    ) {
+        UUID userId = principal.getUuid();
+        return userService.getUserProfile(userId);
+    }
+    
+    @GetMapping("/profile-image")
     public ProfileImageUrlResponse getProfileImageUrl(@AuthenticationPrincipal CustomUserDetails principal
     ) {
         UUID userId = principal.getUuid();
         return userService.getProfileImageUrl(userId);
-
     }
 
     @GetMapping("/gender-type")

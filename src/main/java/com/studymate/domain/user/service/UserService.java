@@ -27,4 +27,7 @@ public interface UserService {
     void completeOnboarding(UUID userId, CompleteOnboardingRequest req);
     UserSettingsResponse getUserSettings(UUID userId);
     void updateUserSettings(UUID userId, UserSettingsRequest req);
+    
+    // 통합 프로필 조회
+    UserProfileResponse getUserProfile(UUID userId);
 }

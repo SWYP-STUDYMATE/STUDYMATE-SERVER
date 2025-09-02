@@ -1,12 +1,14 @@
 package com.studymate.domain.user.service;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 
 import com.studymate.domain.user.domain.dto.response.TokenResponse;
 import com.studymate.auth.jwt.JwtUtils;
 import com.studymate.exception.LoginExpirationException;
+import com.studymate.redis.entity.RefreshToken;
 import com.studymate.redis.repository.RefreshTokenRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,9 +35,19 @@ public class TokenServiceImpl implements TokenService {
         if (stored == null || !stored.equals(refreshToken)) {
             throw new LoginExpirationException();
         }
-        // 4) 새 Access Token 발급
+        // 4) 새 토큰 발급 및 저장
         String newAccessToken = jwtUtils.generateAccessToken(userId);
-        return TokenResponse.of(newAccessToken, null, userId);
+        String newRefreshToken = jwtUtils.generateRefreshToken(userId);
+        
+        // 5) 새 리프레시 토큰을 Redis에 저장 (기존 토큰 교체)
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .userId(userId.toString())
+                        .token(newRefreshToken)
+                        .ttlSeconds(TimeUnit.DAYS.toSeconds(7))
+                        .build());
+        
+        return TokenResponse.of(newAccessToken, newRefreshToken, userId);
     }
 
     @Override
