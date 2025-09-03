@@ -2,34 +2,34 @@
 -- This file will be executed automatically by Spring Boot on startup
 
 -- MOTIVATION 테이블 초기 데이터
-INSERT INTO MOTIVATION (motivation_name) VALUES ('취업/진학');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('자기 개발');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('취미 생활');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('여행/문화 교류');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('자존감 향상');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('영어 시험 준비 (TOEIC, IELTS, OPIC 등)');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('친구 사귀기 또는 대화');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('유학/어학연수 준비');
-INSERT INTO MOTIVATION (motivation_name) VALUES ('이민 준비');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('취업/진학');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('자기 개발');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('취미 생활');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('여행/문화 교류');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('자존감 향상');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('영어 시험 준비 (TOEIC, IELTS, OPIC 등)');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('친구 사귀기 또는 대화');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('유학/어학연수 준비');
+INSERT INTO MOTIVATION (MOTIVATION_NAME) VALUES ('이민 준비');
 
 -- TOPIC 테이블 초기 데이터
-INSERT INTO TOPIC (topic_name) VALUES ('여행');
-INSERT INTO TOPIC (topic_name) VALUES ('시사');
-INSERT INTO TOPIC (topic_name) VALUES ('음식');
-INSERT INTO TOPIC (topic_name) VALUES ('비즈니스');
-INSERT INTO TOPIC (topic_name) VALUES ('드라마/영화');
-INSERT INTO TOPIC (topic_name) VALUES ('문화/라이프스타일');
-INSERT INTO TOPIC (topic_name) VALUES ('운동/스포츠');
-INSERT INTO TOPIC (topic_name) VALUES ('경제');
-INSERT INTO TOPIC (topic_name) VALUES ('IT');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('여행');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('시사');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('음식');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('비즈니스');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('드라마/영화');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('문화/라이프스타일');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('운동/스포츠');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('경제');
+INSERT INTO TOPIC (TOPIC_NAME) VALUES ('IT');
 
 -- LEARNING_STYLE 테이블 초기 데이터
-INSERT INTO LEARNING_STYLE (learning_style_name) VALUES ('듣는 걸 좋아해요');
-INSERT INTO LEARNING_STYLE (learning_style_name) VALUES ('말하는 걸 좋아해요');
-INSERT INTO LEARNING_STYLE (learning_style_name) VALUES ('둘 다 반반이예요');
+INSERT INTO LEARNING_STYLE (LEARNING_STYLE_NAME) VALUES ('듣는 걸 좋아해요');
+INSERT INTO LEARNING_STYLE (LEARNING_STYLE_NAME) VALUES ('말하는 걸 좋아해요');
+INSERT INTO LEARNING_STYLE (LEARNING_STYLE_NAME) VALUES ('둘 다 반반이예요');
 
 -- Location 테이블 초기 데이터 (onboarding-info 페이지에서 활용)
-INSERT INTO Location (country, city, timezone) VALUES
+INSERT INTO LOCATION (COUNTRY, CITY, TIMEZONE) VALUES
 -- 아시아/태평양
 ('대한민국', '서울', 'Asia/Seoul'),
 ('일본', '도쿄', 'Asia/Tokyo'),
@@ -86,8 +86,8 @@ INSERT INTO Location (country, city, timezone) VALUES
 ('아르헨티나', '부에노스아이레스', 'America/Argentina/Buenos_Aires'),
 ('멕시코', '멕시코시티', 'America/Mexico_City');
 
--- Language 테이블 초기 데이터
-INSERT INTO Language (language_name) VALUES
+-- Language 테이블 초기 데이터  
+INSERT INTO LANGUAGE (LANGUAGE_NAME) VALUES
 ('한국어'),
 ('영어'),
 ('일본어'),
@@ -102,11 +102,11 @@ INSERT INTO Language (language_name) VALUES
 ('포르투갈어');
 
 -- PARTNER_PERSONALITY 테이블 초기 데이터 (오타 수정: PARSONALITY -> PERSONALITY)
-INSERT INTO PARTNER_PERSONALITY (partner_personality) VALUES ('편하게 대화 나누는 친구 같은 파트너');
-INSERT INTO PARTNER_PERSONALITY (partner_personality) VALUES ('교정과 피드백을 잘 주는 선생님 스타일');
-INSERT INTO PARTNER_PERSONALITY (partner_personality) VALUES ('함께 주제를 정해 대화할 수 있는 파트너');
-INSERT INTO PARTNER_PERSONALITY (partner_personality) VALUES ('자신과 비슷한 관심사를 가지고 있는 파트너');
-INSERT INTO PARTNER_PERSONALITY (partner_personality) VALUES ('서로 도움을 주며 같이 성장할 수 있는 파트너');
+INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('편하게 대화 나누는 친구 같은 파트너');
+INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('교정과 피드백을 잘 주는 선생님 스타일');
+INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('함께 주제를 정해 대화할 수 있는 파트너');
+INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('자신과 비슷한 관심사를 가지고 있는 파트너');
+INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('서로 도움을 주며 같이 성장할 수 있는 파트너');
 
 -- LANG_LEVEL_TYPE 테이블 초기 데이터 (학습 언어 레벨)
 INSERT INTO LANG_LEVEL_TYPE (LANG_LEVEL_ID, LANG_LEVEL_NAME) VALUES
