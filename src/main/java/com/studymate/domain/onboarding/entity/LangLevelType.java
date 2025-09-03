@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "LANG_LEVEl_TYPE")
+@Table(name = "LANG_LEVEL_TYPE")
 public class LangLevelType {
 
     @Id
