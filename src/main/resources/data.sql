@@ -87,19 +87,19 @@ INSERT INTO LOCATION (COUNTRY, CITY, TIMEZONE) VALUES
 ('멕시코', '멕시코시티', 'America/Mexico_City');
 
 -- Language 테이블 초기 데이터  
-INSERT INTO LANGUAGE (LANGUAGE_NAME) VALUES
-('한국어'),
-('영어'),
-('일본어'),
-('중국어'),
-('프랑스어'),
-('독일어'),
-('스페인어'),
-('러시아어'),
-('베트남어'),
-('태국어'),
-('아랍어'),
-('포르투갈어');
+INSERT INTO LANGUAGE (LANGUAGE_NAME, LANGUAGE_CODE) VALUES
+('한국어', 'ko'),
+('영어', 'en'),
+('일본어', 'ja'),
+('중국어', 'zh'),
+('프랑스어', 'fr'),
+('독일어', 'de'),
+('스페인어', 'es'),
+('러시아어', 'ru'),
+('베트남어', 'vi'),
+('태국어', 'th'),
+('아랍어', 'ar'),
+('포르투갈어', 'pt');
 
 -- PARTNER_PERSONALITY 테이블 초기 데이터 (오타 수정: PARSONALITY -> PERSONALITY)
 INSERT INTO PARTNER_PERSONALITY (PARTNER_PERSONALITY) VALUES ('편하게 대화 나누는 친구 같은 파트너');

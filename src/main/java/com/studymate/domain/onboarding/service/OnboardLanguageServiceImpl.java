@@ -16,6 +16,7 @@ import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OnboardLanguageServiceImpl implements OnboardLanguageService {
 
     private final UserRepository userRepository;
@@ -34,16 +36,21 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
     private final OnboardLangLevelRepository onboardLangLevelRepository;
 
     @Override
-    public void saveNativeLanguage(UUID userId,NativeLanguageRequest req) {
+    public void saveNativeLanguage(UUID userId, NativeLanguageRequest req) {
         int nativeLangId = req.languageId();
+        
+        if (nativeLangId <= 0) {
+            throw new IllegalArgumentException("Invalid language ID: " + nativeLangId);
+        }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException("USER NOT FOUND"));
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다: " + userId));
+        
         Language language = languageRepository.findById(nativeLangId)
-                .orElseThrow(()-> new NotFoundException("NOT FOUND LANGUAGE"));
+                .orElseThrow(() -> new NotFoundException("언어를 찾을 수 없습니다. ID: " + nativeLangId));
+        
         user.setNativeLanguage(language);
         userRepository.save(user);
-
     }
 
     @Override
