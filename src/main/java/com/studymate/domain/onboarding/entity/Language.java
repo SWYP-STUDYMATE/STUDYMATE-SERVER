@@ -17,7 +17,7 @@ public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LANGUAGE_ID")
-    private int LanguageId;
+    private int languageId;
 
     @Column(name = "LANGUAGE_NAME")
     private String languageName;
@@ -29,5 +29,9 @@ public class Language {
     // 편의 메서드들
     public String getName() {
         return this.languageName;
+    }
+    
+    public String getCode() {
+        return this.code;
     }
 }
