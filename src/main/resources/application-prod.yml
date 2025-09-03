@@ -26,6 +26,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
     database-platform: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: false
@@ -35,6 +36,12 @@ spring:
           characterEncoding: utf-8
           CharSet: utf-8
           useUnicode: true
+  
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+      continue-on-error: true
 
   # Redis Configuration
   data:
