@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +38,15 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
 
     @Override
     public void saveNativeLanguage(UUID userId, NativeLanguageRequest req) {
+        System.out.println("🔍 saveNativeLanguage 호출됨");
+        System.out.println("🔍 userId: " + userId);
+        System.out.println("🔍 req: " + req);
+        
         int nativeLangId = req.languageId();
+        System.out.println("🔍 nativeLangId: " + nativeLangId);
         
         if (nativeLangId <= 0) {
+            System.out.println("🔍 Invalid language ID detected: " + nativeLangId);
             throw new IllegalArgumentException("Invalid language ID: " + nativeLangId);
         }
 
@@ -49,29 +56,44 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
         Language language = languageRepository.findById(nativeLangId)
                 .orElseThrow(() -> new NotFoundException("언어를 찾을 수 없습니다. ID: " + nativeLangId));
         
+        System.out.println("🔍 언어 찾기 성공: " + language.getLanguageName());
+        
         user.setNativeLanguage(language);
         userRepository.save(user);
+        
+        System.out.println("🔍 모국어 저장 완료");
     }
 
     @Override
     public void saveLanguageLevel(UUID userId,LanguageLevelRequest req) {
-        Set<Integer> langLevelTypeIds = req.languages().stream()
-                .map(LanguageLevelRequest.LanguageLevelDto::langLevelTypeId)
+        // 현재 레벨과 목표 레벨 모두 수집
+        Set<Integer> allLevelIds = req.languages().stream()
+                .flatMap(dto -> Stream.of(dto.currentLevelId(), dto.targetLevelId()))
                 .collect(Collectors.toSet());
+                
         Map<Integer, LangLevelType> langLevelTypeMap = langLevelTypeRepository
-                .findAllById(langLevelTypeIds)
+                .findAllById(allLevelIds)
                 .stream()
                 .collect(Collectors.toMap(LangLevelType::getLangLevelId, Function.identity()));
 
         for (LanguageLevelRequest.LanguageLevelDto dto : req.languages()) {
             OnboardLangLevelId id = new OnboardLangLevelId(userId, dto.languageId());
-            LangLevelType langLevelType = langLevelTypeMap.get(dto.langLevelTypeId());
-            if (langLevelType == null) {
-                throw new NotFoundException("LANGUAGE LEVEL NOT FOUND: ");
+            
+            LangLevelType currentLevelType = langLevelTypeMap.get(dto.currentLevelId());
+            LangLevelType targetLevelType = langLevelTypeMap.get(dto.targetLevelId());
+            
+            if (currentLevelType == null) {
+                throw new NotFoundException("현재 언어 레벨을 찾을 수 없습니다: " + dto.currentLevelId());
             }
+            if (targetLevelType == null) {
+                throw new NotFoundException("목표 언어 레벨을 찾을 수 없습니다: " + dto.targetLevelId());
+            }
+            
             OnboardLangLevel onboardLangLevel = OnboardLangLevel.builder()
                     .id(id)
-                    .langLevelType(langLevelType)
+                    .langLevelType(currentLevelType) // 기존 호환성 유지
+                    .currentLevel(currentLevelType)
+                    .targetLevel(targetLevelType)
                     .build();
             onboardLangLevelRepository.save(onboardLangLevel);
         }

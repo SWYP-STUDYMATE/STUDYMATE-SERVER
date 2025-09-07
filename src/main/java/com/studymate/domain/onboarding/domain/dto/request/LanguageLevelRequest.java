@@ -9,6 +9,7 @@ public record LanguageLevelRequest(
 ) {
     public static record LanguageLevelDto(
             int languageId,
-            int langLevelTypeId
+            int currentLevelId,
+            int targetLevelId
     ) {}
 }

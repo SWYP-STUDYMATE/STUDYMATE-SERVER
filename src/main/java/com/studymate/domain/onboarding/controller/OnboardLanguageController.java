@@ -30,7 +30,12 @@ public class OnboardLanguageController {
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestBody NativeLanguageRequest req) {
         
+        System.out.println("🔍 saveNativeLanguage Controller 호출됨");
+        System.out.println("🔍 Request body: " + req);
+        
         UUID userId = principal.getUuid();
+        System.out.println("🔍 User ID: " + userId);
+        
         onboardLanguageService.saveNativeLanguage(userId, req);
         
         return ResponseEntity.ok(ApiResponse.success("모국어가 성공적으로 저장되었습니다."));

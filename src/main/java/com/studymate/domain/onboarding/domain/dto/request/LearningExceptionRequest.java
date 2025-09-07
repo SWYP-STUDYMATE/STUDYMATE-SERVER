@@ -1,12 +1,9 @@
 package com.studymate.domain.onboarding.domain.dto.request;
 
-import com.studymate.domain.onboarding.domain.type.LearningExpectionType;
-
-
-import java.util.UUID;
+import java.util.List;
 
 public record LearningExceptionRequest(
-        LearningExpectionType learningExpectionType
+        List<Integer> learningExpectationIds
 ) {
 
 

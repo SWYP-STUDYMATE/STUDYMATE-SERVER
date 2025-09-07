@@ -75,16 +75,32 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
     @Override
     @Transactional
-    public void saveLearningExpectation(UUID userId,LearningExceptionRequest req) {
-        LearningExpectionType learningExpectionType = req.learningExpectionType();
+    public void saveLearningExpectation(UUID userId, LearningExceptionRequest req) {
         User user = userRepository.findById(userId)
-                        .orElseThrow(()->new NotFoundException("USER NOT FOUND"));
+                .orElseThrow(() -> new NotFoundException("USER NOT FOUND"));
 
-
-        user.setLearningExpectionType(learningExpectionType);
-        userRepository.save(user);
-
-
+        // 배열에서 첫 번째 ID를 사용하여 LearningExpectionType 매핑
+        if (req.learningExpectationIds() != null && !req.learningExpectationIds().isEmpty()) {
+            Integer firstId = req.learningExpectationIds().get(0);
+            
+            // ID를 LearningExpectionType으로 매핑 (임시 로직)
+            LearningExpectionType learningExpectionType = mapIdToLearningExpectionType(firstId);
+            
+            user.setLearningExpectionType(learningExpectionType);
+            userRepository.save(user);
+        }
+    }
+    
+    private LearningExpectionType mapIdToLearningExpectionType(Integer id) {
+        // TODO: 실제 매핑 로직은 데이터베이스 구조에 따라 결정
+        // 현재는 임시로 순서대로 매핑
+        return switch (id) {
+            case 1 -> LearningExpectionType.HABIT;
+            case 2 -> LearningExpectionType.CONFIDENCE;
+            case 3 -> LearningExpectionType.CUSTOMIZED_METHOD;
+            case 4 -> LearningExpectionType.PRACTICAL_CONVERSATION;
+            default -> LearningExpectionType.HABIT; // 기본값
+        };
     }
 
     @Override
