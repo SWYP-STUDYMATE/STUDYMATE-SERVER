@@ -71,7 +71,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
 
-        String key = "profile-image/" + userId + "_" + file.getOriginalFilename();
+        // 파일명 처리 (카메라 촬영 시 null이 될 수 있음)
+        String originalFilename = file.getOriginalFilename();
+        String filename = (originalFilename != null && !originalFilename.isEmpty()) 
+            ? originalFilename 
+            : "profile_" + System.currentTimeMillis() + ".jpg";
+            
+        String key = "profile-image/" + userId + "_" + filename;
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
@@ -91,7 +97,7 @@ public class UserServiceImpl implements UserService {
             log.info("프로필 이미지 업로드 성공 - 사용자: {}, URL: {}", userId, url);
         } catch (Exception e) {
             log.error("프로필 이미지 업로드 실패 - 사용자: {}, 파일: {}, 오류: {}", 
-                     userId, file.getOriginalFilename(), e.getMessage());
+                     userId, filename, e.getMessage());
             throw new RuntimeException("이미지 업로드 실패: " + e.getMessage(), e);
         }
     }
