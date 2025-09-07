@@ -42,11 +42,19 @@ public class OnboardLanguageController {
     }
 
     @PostMapping("/language-level")
-    public void saveLanguageLevel(@AuthenticationPrincipal CustomUserDetails principal,
-                                  @RequestBody LanguageLevelRequest req
-    ){
+    public ResponseEntity<ApiResponse<Void>> saveLanguageLevel(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @RequestBody LanguageLevelRequest req) {
+        
+        System.out.println("🔍 saveLanguageLevel Controller 호출됨");
+        System.out.println("🔍 Request body: " + req);
+        
         UUID userId = principal.getUuid();
-        onboardLanguageService.saveLanguageLevel(userId,req);
+        System.out.println("🔍 User ID: " + userId);
+        
+        onboardLanguageService.saveLanguageLevel(userId, req);
+        
+        return ResponseEntity.ok(ApiResponse.success("언어 레벨이 성공적으로 저장되었습니다."));
     }
 
 

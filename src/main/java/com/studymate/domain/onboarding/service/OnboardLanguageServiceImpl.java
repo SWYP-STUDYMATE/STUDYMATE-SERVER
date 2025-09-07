@@ -65,27 +65,47 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
     }
 
     @Override
-    public void saveLanguageLevel(UUID userId,LanguageLevelRequest req) {
+    public void saveLanguageLevel(UUID userId, LanguageLevelRequest req) {
+        System.out.println("🔍 saveLanguageLevel Service 호출됨");
+        System.out.println("🔍 userId: " + userId);
+        System.out.println("🔍 req: " + req);
+        
+        if (req.languages() == null || req.languages().isEmpty()) {
+            System.out.println("🔍 Languages list is null or empty");
+            throw new IllegalArgumentException("언어 목록이 비어있습니다.");
+        }
+        
         // 현재 레벨과 목표 레벨 모두 수집
         Set<Integer> allLevelIds = req.languages().stream()
                 .flatMap(dto -> Stream.of(dto.currentLevelId(), dto.targetLevelId()))
                 .collect(Collectors.toSet());
+                
+        System.out.println("🔍 All level IDs: " + allLevelIds);
                 
         Map<Integer, LangLevelType> langLevelTypeMap = langLevelTypeRepository
                 .findAllById(allLevelIds)
                 .stream()
                 .collect(Collectors.toMap(LangLevelType::getLangLevelId, Function.identity()));
 
+        System.out.println("🔍 Found level types: " + langLevelTypeMap.keySet());
+
         for (LanguageLevelRequest.LanguageLevelDto dto : req.languages()) {
+            System.out.println("🔍 Processing DTO: " + dto);
+            
             OnboardLangLevelId id = new OnboardLangLevelId(userId, dto.languageId());
             
             LangLevelType currentLevelType = langLevelTypeMap.get(dto.currentLevelId());
             LangLevelType targetLevelType = langLevelTypeMap.get(dto.targetLevelId());
             
+            System.out.println("🔍 Current level type: " + (currentLevelType != null ? currentLevelType.getLangLevelName() : "null"));
+            System.out.println("🔍 Target level type: " + (targetLevelType != null ? targetLevelType.getLangLevelName() : "null"));
+            
             if (currentLevelType == null) {
+                System.out.println("🔍 Current level type not found for ID: " + dto.currentLevelId());
                 throw new NotFoundException("현재 언어 레벨을 찾을 수 없습니다: " + dto.currentLevelId());
             }
             if (targetLevelType == null) {
+                System.out.println("🔍 Target level type not found for ID: " + dto.targetLevelId());
                 throw new NotFoundException("목표 언어 레벨을 찾을 수 없습니다: " + dto.targetLevelId());
             }
             
@@ -96,8 +116,10 @@ public class OnboardLanguageServiceImpl implements OnboardLanguageService {
                     .targetLevel(targetLevelType)
                     .build();
             onboardLangLevelRepository.save(onboardLangLevel);
+            System.out.println("🔍 Saved onboard lang level for language ID: " + dto.languageId());
         }
-
+        
+        System.out.println("🔍 saveLanguageLevel Service 완료");
     }
 
 
