@@ -11,16 +11,14 @@ import com.studymate.domain.onboarding.domain.dto.response.TopicResponse;
 import com.studymate.domain.onboarding.domain.repository.*;
 import com.studymate.domain.onboarding.entity.*;
 import com.studymate.domain.user.domain.repository.UserRepository;
-import com.studymate.domain.onboarding.domain.type.LearningExpectionType;
 import com.studymate.domain.user.entity.User;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +28,12 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
     private final OnboardMotivationRepository onboardMotivationRepository;
     private final OnboardTopicRepository onboardTopicRepository;
     private final OnboardLearningStyleRepository onboardLearningStyleRepository;
+    private final OnboardLearningExpectationRepository onboardLearningExpectationRepository;
     private final UserRepository userRepository;
     private final MotivationRepository motivationRepository;
     private final TopicRepository topicRepository;
     private final LearningStyleRepository learningStyleRepository;
+    private final LearningExpectationRepository learningExpectationRepository;
 
     @Override
     @Transactional
@@ -76,31 +76,29 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
     @Override
     @Transactional
     public void saveLearningExpectation(UUID userId, LearningExceptionRequest req) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("USER NOT FOUND"));
-
-        // 배열에서 첫 번째 ID를 사용하여 LearningExpectionType 매핑
-        if (req.learningExpectationIds() != null && !req.learningExpectationIds().isEmpty()) {
-            Integer firstId = req.learningExpectationIds().get(0);
-            
-            // ID를 LearningExpectionType으로 매핑 (임시 로직)
-            LearningExpectionType learningExpectionType = mapIdToLearningExpectionType(firstId);
-            
-            user.setLearningExpectionType(learningExpectionType);
-            userRepository.save(user);
-        }
-    }
-    
-    private LearningExpectionType mapIdToLearningExpectionType(Integer id) {
-        // TODO: 실제 매핑 로직은 데이터베이스 구조에 따라 결정
-        // 현재는 임시로 순서대로 매핑
-        return switch (id) {
-            case 1 -> LearningExpectionType.HABIT;
-            case 2 -> LearningExpectionType.CONFIDENCE;
-            case 3 -> LearningExpectionType.CUSTOMIZED_METHOD;
-            case 4 -> LearningExpectionType.PRACTICAL_CONVERSATION;
-            default -> LearningExpectionType.HABIT; // 기본값
-        };
+        // LearningExpectation ID들 검증
+        Set<Integer> learningExpectationIds = new HashSet<>(req.learningExpectationIds());
+        Map<Integer, LearningExpectation> learningExpectationMap = learningExpectationRepository
+                .findAllById(learningExpectationIds)
+                .stream()
+                .collect(Collectors.toMap(LearningExpectation::getLearningExpectationId, Function.identity()));
+        
+        // OnboardLearningExpectation 엔티티들 생성 및 저장
+        List<OnboardLearningExpectation> onboardLearningExpectations = req.learningExpectationIds().stream()
+                .map(expectationId -> {
+                    LearningExpectation learningExpectation = learningExpectationMap.get(expectationId);
+                    if (learningExpectation == null) {
+                        throw new NotFoundException("LEARNING EXPECTATION NOT FOUND: " + expectationId);
+                    }
+                    
+                    OnboardLearningExpectationId id = new OnboardLearningExpectationId(userId, expectationId);
+                    return OnboardLearningExpectation.builder()
+                            .id(id)
+                            .build();
+                })
+                .collect(Collectors.toList());
+                
+        onboardLearningExpectationRepository.saveAll(onboardLearningExpectations);
     }
 
     @Override
@@ -136,8 +134,11 @@ public class OnboardInterestServiceImpl implements OnboardInterestService {
 
 @Override
 public List<LearningExpectationResponse> getAllLearningExpectationType() {
-    return Arrays.stream(LearningExpectionType.values())
-            .map(e -> new LearningExpectationResponse(e.name(), e.getDescription()))
+    return learningExpectationRepository.findAll().stream()
+            .map(e -> new LearningExpectationResponse(
+                    e.getLearningExpectationId(),
+                    e.getLearningExpectationName()
+            ))
             .toList();
 }
 
