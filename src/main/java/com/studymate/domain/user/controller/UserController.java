@@ -44,11 +44,11 @@ public class UserController {
     }
 
     @PostMapping(value = "/profile-image", consumes = "multipart/form-data")
-    public void saveProfileImage (@AuthenticationPrincipal CustomUserDetails principal,
+    public ProfileImageUrlResponse saveProfileImage (@AuthenticationPrincipal CustomUserDetails principal,
                                   @RequestPart("file")MultipartFile file
                                   ) {
         UUID userId = principal.getUuid();
-        userService.saveProfileImage(userId,file);
+        return userService.saveProfileImage(userId,file);
     }
 
     @PostMapping("/gender")

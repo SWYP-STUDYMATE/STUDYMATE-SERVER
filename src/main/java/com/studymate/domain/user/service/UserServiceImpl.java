@@ -51,20 +51,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveProfileImage(UUID userId, MultipartFile file){
+    public ProfileImageUrlResponse saveProfileImage(UUID userId, MultipartFile file){
+        log.info("프로필 이미지 업로드 시작 - 사용자: {}", userId);
+        
         // 파일 유효성 검증
         if (file == null || file.isEmpty()) {
+            log.error("파일이 null이거나 비어있음 - 사용자: {}, file: {}", userId, file);
             throw new IllegalArgumentException("파일이 비어있습니다.");
         }
         
+        log.info("파일 정보 - 이름: {}, 크기: {}, 타입: {}", 
+                file.getOriginalFilename(), file.getSize(), file.getContentType());
+        
         // 파일 크기 검증 (10MB)
         if (file.getSize() > 10 * 1024 * 1024) {
+            log.error("파일 크기 초과 - 사용자: {}, 크기: {}MB", userId, file.getSize() / (1024 * 1024));
             throw new IllegalArgumentException("파일 크기가 10MB를 초과합니다.");
         }
         
         // 파일 타입 검증
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
+            log.error("잘못된 파일 타입 - 사용자: {}, 타입: {}", userId, contentType);
             throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
         }
         
@@ -95,6 +103,8 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             
             log.info("프로필 이미지 업로드 성공 - 사용자: {}, URL: {}", userId, url);
+            
+            return new ProfileImageUrlResponse(url);
         } catch (Exception e) {
             log.error("프로필 이미지 업로드 실패 - 사용자: {}, 파일: {}, 오류: {}", 
                      userId, filename, e.getMessage());

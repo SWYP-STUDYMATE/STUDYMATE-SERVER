@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface UserService {
     void saveEnglishName(UUID userId,EnglishNameRequest req);
-    void saveProfileImage(UUID userId, MultipartFile file);
+    ProfileImageUrlResponse saveProfileImage(UUID userId, MultipartFile file);
     void saveSelfBio(UUID userId,SelfBioRequest req);
     void saveLocation(UUID userId,LocationRequest req);
     void saveUserGender(UUID userId, UserGenderTypeRequest req);
