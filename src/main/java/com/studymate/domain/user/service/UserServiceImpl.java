@@ -52,6 +52,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveProfileImage(UUID userId, MultipartFile file){
+        // 파일 유효성 검증
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("파일이 비어있습니다.");
+        }
+        
+        // 파일 크기 검증 (10MB)
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new IllegalArgumentException("파일 크기가 10MB를 초과합니다.");
+        }
+        
+        // 파일 타입 검증
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
+        }
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("NOT FOUND USER"));
 
@@ -71,11 +87,13 @@ public class UserServiceImpl implements UserService {
             String url = amazonS3.getUrl(bucketName, key).toString();
             user.setProfileImage(url);
             userRepository.save(user);
+            
+            log.info("프로필 이미지 업로드 성공 - 사용자: {}, URL: {}", userId, url);
         } catch (Exception e) {
-            throw new RuntimeException("이미지 업로드 실패",e);
+            log.error("프로필 이미지 업로드 실패 - 사용자: {}, 파일: {}, 오류: {}", 
+                     userId, file.getOriginalFilename(), e.getMessage());
+            throw new RuntimeException("이미지 업로드 실패: " + e.getMessage(), e);
         }
-
-
     }
     @Override
      public void saveUserGender(UUID userId, UserGenderTypeRequest req) {

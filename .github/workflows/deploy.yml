@@ -43,6 +43,11 @@ jobs:
           spring.sql.init.data-locations=classpath:data.sql
           spring.sql.init.continue-on-error=true
           
+          spring.servlet.multipart.enabled=true
+          spring.servlet.multipart.max-file-size=10MB
+          spring.servlet.multipart.max-request-size=10MB
+          spring.servlet.multipart.file-size-threshold=2KB
+          
           naver.client_id=EzXpYAkIVhX1ViFQ5edo
           naver.client_secret=Zml5tphcOJ
           naver.authorization_grant_type=authorization_code

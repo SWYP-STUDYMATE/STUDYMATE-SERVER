@@ -73,6 +73,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(httpStatus).body(response);
     }
     
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException ex, HttpServletRequest request) {
+        
+        ErrorResponse response = ErrorResponse.builder()
+            .success(false)
+            .timestamp(LocalDateTime.now())
+            .error(ErrorResponse.ErrorDetail.builder()
+                .code("INVALID_REQUEST")
+                .message("잘못된 요청입니다")
+                .details(ex.getMessage())
+                .build())
+            .path(request.getRequestURI())
+            .build();
+            
+        log.warn("Illegal Argument Exception: {}", ex.getMessage());
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex, HttpServletRequest request) {
