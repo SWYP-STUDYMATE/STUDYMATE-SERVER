@@ -77,6 +77,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex, HttpServletRequest request) {
         
+        // 프로필 이미지 업로드 관련 에러 상세 로깅
+        if (request.getRequestURI().contains("/profile-image")) {
+            log.error("Profile Image Upload Error - URI: {}, Message: {}, Stack: {}", 
+                     request.getRequestURI(), ex.getMessage(), ex.getStackTrace()[0]);
+        }
+        
         ErrorResponse response = ErrorResponse.builder()
             .success(false)
             .timestamp(LocalDateTime.now())
