@@ -17,7 +17,7 @@
 - 🟡 Medium Risk: 12개
 - 🟢 Low Risk: 7개
 
-## ✅ 수정 완료 항목
+## ✅ 수정 완료 항목 (옵션 3 전체 자동 수정 완료)
 
 ### 1. WebSocket 설정 통일
 **문제**: 클라이언트와 서버의 WebSocket 브로커 프리픽스 불일치
@@ -52,6 +52,18 @@
 **확인 결과**: 클라이언트 TypeScript 타입과 서버 DTO가 이미 잘 동기화되어 있음
 - `/Users/minhan/Desktop/public-repo/STYDYMATE-CLIENT/src/types/api.d.ts`
 - ApiResponse 타입이 서버와 동일한 구조로 정의됨
+
+### 5. 추가 Controller ApiResponse 적용 (2차 작업)
+**수정 완료된 Controller들**:
+- **TokenController**: 토큰 갱신 및 로그아웃 API
+- **NotificationController**: 25개 알림 관련 API 메서드
+- **SessionController**: 14개 세션 관련 API 메서드
+- **ChatRoomController**: ResponseDto → ApiResponse 변경
+
+**수정 내용**:
+- 모든 `ResponseEntity<T>` → `ApiResponse<T>` 변경
+- 각 메서드에 적절한 한글 성공 메시지 추가
+- 일관된 응답 형식 확보
 
 ## 📝 추가 권장사항
 
