@@ -1,0 +1,119 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "데이터베이스 스키마-엔티티 정합성 감사 및 분석",
+        "description": "실제 JPA 엔티티와 데이터베이스 스키마 문서 간의 불일치를 체계적으로 분석하고 문서화하여 수정 우선순위를 결정",
+        "details": "1. Spring Boot Actuator의 EntityManagerFactoryIntrospector를 활용한 JPA 메타모델 추출\n2. Hibernate Validator와 Bean Validation API를 통한 엔티티 구조 분석\n3. 주요 불일치 사항:\n   - User 엔티티: UUID vs 스키마 문서의 varchar(36) 확인\n   - Location 엔티티: country/city/timezone vs 스키마의 name/code\n   - ChatRoom/ChatMessage: Long ID vs 스키마의 UUID\n   - 테이블명 케이스: sessions/level_tests (snake_case) vs SESSIONS/LEVEL_TESTS (UPPER_CASE)\n4. Jackson ObjectMapper를 사용한 JSON 형식의 불일치 리포트 생성\n5. Liquibase 또는 Flyway 마이그레이션 스크립트 준비를 위한 DDL 차이 분석",
+        "testStrategy": "1. JUnit 5와 @DataJpaTest를 사용한 엔티티 검증 테스트 작성\n2. TestContainers MySQL 8.0을 활용한 실제 데이터베이스 스키마 검증\n3. AssertJ Database를 사용한 스키마 구조 자동 검증\n4. 각 엔티티별 CRUD 작업 통합 테스트",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "API 엔드포인트 정합성 검증 시스템 구축",
+        "description": "클라이언트-서버 간 API 불일치를 자동으로 감지하고 OpenAPI 3.0 스펙 기반으로 동기화",
+        "details": "1. SpringDoc OpenAPI 3.0 (현재 2.8.9 버전 사용 중)을 활용한 API 문서 자동 생성\n2. 클라이언트 TypeScript 인터페이스와 서버 DTO 매핑 검증:\n   - OpenAPI Generator를 사용한 TypeScript 클라이언트 코드 자동 생성\n   - ../STUDYMATE-CLIENT/src/types/ 디렉토리와 비교\n3. 누락된 엔드포인트 구현:\n   - /api/v1/user/profile GET 엔드포인트 추가\n   - /api/v1/user/settings 관련 엔드포인트\n4. ApiResponse<T> 래퍼 클래스 일관성 확보\n5. Spring RestDocs를 추가하여 실제 요청/응답 문서화\n6. Postman Collection 자동 생성 및 Newman을 통한 E2E 테스트",
+        "testStrategy": "1. MockMvc와 @WebMvcTest를 사용한 컨트롤러 단위 테스트\n2. RestAssured를 활용한 API 통합 테스트\n3. Pact Framework를 사용한 Consumer-Driven Contract Testing\n4. SpringBootTest와 TestRestTemplate을 사용한 전체 플로우 테스트",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "in-progress",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "ID 타입 전략 통일 및 마이그레이션",
+        "description": "시스템 전체의 ID 타입을 UUID 또는 Long으로 통일하고 무중단 마이그레이션 실행",
+        "details": "1. 현재 상태 분석:\n   - User: UUID (GenerationType.UUID)\n   - ChatRoom/ChatMessage: Long (GenerationType.IDENTITY)\n   - 혼재 사용으로 인한 복잡성\n2. UUID 채택 시 (권장):\n   - UUID v7 (시간순 정렬 가능) 도입 고려\n   - com.github.f4b6a3:uuid-creator:5.3.7 라이브러리 사용\n   - MySQL 8.0의 UUID_TO_BIN/BIN_TO_UUID 함수 활용\n3. 마이그레이션 전략:\n   - Dual-write 패턴으로 신규 ID 컬럼 추가\n   - Background job으로 기존 데이터 마이그레이션\n   - Feature toggle (Spring Cloud Config)로 점진적 전환\n4. JPA @IdClass 또는 @EmbeddedId를 사용한 복합키 처리\n5. Redis에서의 UUID 키 최적화 (RedisTemplate 설정)",
+        "testStrategy": "1. 마이그레이션 스크립트 단위 테스트 (H2, MySQL)\n2. 동시성 테스트 (JMeter, Gatling)\n3. 데이터 무결성 검증 (before/after 체크섬)\n4. 롤백 시나리오 테스트",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "WebSocket/STOMP 실시간 통신 통합 검증",
+        "description": "Spring WebSocket과 Cloudflare Workers 간 실시간 통신 아키텍처 검증 및 최적화",
+        "details": "1. Spring WebSocket 구성 검증:\n   - 현재 WebSocketConfig 설정 분석\n   - STOMP 브로커 (/topic, /queue) 구성 확인\n   - SockJS fallback 옵션 검토\n2. Cloudflare Workers와 통합:\n   - Durable Objects를 사용한 WebRTC 룸 관리\n   - Workers KV를 통한 세션 상태 동기화\n   - R2 Storage와 NCP Object Storage 간 파일 동기화\n3. 메시지 브로커 아키텍처:\n   - Spring Integration WebSocket 어댑터 구현\n   - Redis Pub/Sub를 통한 스케일아웃 지원\n   - @MessageMapping과 @SendTo 어노테이션 최적화\n4. 보안 강화:\n   - JWT 기반 WebSocket 인증 (JwtAuthenticationFilter 확장)\n   - CORS 설정 (WebMvcConfigurer)\n5. 성능 최적화:\n   - WebSocket 세션 풀링\n   - 메시지 압축 (permessage-deflate)",
+        "testStrategy": "1. WebSocketStompClient를 사용한 통합 테스트\n2. 부하 테스트 (Artillery.io WebSocket 시나리오)\n3. 네트워크 장애 시뮬레이션 (Toxiproxy)\n4. 메시지 순서 보장 테스트",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Cloudflare Workers 시스템 통합 및 동기화",
+        "description": "Cloudflare Workers의 AI 기능과 메인 서버 간 데이터 동기화 및 통합 최적화",
+        "details": "1. Workers AI 바인딩 통합:\n   - Whisper API를 통한 음성 인식 결과 서버 동기화\n   - LLM 임베딩 결과 MySQL/Redis 저장\n   - Vectorize를 사용한 벡터 검색 구현\n2. Durable Objects 상태 관리:\n   - WebRTC 룸 상태와 ChatRoom 엔티티 동기화\n   - Transactional Outbox 패턴 구현\n3. R2 Storage 통합:\n   - NCP Object Storage와 R2 간 CDN 전략\n   - Multipart upload 지원 (AWS SDK 호환)\n   - 이미지 리사이징 Workers 구현\n4. KV 네임스페이스 활용:\n   - 세션 캐시 (Redis와 동기화)\n   - Rate limiting 구현\n5. Analytics Engine 데이터 수집:\n   - 사용량 메트릭 Spring Actuator 통합\n   - Micrometer를 통한 메트릭 수집",
+        "testStrategy": "1. Miniflare를 사용한 Workers 로컬 테스트\n2. Workers 배포 후 E2E 테스트\n3. 데이터 일관성 검증 (Eventually Consistent)\n4. Workers KV와 Redis 동기화 테스트",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "문서 자동화 시스템 구축",
+        "description": "코드 변경 시 자동으로 문서를 업데이트하는 CI/CD 파이프라인 구축",
+        "details": "1. SpringDoc OpenAPI 자동 문서 생성:\n   - Gradle 태스크로 OpenAPI spec 추출\n   - Redoc/Swagger UI 자동 배포\n2. Database 스키마 문서화:\n   - SchemaSpy 6.2.4 도입\n   - Liquibase changelog 자동 생성\n   - ERD 자동 생성 (PlantUML/Mermaid)\n3. TypeScript 인터페이스 자동 생성:\n   - OpenAPI Generator 7.x 설정\n   - npm 패키지 자동 배포\n4. GitHub Actions 워크플로우:\n   - PR 생성 시 문서 diff 검증\n   - 자동 커밋으로 문서 업데이트\n5. Docusaurus 또는 MkDocs 기반 문서 사이트:\n   - 버전별 문서 관리\n   - 검색 기능 (Algolia DocSearch)",
+        "testStrategy": "1. 문서 생성 파이프라인 테스트\n2. 문서 링크 유효성 검사 (broken-link-checker)\n3. OpenAPI spec 검증 (Spectral)\n4. 문서 버전 관리 테스트",
+        "priority": "low",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "통합 테스트 환경 구축 및 검증",
+        "description": "전체 시스템 정합성을 검증하는 자동화된 통합 테스트 환경 구축",
+        "details": "1. TestContainers 기반 통합 테스트:\n   - MySQL 8.0, Redis 7 컨테이너\n   - LocalStack으로 AWS S3 호환 테스트\n   - Kafka/RabbitMQ 메시지 브로커 테스트\n2. 데이터 일관성 검증:\n   - ArchUnit으로 아키텍처 규칙 검증\n   - JPA Auditing 검증 (@CreatedDate, @LastModifiedDate)\n   - Soft Delete 패턴 검증\n3. API Contract Testing:\n   - Spring Cloud Contract 도입\n   - WireMock으로 외부 API 모킹\n4. 성능 테스트:\n   - JMH (Java Microbenchmark Harness)\n   - Gatling 시나리오 테스트\n5. 보안 테스트:\n   - OWASP Dependency Check\n   - Spring Security Test",
+        "testStrategy": "1. 각 도메인별 통합 테스트 스위트\n2. Cross-domain 트랜잭션 테스트\n3. 장애 복구 시나리오 테스트\n4. 데이터 마이그레이션 회귀 테스트",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "프로덕션 배포 및 모니터링 체계 구축",
+        "description": "수정된 시스템을 안전하게 프로덕션에 배포하고 실시간 모니터링하는 체계 구축",
+        "details": "1. Blue-Green 배포 전략:\n   - NCP Load Balancer 설정\n   - Spring Boot Actuator health check\n   - Graceful shutdown 구현\n2. 모니터링 스택:\n   - Micrometer + Prometheus 메트릭 수집\n   - Grafana 대시보드 구성\n   - ELK Stack (Elasticsearch, Logstash, Kibana)\n3. APM (Application Performance Monitoring):\n   - Spring Cloud Sleuth 분산 추적\n   - Zipkin 또는 Jaeger 통합\n   - Sentry 에러 트래킹\n4. Database 모니터링:\n   - MySQL slow query 로그 분석\n   - Redis 메모리 사용량 모니터링\n   - Connection pool 메트릭 (HikariCP)\n5. 알림 시스템:\n   - PagerDuty/Opsgenie 통합\n   - Slack/Discord 웹훅\n6. Chaos Engineering:\n   - Chaos Monkey for Spring Boot\n   - 장애 주입 테스트",
+        "testStrategy": "1. 카나리 배포 테스트\n2. 롤백 시나리오 검증\n3. 모니터링 알림 테스트\n4. 부하 테스트 후 메트릭 검증",
+        "priority": "low",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-08T08:20:26.137Z",
+      "updated": "2025-09-08T08:37:59.878Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

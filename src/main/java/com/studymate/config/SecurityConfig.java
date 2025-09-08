@@ -62,7 +62,9 @@ public class SecurityConfig {
                                                                 "/v1/onboard/schedule/daily-methods", "/api/v1/onboard/schedule/daily-methods",
                                                                 "/v1/onboard/schedule/group-sizes", "/api/v1/onboard/schedule/group-sizes",
                                                                 "/v1/user/locations", "/api/v1/user/locations",
-                                                                "/v1/user/gender-type", "/api/v1/user/gender-type")
+                                                                "/v1/user/gender-type", "/api/v1/user/gender-type",
+                                                                // System Analysis 엔드포인트 (개발/분석용)
+                                                                "/api/v1/system/analysis/**")
                                                 .permitAll()
                                                 // 2) SockJS/WebSocket 핸드셰이크 경로
                                                 .requestMatchers("/ws/**").permitAll()

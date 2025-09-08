@@ -8,12 +8,34 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserSettingsRequest {
-    private boolean emailNotifications;
-    private boolean pushNotifications;
-    private boolean matchingNotifications;
-    private boolean chatNotifications;
-    private boolean sessionReminders;
-    private String preferredLanguage;
-    private String timezone;
-    private boolean privateProfile;
+    private NotificationSettings notifications;
+    private PrivacySettings privacy;
+    private PreferenceSettings preferences;
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NotificationSettings {
+        private Boolean email;
+        private Boolean push;
+        private Boolean sms;
+    }
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PrivacySettings {
+        private Boolean profilePublic;
+        private Boolean showOnlineStatus;
+        private Boolean allowMessages;
+    }
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PreferenceSettings {
+        private String language;
+        private String timezone;
+        private String theme; // "light", "dark", "auto"
+    }
 }

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '7.10.0'
 }
 
 group = 'com.studymate'
@@ -74,4 +75,56 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// OpenAPI Generator configuration for TypeScript client generation
+openApiGenerate {
+	generatorName = "typescript-fetch"
+	inputSpec = "$rootDir/build/openapi.json"
+	outputDir = "$rootDir/generated/typescript-client"
+	apiPackage = "com.studymate.api"
+	modelPackage = "com.studymate.models"
+	configOptions = [
+		"npmName": "studymate-api-client",
+		"npmVersion": "1.0.0",
+		"supportsES6": "true",
+		"withInterfaces": "true",
+		"typescriptThreePlus": "true"
+	]
+	globalProperties = [
+		"models": "",
+		"apis": ""
+	]
+}
+
+// Task to extract OpenAPI spec as JSON before generating client
+task extractOpenApiSpec {
+	group = 'openapi'
+	description = 'Extract OpenAPI specification as JSON file'
+	doLast {
+		mkdir "build"
+		exec {
+			commandLine 'curl', '-o', 'build/openapi.json', 'http://localhost:8080/v3/api-docs'
+		}
+	}
+}
+
+// Task to generate and copy TypeScript types to client project
+task generateTypescriptClient {
+	group = 'openapi'
+	description = 'Generate TypeScript client and copy to client project'
+	dependsOn extractOpenApiSpec, openApiGenerate
+	doLast {
+		def clientProjectPath = "../STUDYMATE-CLIENT"
+		if (file(clientProjectPath).exists()) {
+			copy {
+				from "$rootDir/generated/typescript-client/src"
+				into "$clientProjectPath/src/types/api-generated"
+				include "**/*.ts"
+			}
+			println "TypeScript client generated and copied to $clientProjectPath/src/types/api-generated"
+		} else {
+			println "Client project not found at $clientProjectPath"
+		}
+	}
 }

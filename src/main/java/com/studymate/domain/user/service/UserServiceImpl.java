@@ -304,14 +304,15 @@ public class UserServiceImpl implements UserService {
         
         // 기본값으로 설정 (실제로는 UserSettings 테이블이 필요)
         return new UserSettingsResponse(
-                true,  // emailNotifications
-                true,  // pushNotifications
-                true,  // matchingNotifications
-                true,  // chatNotifications
-                true,  // sessionReminders
-                "ko",  // preferredLanguage
-                user.getLocation() != null ? user.getLocation().getTimeZone() : "Asia/Seoul",
-                false  // privateProfile
+                true,   // emailNotifications
+                true,   // pushNotifications
+                false,  // smsNotifications
+                true,   // profilePublic (inverted from privateProfile)
+                true,   // showOnlineStatus
+                true,   // allowMessages
+                "ko",   // language
+                user.getLocation() != null ? user.getLocation().getTimeZone() : "Asia/Seoul", // timezone
+                "auto"  // theme
         );
     }
     
@@ -321,7 +322,25 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
         // UserSettings 엔티티 생성 후 실제 설정 저장 - 향후 UserSettings 엔티티 구현 예정
-        log.info("Updating user settings for user: {} with data: {}", userId, req);
+        log.info("Updating user settings for user: {}", userId);
+        if (req.getNotifications() != null) {
+            log.info("Notification settings - email: {}, push: {}, sms: {}", 
+                    req.getNotifications().getEmail(), 
+                    req.getNotifications().getPush(), 
+                    req.getNotifications().getSms());
+        }
+        if (req.getPrivacy() != null) {
+            log.info("Privacy settings - profilePublic: {}, showOnlineStatus: {}, allowMessages: {}", 
+                    req.getPrivacy().getProfilePublic(), 
+                    req.getPrivacy().getShowOnlineStatus(), 
+                    req.getPrivacy().getAllowMessages());
+        }
+        if (req.getPreferences() != null) {
+            log.info("Preference settings - language: {}, timezone: {}, theme: {}", 
+                    req.getPreferences().getLanguage(), 
+                    req.getPreferences().getTimezone(), 
+                    req.getPreferences().getTheme());
+        }
         
         userRepository.save(user);
     }
@@ -342,18 +361,23 @@ public class UserServiceImpl implements UserService {
             );
         }
         
+        // TODO: Add proper nativeLanguage and targetLanguages from user onboarding data
+        // For now, using null values - this should be implemented properly
         return new UserProfileResponse(
-                user.getUserId(),
-                user.getName(),
-                user.getEnglishName(),
-                user.getEmail(),
-                user.getBirthday(),
-                user.getBirthyear(),
-                user.getUserGenderType(),
-                user.getProfileImage(),
-                user.getSelfBio(),
-                locationResponse,
-                user.getIsOnboardingCompleted()
+                user.getUserId().toString(),                    // String id
+                user.getEnglishName(),                          // String englishName  
+                user.getProfileImage(),                         // String profileImageUrl
+                user.getSelfBio(),                              // String selfBio
+                locationResponse,                               // LocationResponse location
+                null,                                           // LanguageResponse nativeLanguage - TODO: fetch from onboarding
+                null,                                           // List<LanguageResponse> targetLanguages - TODO: fetch from onboarding
+                user.getBirthyear() != null ? Integer.parseInt(user.getBirthyear()) : null, // Integer birthYear
+                user.getBirthday(),                             // String birthday
+                new UserGenderTypeResponse(
+                                         user.getUserGenderType().name(), 
+                                         user.getUserGenderType().getDescription()), // UserGenderTypeResponse gender
+                user.getUserCreatedAt(),                        // LocalDateTime createdAt  
+                user.getUserCreatedAt()                         // LocalDateTime updatedAt - TODO: add proper updatedAt field to User entity
         );
     }
 }
