@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "group_session_participants")
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper=false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
