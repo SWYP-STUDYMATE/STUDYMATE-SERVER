@@ -51,6 +51,7 @@ public class ChatFile extends BaseTimeEntity {
     private Integer duration;
 
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     public enum FileType {

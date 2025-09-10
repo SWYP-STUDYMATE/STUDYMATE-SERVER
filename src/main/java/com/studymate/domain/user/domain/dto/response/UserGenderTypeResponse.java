@@ -57,8 +57,7 @@ public record UserGenderTypeResponse(
         return switch (genderType) {
             case MALE -> "남성";
             case FEMALE -> "여성";
-            case OTHER -> "기타";
-            case PREFER_NOT_TO_SAY -> "밝히지 않음";
+            case NONE -> "없음";
             default -> genderType.name();
         };
     }

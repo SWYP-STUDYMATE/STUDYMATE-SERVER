@@ -380,4 +380,95 @@ public class UserServiceImpl implements UserService {
                 user.getUserCreatedAt()                         // LocalDateTime updatedAt - TODO: add proper updatedAt field to User entity
         );
     }
+    
+    // V2 API 메소드들 구현
+    @Override
+    public UserProfileResponseV2 getUserProfileV2(UUID userId) {
+        // 기존 getUserProfile과 동일한 로직을 사용하되 V2 Response 형식으로 반환
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        
+        // TODO: 실제 V2 응답 형식에 맞게 구현 필요
+        // 임시로 null 반환
+        return null;
+    }
+    
+    @Override
+    public UserNameResponse updateEnglishName(UUID userId, EnglishNameRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        user.setEnglishName(request.englishName());
+        userRepository.save(user);
+        
+        return new UserNameResponse(user.getEnglishName());
+    }
+    
+    @Override
+    public LocationResponseV2 updateLocationV2(UUID userId, LocationRequest request) {
+        // TODO: 실제 구현 필요
+        return null;
+    }
+    
+    @Override
+    public BirthYearResponse updateBirthYear(UUID userId, BirthyearRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        user.setBirthyear(request.birthyear());
+        userRepository.save(user);
+        
+        return new BirthYearResponse(Integer.parseInt(request.birthyear()));
+    }
+    
+    @Override
+    public UserGenderTypeResponse updateGenderV2(UUID userId, UserGenderTypeRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        user.setUserGenderType(request.genderType());
+        userRepository.save(user);
+        
+        return UserGenderTypeResponse.from(user.getUserGenderType());
+    }
+    
+    @Override
+    public void updateSelfBio(UUID userId, SelfBioRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        user.setSelfBio(request.selfBio());
+        userRepository.save(user);
+    }
+    
+    @Override
+    public ProfileImageUrlResponse updateProfileImage(UUID userId, ProfileImageRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+        user.setProfileImage(request.profileImage());
+        userRepository.save(user);
+        
+        return new ProfileImageUrlResponse(user.getProfileImage());
+    }
+    
+    
+    @Override
+    public List<LocationResponseV2> getAvailableLocationsV2() {
+        // TODO: 실제 구현 필요
+        return List.of();
+    }
+    
+    @Override
+    public List<com.studymate.domain.onboarding.domain.dto.response.LanguageResponse> getAvailableLanguages() {
+        // TODO: 실제 구현 필요
+        return List.of();
+    }
+    
+    @Override
+    public List<UserGenderTypeResponse> getGenderTypes() {
+        return Arrays.stream(UserGenderType.values())
+                .map(UserGenderTypeResponse::from)
+                .toList();
+    }
+    
+    private String extractFileName(String url) {
+        if (url == null || url.isEmpty()) return null;
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
 }

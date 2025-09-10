@@ -47,7 +47,7 @@ public record LanguageResponse(
             return null;
         }
         
-        String languageCode = language.getLanguageCode();
+        String languageCode = language.getCode();
         
         return new LanguageResponse(
                 language.getLanguageId(),

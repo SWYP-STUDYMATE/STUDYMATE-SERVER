@@ -3,11 +3,9 @@ package com.studymate.domain.user.controller;
 import com.studymate.common.dto.ApiResponse;
 import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
 import com.studymate.domain.user.domain.dto.request.*;
-import com.studymate.domain.user.domain.dto.response.LocationResponseV2;
-import com.studymate.domain.user.domain.dto.response.UserGenderTypeResponse;
-import com.studymate.domain.user.domain.dto.response.UserProfileResponseV2;
+import com.studymate.domain.user.domain.dto.response.*;
 import com.studymate.domain.user.service.UserService;
-import com.studymate.security.annotation.CurrentUser;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +38,7 @@ public class UserControllerV2 {
     @GetMapping("/profile")
     @Operation(summary = "사용자 프로필 조회", description = "현재 로그인한 사용자의 상세 프로필 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<UserProfileResponseV2>> getUserProfile(
-            @CurrentUser UUID userId) {
+            @AuthenticationPrincipal UUID userId) {
         
         UserProfileResponseV2 profile = userService.getUserProfileV2(userId);
         return ResponseEntity.ok(ApiResponse.success(profile));
@@ -51,11 +49,11 @@ public class UserControllerV2 {
      */
     @PutMapping("/english-name")
     @Operation(summary = "영어 이름 수정")
-    public ResponseEntity<ApiResponse<UserNameResponse>> updateEnglishName(
-            @CurrentUser UUID userId,
+    public ResponseEntity<ApiResponse<com.studymate.domain.user.domain.dto.response.UserNameResponse>> updateEnglishName(
+            @AuthenticationPrincipal UUID userId,
             @RequestBody EnglishNameRequest request) {
         
-        UserNameResponse response = userService.updateEnglishName(userId, request);
+        com.studymate.domain.user.domain.dto.response.UserNameResponse response = userService.updateEnglishName(userId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
     
@@ -67,7 +65,7 @@ public class UserControllerV2 {
     @PutMapping("/location")
     @Operation(summary = "위치 정보 수정")
     public ResponseEntity<ApiResponse<LocationResponseV2>> updateLocation(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody LocationRequest request) {
         
         LocationResponseV2 response = userService.updateLocationV2(userId, request);
@@ -80,8 +78,8 @@ public class UserControllerV2 {
     @PutMapping("/birth-year")
     @Operation(summary = "출생년도 수정")
     public ResponseEntity<ApiResponse<BirthYearResponse>> updateBirthYear(
-            @CurrentUser UUID userId,
-            @RequestBody BirthYearRequest request) {
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody BirthyearRequest request) {
         
         // request에서 Integer로 받아서 처리
         BirthYearResponse response = userService.updateBirthYear(userId, request);
@@ -96,7 +94,7 @@ public class UserControllerV2 {
     @PutMapping("/gender")
     @Operation(summary = "성별 정보 수정")
     public ResponseEntity<ApiResponse<UserGenderTypeResponse>> updateGender(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody UserGenderTypeRequest request) {
         
         UserGenderTypeResponse response = userService.updateGenderV2(userId, request);
@@ -109,7 +107,7 @@ public class UserControllerV2 {
     @PutMapping("/bio")
     @Operation(summary = "자기소개 수정")
     public ResponseEntity<ApiResponse<Void>> updateSelfBio(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody SelfBioRequest request) {
         
         userService.updateSelfBio(userId, request);
@@ -122,7 +120,7 @@ public class UserControllerV2 {
     @PutMapping("/profile-image")
     @Operation(summary = "프로필 이미지 수정")
     public ResponseEntity<ApiResponse<ProfileImageUrlResponse>> updateProfileImage(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody ProfileImageRequest request) {
         
         ProfileImageUrlResponse response = userService.updateProfileImage(userId, request);
@@ -134,12 +132,13 @@ public class UserControllerV2 {
      */
     @PutMapping("/profile/complete")
     @Operation(summary = "프로필 일괄 수정")
-    public ResponseEntity<ApiResponse<UserCompleteProfileResponse>> updateCompleteProfile(
-            @CurrentUser UUID userId,
+    public ResponseEntity<ApiResponse<Void>> updateCompleteProfile(
+            @AuthenticationPrincipal UUID userId,
             @RequestBody UserCompleteProfileRequest request) {
         
-        UserCompleteProfileResponse response = userService.updateCompleteProfile(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        userService.updateCompleteProfile(userId, request);
+        // TODO: 실제 완성된 프로필 응답 구현 필요
+        return ResponseEntity.ok(ApiResponse.success());
     }
     
     /**
@@ -176,44 +175,3 @@ public class UserControllerV2 {
     }
 }
 
-/**
- * 요청/응답 DTO 정의
- */
-record UserNameResponse(
-        String englishName,
-        String userName
-) {}
-
-record ProfileImageUrlResponse(
-        String imageUrl,
-        String fileName
-) {}
-
-record BirthYearRequest(
-        Integer birthYear  // Integer로 직접 받음
-) {}
-
-record BirthYearResponse(
-        Integer birthYear  // Integer로 반환
-) {}
-
-record ProfileImageRequest(
-        String imageUrl
-) {}
-
-record UserCompleteProfileResponse(
-        String id,
-        String englishName,
-        String profileImageUrl,
-        String selfBio,
-        LocationResponseV2 location,
-        LanguageResponse nativeLanguage,
-        List<LanguageResponse> targetLanguages,
-        Integer birthYear,  // Integer로 반환
-        String birthday,
-        UserGenderTypeResponse gender,
-        String createdAt,
-        String updatedAt,
-        boolean onboardingCompleted,
-        int profileCompleteness
-) {}
