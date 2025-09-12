@@ -49,7 +49,7 @@ public class User {
     @Column(name = "ENGLISH_NAME")
     private String englishName;
 
-    @Column(name = "PROFILE_IMAGE")
+    @Column(name = "PROFILE_IMAGE", length = 3000)
     private String profileImage;
 
     @Column(name = "SELF_BIO", length = 1000)
