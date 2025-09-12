@@ -54,7 +54,10 @@ public class TokenServiceImpl implements TokenService {
         // 4) 새 토큰 발급 및 저장
         String newAccessToken = jwtUtils.generateAccessToken(userId);
         String newRefreshToken = jwtUtils.generateRefreshToken(userId);
-        
+
+        log.info("REFRESH_TOKEN 새로운 토큰 발급 - UserID: {}, NewAccessToken: {}, NewRefreshToken: {}",
+                userId, newAccessToken, newRefreshToken);
+
         // 5) 새 리프레시 토큰을 Redis에 저장 (기존 토큰 교체)
         refreshTokenRepository.save(
                 RefreshToken.builder()

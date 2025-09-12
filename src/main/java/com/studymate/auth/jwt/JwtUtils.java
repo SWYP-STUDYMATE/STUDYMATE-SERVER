@@ -18,7 +18,7 @@ import java.util.UUID;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:defaultSecretKeyForTestingPurposes}")
+    @Value("${jwt.secret_key:defaultSecretKeyForTestingPurposes}")
     private String jwtSecret;
 
     @Value("${jwt.expiration:86400}")

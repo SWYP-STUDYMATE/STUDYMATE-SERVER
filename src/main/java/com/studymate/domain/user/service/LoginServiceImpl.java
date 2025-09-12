@@ -106,12 +106,16 @@ public class LoginServiceImpl implements LoginService {
         UUID userId = user.getUserId();
         String accessToken = jwtUtils.generateAccessToken(userId);
         String refreshToken = jwtUtils.generateRefreshToken(userId);
+        log.info("LOGIN_TOKEN 발급된 토큰 - UserID: {}, AccessToken: {}, RefreshToken: {}",
+                userId, accessToken, refreshToken);
         refreshTokenRepository.save(
                 RefreshToken.builder()
                         .userId(userId.toString())
                         .token(refreshToken)
                         .ttlSeconds(TimeUnit.DAYS.toSeconds(7))
                         .build());
+        log.info("LOGIN_TOKEN Redis에 RefreshToken 저장 완료 - UserID: {}", userId);
+
 
         return TokenResponse.of(accessToken, refreshToken, userId);
     }
