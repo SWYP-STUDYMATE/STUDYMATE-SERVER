@@ -34,7 +34,7 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     @Override
     public String transcribeAudio(MultipartFile audioFile) {
         try {
-            String url = workersApiUrl + "/api/v1/leveltest/voice/transcribe";
+            String url = workersApiUrl + "/api/v1/transcribe";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -76,7 +76,7 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     @Override
     public VoiceAnalysisResponse evaluateLevelTest(String transcript, String language, Map<String, Object> questions) {
         try {
-            String url = workersApiUrl + "/api/v1/leveltest/evaluate";
+            String url = workersApiUrl + "/api/v1/level-test";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -117,7 +117,7 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     @Override
     public Map<String, Object> generateRealtimeFeedback(String transcript, String context, String userLevel) {
         try {
-            String url = workersApiUrl + "/api/v1/feedback/realtime";
+            String url = workersApiUrl + "/api/v1/llm";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
