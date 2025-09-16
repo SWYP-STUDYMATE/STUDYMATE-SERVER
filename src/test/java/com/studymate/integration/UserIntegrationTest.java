@@ -50,7 +50,7 @@ class UserIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("테스트사용자")
                 .email("test@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
         
@@ -111,7 +111,7 @@ class UserIntegrationTest {
     @Test
     @DisplayName("위치 정보 저장 통합 테스트")
     void saveLocation_Integration_Success() throws Exception {
-        LocationRequest request = new LocationRequest(1L);
+        LocationRequest request = new LocationRequest(1);
 
         mockMvc.perform(post("/api/v1/user/location")
                 .header("Authorization", "Bearer " + accessToken)

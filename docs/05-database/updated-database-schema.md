@@ -469,7 +469,7 @@ erDiagram
 -- 사용자 관련
 CREATE INDEX idx_users_identity ON USERS(USER_IDENTITY);
 CREATE INDEX idx_users_location ON USERS(LOCATION_ID);
-CREATE INDEX idx_users_onboarding ON USERS(IS_ONBOARDING_COMPLETED);
+CREATE INDEX idx_users_onboard ON USERS(IS_ONBOARDING_COMPLETED);
 
 -- 활동 로그 관련  
 CREATE INDEX idx_user_activities_user_type ON USER_ACTIVITIES(USER_ID, ACTIVITY_TYPE);

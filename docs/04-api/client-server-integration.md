@@ -104,7 +104,7 @@ export interface LocationResponse {
 
 ---
 
-### 4. Onboarding 도메인 매핑
+### 4. Onboard 도메인 매핑
 
 #### 언어 레벨 설정
 
@@ -118,7 +118,7 @@ export interface LocationResponse {
 #### 온보딩 진행 상태
 ```typescript
 // 클라이언트 기대 응답
-export interface OnboardingProgressResponse {
+export interface OnboardProgressResponse {
     step: number;
     completed: boolean;
     totalSteps: number;
@@ -144,14 +144,14 @@ export interface OnboardingProgressResponse {
 | `/api/v1/users/gender` | PUT | UserGenderTypeRequest | ApiResponse<UserGenderTypeResponse> | ✅ |
 | `/api/v1/users/bio` | PUT | SelfBioRequest | ApiResponse<void> | ✅ |
 
-### Onboarding Controller
+### Onboard Controller
 
 | 엔드포인트 | 메서드 | 요청 타입 | 응답 타입 | 상태 |
 |-----------|--------|----------|----------|------|
-| `/api/v1/onboarding/progress` | GET | - | ApiResponse<OnboardingProgressResponse> | ✅ |
-| `/api/v1/onboarding/native-language` | POST | NativeLanguageRequest | ApiResponse<LanguageResponse> | ✅ |
-| `/api/v1/onboarding/language-levels` | POST | LanguageLevelRequest | ApiResponse<void> | ✅ |
-| `/api/v1/onboarding/complete` | POST | CompleteOnboardingRequest | ApiResponse<OnboardingStatusResponse> | ✅ |
+| `/api/v1/onboard/progress` | GET | - | ApiResponse<OnboardProgressResponse> | ✅ |
+| `/api/v1/onboard/native-language` | POST | NativeLanguageRequest | ApiResponse<LanguageResponse> | ✅ |
+| `/api/v1/onboard/language-levels` | POST | LanguageLevelRequest | ApiResponse<void> | ✅ |
+| `/api/v1/onboard/complete` | POST | CompleteOnboardRequest | ApiResponse<OnboardStatusResponse> | ✅ |
 
 ---
 
@@ -258,7 +258,7 @@ export const handleApiError = (error: ApiResponse['error']) => {
             router.push('/login');
             break;
         case 'ONBOARD_001':
-            router.push('/onboarding');
+            router.push('/onboard');
             break;
         default:
             toast.error(error?.message || '오류가 발생했습니다');
@@ -276,16 +276,16 @@ export const handleApiError = (error: ApiResponse['error']) => {
 // stores/userStore.ts
 interface UserStore {
     user: UserProfileResponse | null;
-    isOnboardingCompleted: boolean;
+    isOnboardCompleted: boolean;
     updateProfile: (data: Partial<UserProfileResponse>) => void;
-    setOnboardingStatus: (completed: boolean) => void;
+    setOnboardStatus: (completed: boolean) => void;
 }
 ```
 
 ### 서버 상태와 동기화 포인트
 
 1. **로그인 시**: 전체 사용자 프로필 로드
-2. **온보딩 완료 시**: `isOnboardingCompleted` 업데이트
+2. **온보딩 완료 시**: `isOnboardCompleted` 업데이트
 3. **프로필 수정 시**: 부분 업데이트 후 전체 리로드
 4. **로그아웃 시**: 스토어 초기화
 

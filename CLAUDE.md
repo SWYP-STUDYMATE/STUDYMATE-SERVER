@@ -75,7 +75,7 @@ com.studymate/
 ├── domain/         # 비즈니스 도메인
 │   ├── user/       # 사용자 관리 (Naver OAuth, JWT)
 │   ├── chat/       # 실시간 채팅 (WebSocket)
-│   ├── onboarding/ # 온보딩 설문조사
+│   ├── onboard/ # 온보딩 설문조사
 │   └── matching/   # 사용자 매칭 로직
 └── exception/      # 전역 예외 처리
 ```
@@ -92,7 +92,7 @@ com.studymate/
 - **채팅방 관리**: `ChatRoomController`, `ChatRoomService`
 - **메시지 저장**: `ChatMessage`, `ChatRoom` 엔티티
 
-#### Onboarding 도메인
+#### Onboard 도메인
 - **언어 설정**: 학습 언어, 수준, 모국어
 - **학습 스타일**: 동기, 학습 스타일, 소통 방법
 - **파트너 선호도**: 성별, 성격 유형

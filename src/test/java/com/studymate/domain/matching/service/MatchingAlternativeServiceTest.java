@@ -3,7 +3,7 @@ package com.studymate.domain.matching.service;
 import com.studymate.domain.matching.dto.request.MatchingAlternativeRequest;
 import com.studymate.domain.matching.dto.response.MatchingAlternativeResponse;
 import com.studymate.domain.user.entity.User;
-import com.studymate.domain.user.repository.UserRepository;
+import com.studymate.domain.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

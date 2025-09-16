@@ -46,7 +46,7 @@ class AnalyticsIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("분석테스트사용자")
                 .email("analytics@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
         

@@ -64,7 +64,7 @@ class ChatIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("테스트사용자1")
                 .email("test1@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 
@@ -72,7 +72,7 @@ class ChatIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("테스트사용자2")
                 .email("test2@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 
@@ -102,8 +102,11 @@ class ChatIntegrationTest {
     @DisplayName("채팅방 생성 통합 테스트")
     void createChatRoom_Integration_Success() throws Exception {
         ChatRoomCreateRequest request = new ChatRoomCreateRequest(
-                Arrays.asList(testUser2.getUserId()),
-                "새로운채팅방"
+                "새로운채팅방",
+                com.studymate.domain.chat.dto.request.RoomType.DIRECT,
+                false,
+                2,
+                Arrays.asList(testUser2.getUserId())
         );
 
         mockMvc.perform(post("/api/v1/chat/rooms")

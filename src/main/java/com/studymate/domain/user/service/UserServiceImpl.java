@@ -11,9 +11,9 @@ import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.entity.Location;
 import com.studymate.domain.user.entity.User;
-import com.studymate.domain.onboarding.domain.repository.OnboardTopicRepository;
-import com.studymate.domain.onboarding.domain.repository.OnboardPartnerRepository;
-import com.studymate.domain.onboarding.domain.repository.OnboardScheduleRepository;
+import com.studymate.domain.onboard.domain.repository.OnboardTopicRepository;
+import com.studymate.domain.onboard.domain.repository.OnboardPartnerRepository;
+import com.studymate.domain.onboard.domain.repository.OnboardScheduleRepository;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public OnboardingStatusResponse getOnboardingStatus(UUID userId) {
+    public OnboardStatusResponse getOnboardingStatus(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
         if (partnerInfoCompleted) completedSteps++;
         if (scheduleInfoCompleted) completedSteps++;
         
-        return new OnboardingStatusResponse(
+        return new OnboardStatusResponse(
                 basicInfoCompleted,
                 languageInfoCompleted,
                 interestInfoCompleted,
@@ -455,7 +455,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public List<com.studymate.domain.onboarding.domain.dto.response.LanguageResponse> getAvailableLanguages() {
+    public List<com.studymate.domain.onboard.domain.dto.response.LanguageResponse> getAvailableLanguages() {
         // TODO: 실제 구현 필요
         return List.of();
     }

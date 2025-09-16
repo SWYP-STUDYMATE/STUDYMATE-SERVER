@@ -5,7 +5,7 @@ import com.studymate.domain.session.domain.dto.request.SessionCreateRequest;
 import com.studymate.domain.session.domain.dto.request.SessionJoinRequest;
 import com.studymate.domain.session.domain.dto.request.SessionFeedbackRequest;
 import com.studymate.domain.session.entity.Session;
-import com.studymate.domain.session.repository.SessionRepository;
+import com.studymate.domain.session.domain.repository.SessionRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.auth.jwt.JwtUtils;
@@ -62,7 +62,7 @@ class SessionIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("세션테스트사용자1")
                 .email("session1@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 
@@ -70,7 +70,7 @@ class SessionIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("세션테스트사용자2")
                 .email("session2@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 

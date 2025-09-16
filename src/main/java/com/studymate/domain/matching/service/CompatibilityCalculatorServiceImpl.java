@@ -1,12 +1,12 @@
 package com.studymate.domain.matching.service;
 
 import com.studymate.domain.matching.domain.dto.response.CompatibilityScoreResponse;
-import com.studymate.domain.onboarding.domain.repository.OnboardingPersonalityRepository;
-import com.studymate.domain.onboarding.domain.repository.OnboardingStudyGoalRepository;
-import com.studymate.domain.onboarding.domain.repository.OnboardTopicRepository;
-import com.studymate.domain.onboarding.entity.OnboardingPersonality;
-import com.studymate.domain.onboarding.entity.OnboardingStudyGoal;
-import com.studymate.domain.onboarding.entity.OnboardTopic;
+import com.studymate.domain.onboard.domain.repository.OnboardPersonalityRepository;
+import com.studymate.domain.onboard.domain.repository.OnboardStudyGoalRepository;
+import com.studymate.domain.onboard.domain.repository.OnboardTopicRepository;
+import com.studymate.domain.onboard.entity.OnboardPersonality;
+import com.studymate.domain.onboard.entity.OnboardStudyGoal;
+import com.studymate.domain.onboard.entity.OnboardTopic;
 import com.studymate.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +20,8 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class CompatibilityCalculatorServiceImpl implements CompatibilityCalculatorService {
 
-    private final OnboardingPersonalityRepository personalityRepository;
-    private final OnboardingStudyGoalRepository studyGoalRepository;
+    private final OnboardPersonalityRepository personalityRepository;
+    private final OnboardStudyGoalRepository studyGoalRepository;
     private final OnboardTopicRepository topicRepository;
 
     @Override
@@ -99,8 +99,8 @@ public class CompatibilityCalculatorServiceImpl implements CompatibilityCalculat
     }
 
     private double calculatePersonalityCompatibility(User user1, User user2) {
-        List<OnboardingPersonality> user1Personalities = personalityRepository.findByUserId(user1.getUserId());
-        List<OnboardingPersonality> user2Personalities = personalityRepository.findByUserId(user2.getUserId());
+        List<OnboardPersonality> user1Personalities = personalityRepository.findByUserId(user1.getUserId());
+        List<OnboardPersonality> user2Personalities = personalityRepository.findByUserId(user2.getUserId());
         
         if (user1Personalities.isEmpty() || user2Personalities.isEmpty()) {
             return 50.0; // 기본 점수
@@ -138,8 +138,8 @@ public class CompatibilityCalculatorServiceImpl implements CompatibilityCalculat
     }
 
     private double calculateGoalCompatibility(User user1, User user2) {
-        List<OnboardingStudyGoal> user1Goals = studyGoalRepository.findByUserId(user1.getUserId());
-        List<OnboardingStudyGoal> user2Goals = studyGoalRepository.findByUserId(user2.getUserId());
+        List<OnboardStudyGoal> user1Goals = studyGoalRepository.findByUserId(user1.getUserId());
+        List<OnboardStudyGoal> user2Goals = studyGoalRepository.findByUserId(user2.getUserId());
         
         if (user1Goals.isEmpty() || user2Goals.isEmpty()) {
             return 50.0; // 기본 점수

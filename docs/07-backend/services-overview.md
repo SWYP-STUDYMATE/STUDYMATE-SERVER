@@ -49,7 +49,7 @@ com.studymate/
 └── domain/                   # 비즈니스 도메인
     ├── user/                 # 사용자 관리
     ├── chat/                 # 채팅 시스템
-    ├── onboarding/           # 온보딩 프로세스
+    ├── onboard/           # 온보딩 프로세스
     └── matching/             # 매칭 시스템
 ```
 
@@ -114,12 +114,12 @@ public class ChatController {
 발송: /app/chat/send
 ```
 
-### 3. Onboarding 도메인 (온보딩)
+### 3. Onboard 도메인 (온보딩)
 
 #### 서비스 구조
 ```java
 @Service  
-public class OnboardingService {
+public class OnboardService {
     // 온보딩 설문 처리
     // 사용자 선호도 저장
     // 레벨 테스트 결과 처리

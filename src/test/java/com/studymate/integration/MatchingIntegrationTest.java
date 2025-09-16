@@ -59,7 +59,7 @@ class MatchingIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("테스트사용자1")
                 .email("test1@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 
@@ -67,7 +67,7 @@ class MatchingIntegrationTest {
                 .userId(UUID.randomUUID())
                 .name("테스트사용자2")
                 .email("test2@example.com")
-                .identityType("NAVER")
+                .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
                 .build();
 
@@ -84,38 +84,17 @@ class MatchingIntegrationTest {
         // 고급 필터링 요청 생성
         AdvancedMatchingFilterRequest filterRequest = new AdvancedMatchingFilterRequest();
         
-        // Language filters
-        Map<String, Object> languageFilters = new HashMap<>();
-        languageFilters.put("learningLanguage", "ENGLISH");
-        languageFilters.put("nativeLanguage", "KOREAN");
-        languageFilters.put("minimumLevel", "INTERMEDIATE");
-        filterRequest.setLanguageFilters(languageFilters);
+        // 실제 DTO 필드에 맞게 설정
+        filterRequest.setTargetLanguage("ENGLISH");
+        filterRequest.setNativeLanguage("KOREAN");
+        filterRequest.setLanguageLevel("INTERMEDIATE");
 
-        // Personality filters
-        Map<String, Object> personalityFilters = new HashMap<>();
-        personalityFilters.put("preferredPersonalities", Arrays.asList("OUTGOING", "PATIENT"));
-        personalityFilters.put("communicationStyle", "CASUAL");
-        filterRequest.setPersonalityFilters(personalityFilters);
+        // 기타 필터 설정
+        filterRequest.setGender("ANY");
+        filterRequest.setMinAge(20);
+        filterRequest.setMaxAge(40);
 
-        // Availability filters
-        Map<String, Object> availabilityFilters = new HashMap<>();
-        availabilityFilters.put("dayOfWeek", "MONDAY");
-        availabilityFilters.put("timeSlot", "19:00-21:00");
-        availabilityFilters.put("timezone", "Asia/Seoul");
-        filterRequest.setAvailabilityFilters(availabilityFilters);
-
-        // Compatibility filters
-        Map<String, Object> compatibilityFilters = new HashMap<>();
-        Map<String, Integer> ageRange = new HashMap<>();
-        ageRange.put("min", 20);
-        ageRange.put("max", 35);
-        compatibilityFilters.put("ageRange", ageRange);
-        compatibilityFilters.put("sharedInterests", Arrays.asList("TRAVEL", "MOVIES"));
-        compatibilityFilters.put("studyGoals", Arrays.asList("BUSINESS_ENGLISH"));
-        filterRequest.setCompatibilityFilters(compatibilityFilters);
-
-        filterRequest.setPage(0);
-        filterRequest.setSize(10);
+        // 기타 필터는 제거 (AdvancedMatchingFilterRequest에 없는 필드)
 
         mockMvc.perform(post("/api/v1/matching/search")
                 .header("Authorization", "Bearer " + accessToken1)

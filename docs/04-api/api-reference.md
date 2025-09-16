@@ -310,7 +310,7 @@ multipart/form-data
 ### 언어 설정 저장
 사용자의 학습하고자 하는 언어와 현재 수준을 저장합니다.
 
-**POST** `/api/v1/onboarding/language`
+**POST** `/api/v1/onboard/language`
 
 #### 요청 바디
 ```json
@@ -326,7 +326,7 @@ multipart/form-data
 ```
 
 ### 관심사 저장
-**POST** `/api/v1/onboarding/interests`
+**POST** `/api/v1/onboard/interests`
 
 #### 요청 바디
 ```json
@@ -338,7 +338,7 @@ multipart/form-data
 ```
 
 ### 파트너 선호도 저장
-**POST** `/api/v1/onboarding/partner`
+**POST** `/api/v1/onboard/partner`
 
 #### 요청 바디
 ```json
@@ -353,7 +353,7 @@ multipart/form-data
 ```
 
 ### 스케줄 저장
-**POST** `/api/v1/onboarding/schedule`
+**POST** `/api/v1/onboard/schedule`
 
 #### 요청 바디
 ```json
@@ -376,7 +376,7 @@ multipart/form-data
 ### 단계별 온보딩 데이터 저장
 사용자가 온보딩을 진행하면서 각 단계별로 데이터를 저장합니다.
 
-**POST** `/api/v1/onboarding/steps/{stepNumber}/save`
+**POST** `/api/v1/onboard/steps/{stepNumber}/save`
 
 #### 요청 바디
 ```json
@@ -409,7 +409,7 @@ multipart/form-data
 ```
 
 ### 현재 진행 중인 단계 조회
-**GET** `/api/v1/onboarding/steps/current`
+**GET** `/api/v1/onboard/steps/current`
 
 #### 응답
 ```json
@@ -430,7 +430,7 @@ multipart/form-data
 ```
 
 ### 온보딩 단계 건너뛰기
-**POST** `/api/v1/onboarding/steps/{stepNumber}/skip`
+**POST** `/api/v1/onboard/steps/{stepNumber}/skip`
 
 #### 응답
 ```json
@@ -447,7 +447,7 @@ multipart/form-data
 ```
 
 ### 자동 저장 (백그라운드)
-**POST** `/api/v1/onboarding/auto-save`
+**POST** `/api/v1/onboard/auto-save`
 
 #### 요청 바디
 ```json
@@ -463,7 +463,7 @@ multipart/form-data
 ### 임시 매칭 체험
 온보딩 중에 매칭 시스템을 미리 체험해볼 수 있습니다.
 
-**POST** `/api/v1/onboarding/trial-matching`
+**POST** `/api/v1/onboard/trial-matching`
 
 #### 요청 바디
 ```json
@@ -496,7 +496,7 @@ multipart/form-data
 ```
 
 ### 온보딩 진행률 조회
-**GET** `/api/v1/onboarding/progress`
+**GET** `/api/v1/onboard/progress`
 
 #### 응답
 ```json

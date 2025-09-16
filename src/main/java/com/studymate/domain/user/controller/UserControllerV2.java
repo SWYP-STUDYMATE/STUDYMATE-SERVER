@@ -1,7 +1,7 @@
 package com.studymate.domain.user.controller;
 
 import com.studymate.common.dto.ApiResponse;
-import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
+import com.studymate.domain.onboard.domain.dto.response.LanguageResponse;
 import com.studymate.domain.user.domain.dto.request.*;
 import com.studymate.domain.user.domain.dto.response.*;
 import com.studymate.domain.user.service.UserService;

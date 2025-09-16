@@ -149,9 +149,9 @@ public class UserController {
     }
     
     @GetMapping("/onboarding-status")
-    public ApiResponse<OnboardingStatusResponse> getOnboardingStatus(@AuthenticationPrincipal CustomUserDetails principal) {
+    public ApiResponse<OnboardStatusResponse> getOnboardingStatus(@AuthenticationPrincipal CustomUserDetails principal) {
         UUID userId = principal.getUuid();
-        OnboardingStatusResponse response = userService.getOnboardingStatus(userId);
+        OnboardStatusResponse response = userService.getOnboardingStatus(userId);
         return ApiResponse.success(response);
     }
     

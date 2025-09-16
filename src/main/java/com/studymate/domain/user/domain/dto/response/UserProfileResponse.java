@@ -1,6 +1,6 @@
 package com.studymate.domain.user.domain.dto.response;
 
-import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
+import com.studymate.domain.onboard.domain.dto.response.LanguageResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
