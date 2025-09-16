@@ -521,6 +521,8 @@ public class LevelTestServiceImpl implements LevelTestService {
                (fileExtension.equalsIgnoreCase(".wav") || 
                 fileExtension.equalsIgnoreCase(".mp3") || 
                 fileExtension.equalsIgnoreCase(".m4a") || 
-                fileExtension.equalsIgnoreCase(".ogg"));
+                fileExtension.equalsIgnoreCase(".ogg") ||
+                       fileExtension.equalsIgnoreCase(".webm"));
+
     }
 }
