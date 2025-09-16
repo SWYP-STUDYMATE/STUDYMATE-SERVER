@@ -34,6 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationPreferenceRepository preferenceRepository;
     private final UserRepository userRepository;
+    private final NotificationWebSocketService webSocketService;
 
     @Override
     public NotificationResponse createNotification(CreateNotificationRequest request) {
@@ -146,6 +147,13 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification.markAsRead();
         notificationRepository.save(notification);
+
+        // WebSocket으로 읽음 상태 업데이트 알림
+        webSocketService.sendNotificationStatusUpdate(userId, notificationId, "READ");
+
+        // 읽지 않은 알림 개수 업데이트
+        Long unreadCount = getUnreadCount(userId);
+        webSocketService.sendUnreadCountUpdate(userId, unreadCount);
     }
 
     @Override
@@ -320,7 +328,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotificationToUser(UUID userId, NotificationType type, String title, 
+    public void sendNotificationToUser(UUID userId, NotificationType type, String title,
                                      String content, Map<String, Object> data) {
         CreateNotificationRequest request = new CreateNotificationRequest();
         request.setUserId(userId);
@@ -329,8 +337,13 @@ public class NotificationServiceImpl implements NotificationService {
         request.setContent(content);
         request.setActionData(convertMapToJson(data));
         request.setPriority(2); // NORMAL
-        
-        createAndSendNotification(request);
+
+        NotificationResponse notification = createAndSendNotification(request);
+
+        // WebSocket으로 실시간 알림 전송
+        if (notification != null) {
+            webSocketService.sendPersonalNotification(userId, title, content, data);
+        }
     }
 
     @Override
