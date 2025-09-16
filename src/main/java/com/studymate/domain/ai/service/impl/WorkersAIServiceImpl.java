@@ -117,7 +117,7 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     @Override
     public Map<String, Object> generateRealtimeFeedback(String transcript, String context, String userLevel) {
         try {
-            String url = workersApiUrl + "/api/v1/llm";
+            String url = workersApiUrl + "/api/v1/llm/conversation-feedback";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -126,9 +126,16 @@ public class WorkersAIServiceImpl implements WorkersAIService {
             }
             
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("transcript", transcript);
-            requestBody.put("context", context);
-            requestBody.put("userLevel", userLevel);
+            // conversation-feedback API에 맞는 형식으로 변경
+            List<Map<String, String>> conversation = new ArrayList<>();
+            Map<String, String> turn = new HashMap<>();
+            turn.put("speaker", "user");
+            turn.put("text", transcript);
+            conversation.add(turn);
+
+            requestBody.put("conversation", conversation);
+            requestBody.put("topic", context);
+            requestBody.put("level", userLevel);
             
             HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
             
@@ -141,6 +148,10 @@ public class WorkersAIServiceImpl implements WorkersAIService {
             
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> responseBody = response.getBody();
+                Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+                if (data != null) {
+                    return (Map<String, Object>) data.get("feedback");
+                }
                 return (Map<String, Object>) responseBody.get("feedback");
             }
             
