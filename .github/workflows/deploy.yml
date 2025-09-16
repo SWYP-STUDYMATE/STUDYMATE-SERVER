@@ -78,7 +78,7 @@ jobs:
           management.endpoint.health.show-details=always
           
           workers.api.url=https://workers.languagemate.kr
-          workers.api.key=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0LXVzZXItMTIzIiwiZW1haWwiOiJ0ZXN0QHN0dWR5bWF0ZS5rciIsInJvbGUiOiJ1c2VyIiwicGVybWlzc2lvbnMiOlsidHJhbnNjcmliZSIsInVwbG9hZCJdLCJpYXQiOjE3NTgwMTEyNjMsImV4cCI6MTc1ODA5NzY2M30.h0ORcIZZke8PAVPWpI9IyXdrwfYkLzDDPU9o0KXZdfUFPvWEaQMkbrEX2BO3dtwRyCbPy6qnYc5h0rxRQUNtag
+          workers.internal.secret=studymate-internal-secret-2024
           
           features.enable-level-test=true
           features.enable-video-call=true
@@ -119,7 +119,7 @@ jobs:
           grep -q 'jdbc:mysql://' src/main/resources/application.properties || (echo "Missing JDBC URL" && exit 1)
           grep -q '^redis.host=' src/main/resources/application.properties || (echo "Missing key: redis.host" && exit 1)
           grep -q '^clova.studio.api-key=' src/main/resources/application.properties || (echo "Missing key: clova.studio.api-key" && exit 1)
-          grep -q '^workers.api.key=' src/main/resources/application.properties || (echo "Missing key: workers.api.key" && exit 1)
+          grep -q '^workers.internal.secret=' src/main/resources/application.properties || (echo "Missing key: workers.internal.secret" && exit 1)
 
       - name: Debug - required secrets presence
         run: |
@@ -130,7 +130,7 @@ jobs:
           [ -n "${{ secrets.NCP_SERVER_HOST }}" ] && echo "NCP_SERVER_HOST: set" || echo "NCP_SERVER_HOST: MISSING"
           [ -n "${{ secrets.NCP_SERVER_USER }}" ] && echo "NCP_SERVER_USER: set" || echo "NCP_SERVER_USER: MISSING"
           [ -n "${{ secrets.NCP_SERVER_PASSWORD }}" ] && echo "NCP_SERVER_PASSWORD: set" || echo "NCP_SERVER_PASSWORD: MISSING"
-          echo "WORKERS_API_KEY: hardcoded (POC mode)"
+          echo "WORKERS_INTERNAL_SECRET: hardcoded (POC mode)"
           echo "APPLICATION_YML: DEPRECATED (using hardcoded properties now)"
       
       - name: Grant execute permission for gradlew
