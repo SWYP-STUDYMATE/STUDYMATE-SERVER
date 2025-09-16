@@ -302,7 +302,7 @@ jobs:
               # Check if port 8080 is listening inside container
               if docker-compose -f docker-compose.prod.yml exec -T app nc -z localhost 8080 2>/dev/null; then
                 echo "Port 8080 is listening inside container"
-                if curl -f http://localhost:8080/api/v1/onboard/interest/motivations; then
+                if curl -f http://localhost:8080/api/v1/onboarding/interest/motivations; then
                   echo "Application is healthy!"
                   break
                 else

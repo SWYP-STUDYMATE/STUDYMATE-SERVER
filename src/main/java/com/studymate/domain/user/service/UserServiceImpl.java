@@ -11,9 +11,9 @@ import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.entity.Location;
 import com.studymate.domain.user.entity.User;
-import com.studymate.domain.onboard.domain.repository.OnboardTopicRepository;
-import com.studymate.domain.onboard.domain.repository.OnboardPartnerRepository;
-import com.studymate.domain.onboard.domain.repository.OnboardScheduleRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingTopicRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingPartnerRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingScheduleRepository;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final AmazonS3Client amazonS3;
-    private final OnboardTopicRepository onboardTopicRepository;
-    private final OnboardPartnerRepository onboardPartnerRepository;
-    private final OnboardScheduleRepository onboardScheduleRepository;
+    private final OnboardingTopicRepository onboardingTopicRepository;
+    private final OnboardingPartnerRepository onboardingPartnerRepository;
+    private final OnboardingScheduleRepository onboardingScheduleRepository;
 
     @Value("${cloud.ncp.storage.bucket-name}")
     private String bucketName;
@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public OnboardStatusResponse getOnboardingStatus(UUID userId) {
+    public OnboardingStatusResponse getOnboardingStatus(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
@@ -258,9 +258,9 @@ public class UserServiceImpl implements UserService {
         
         // 온보딩 단계별 완성도 체크 - 실제 온보딩 관련 테이블들 확인
         boolean languageInfoCompleted = user.getNativeLanguage() != null;
-        boolean interestInfoCompleted = !onboardTopicRepository.findByUsrId(user.getUserId()).isEmpty();
-        boolean partnerInfoCompleted = !onboardPartnerRepository.findByUsrId(user.getUserId()).isEmpty();
-        boolean scheduleInfoCompleted = !onboardScheduleRepository.findByUsrId(user.getUserId()).isEmpty();
+        boolean interestInfoCompleted = !onboardingTopicRepository.findByUsrId(user.getUserId()).isEmpty();
+        boolean partnerInfoCompleted = !onboardingPartnerRepository.findByUsrId(user.getUserId()).isEmpty();
+        boolean scheduleInfoCompleted = !onboardingScheduleRepository.findByUsrId(user.getUserId()).isEmpty();
         
         int completedSteps = 0;
         if (basicInfoCompleted) completedSteps++;
@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
         if (partnerInfoCompleted) completedSteps++;
         if (scheduleInfoCompleted) completedSteps++;
         
-        return new OnboardStatusResponse(
+        return new OnboardingStatusResponse(
                 basicInfoCompleted,
                 languageInfoCompleted,
                 interestInfoCompleted,
@@ -287,11 +287,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
         
         // 온보딩 데이터를 각각의 테이블에 저장
-        // 1. 언어 정보 저장 - OnboardLangLevel 엔티티 생성 필요시 구현
+        // 1. 언어 정보 저장 - OnboardingLangLevel 엔티티 생성 필요시 구현
         log.info("Completing onboarding for user: {} with data: {}", userId, req);
-        // 2. 관심사 정보 저장 (OnboardMotivation, OnboardTopic 등)
-        // 3. 파트너 선호도 저장 (OnboardPartner 등)
-        // 4. 스케줄 정보 저장 (OnboardSchedule 등)
+        // 2. 관심사 정보 저장 (OnboardingMotivation, OnboardingTopic 등)
+        // 3. 파트너 선호도 저장 (OnboardingPartner 등)
+        // 4. 스케줄 정보 저장 (OnboardingSchedule 등)
         
         user.setIsOnboardingCompleted(true);
         userRepository.save(user);
@@ -455,7 +455,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public List<com.studymate.domain.onboard.domain.dto.response.LanguageResponse> getAvailableLanguages() {
+    public List<com.studymate.domain.onboarding.domain.dto.response.LanguageResponse> getAvailableLanguages() {
         // TODO: 실제 구현 필요
         return List.of();
     }

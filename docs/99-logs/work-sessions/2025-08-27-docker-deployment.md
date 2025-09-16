@@ -62,7 +62,7 @@ services:
 
 ### 로컬 테스트 결과
 - ✅ 모든 컨테이너 정상 실행
-- ✅ 공개 API 엔드포인트 응답: `/api/v1/onboard/interest/motivations`
+- ✅ 공개 API 엔드포인트 응답: `/api/v1/onboarding/interest/motivations`
 - ✅ 인증 보안 정상 작동: `/api/v1/users` → 401 Unauthorized
 - ✅ WebSocket 연결 가능: `/ws/chat/info` → SockJS 정보 반환
 

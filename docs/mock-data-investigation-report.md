@@ -52,7 +52,7 @@ features:
 
 ### 401 Unauthorized 에러 분석
 ```
-POST https://api.languagemate.kr/api/v1/onboard/steps/1/save 401 (Unauthorized)
+POST https://api.languagemate.kr/api/v1/onboarding/steps/1/save 401 (Unauthorized)
 ```
 
 #### 가능한 원인 (Mock 데이터와 무관)

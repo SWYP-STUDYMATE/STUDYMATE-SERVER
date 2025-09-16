@@ -56,9 +56,9 @@ baseURL: (import.meta.env.VITE_API_URL || "/api") + "/v1",
 #### 1. 온보딩 관련 API
 ```javascript
 // 클라이언트 (수정 후 올바름)
-api.get('/onboard/interest/motivations')       → /api/v1/onboard/interest/motivations
-api.get('/onboard/language/languages')        → /api/v1/onboard/language/languages  
-api.post('/onboard/partner/gender')           → /api/v1/onboard/partner/gender
+api.get('/onboarding/interest/motivations')       → /api/v1/onboarding/interest/motivations
+api.get('/onboarding/language/languages')        → /api/v1/onboarding/language/languages  
+api.post('/onboarding/partner/gender')           → /api/v1/onboarding/partner/gender
 ```
 
 #### 2. 사용자 관리 API  
@@ -188,7 +188,7 @@ docker-compose -f docker-compose.prod.yml logs app | grep "404\|Not Found"
 예시:
 - /api/v1/user/profile          (사용자 프로필)
 - /api/v1/chat/rooms           (채팅방 목록)  
-- /api/v1/onboard/language     (온보딩 언어)
+- /api/v1/onboarding/language     (온보딩 언어)
 - /api/v1/matching/requests    (매칭 요청)
 ```
 

@@ -151,10 +151,10 @@ const handleNaverLogin = () => {
 ### 2. 온보딩
 | Method | Endpoint | 설명 | 프론트엔드 사용처 |
 |--------|----------|------|-----------------|
-| POST | `/api/v1/onboard/language` | 언어 설정 저장 | `src/pages/ObLang/` |
-| POST | `/api/v1/onboard/interests` | 관심사 저장 | `src/pages/ObInt/` |
-| POST | `/api/v1/onboard/partner` | 파트너 선호도 저장 | `src/pages/ObPartner/` |
-| POST | `/api/v1/onboard/schedule` | 스케줄 저장 | `src/pages/ObSchadule/` |
+| POST | `/api/v1/onboarding/language` | 언어 설정 저장 | `src/pages/ObLang/` |
+| POST | `/api/v1/onboarding/interests` | 관심사 저장 | `src/pages/ObInt/` |
+| POST | `/api/v1/onboarding/partner` | 파트너 선호도 저장 | `src/pages/ObPartner/` |
+| POST | `/api/v1/onboarding/schedule` | 스케줄 저장 | `src/pages/ObSchadule/` |
 
 ### 3. 레벨 테스트
 | Method | Endpoint | 설명 | 프론트엔드 사용처 |

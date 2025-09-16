@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studymate.domain.matching.domain.dto.request.AdvancedMatchingFilterRequest;
-// import com.studymate.domain.onboard.entity.*;
 import com.studymate.domain.user.entity.QUser;
 import com.studymate.domain.user.entity.QUserStatus;
 import com.studymate.domain.user.entity.User;
@@ -30,10 +29,6 @@ public class MatchingRepositoryImpl implements MatchingRepositoryCustom {
     
     private final QUser user = QUser.user;
     private final QUserStatus userStatus = QUserStatus.userStatus;
-    // private final QOnboardTopic onboardTopic = QOnboardTopic.onboardTopic;
-    // private final QOnboardPersonality onboardingPersonality = QOnboardPersonality.onboardingPersonality;
-    // private final QOnboardStudyGoal onboardingStudyGoal = QOnboardStudyGoal.onboardingStudyGoal;
-    // private final QOnboardSchedule onboardSchedule = QOnboardSchedule.onboardSchedule;
 
     @Override
     public Page<User> findPotentialPartnersWithFilters(UUID currentUserId, 

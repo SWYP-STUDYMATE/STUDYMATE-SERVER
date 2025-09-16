@@ -1,10 +1,10 @@
 package com.studymate.domain.user.entity;
 
-import com.studymate.domain.onboard.domain.type.CommunicationMethodType;
-import com.studymate.domain.onboard.domain.type.DailyMinuteType;
-import com.studymate.domain.onboard.domain.type.PartnerGenderType;
-import com.studymate.domain.onboard.entity.Language;
-import com.studymate.domain.onboard.domain.type.LearningExpectionType;
+import com.studymate.domain.onboarding.domain.type.CommunicationMethodType;
+import com.studymate.domain.onboarding.domain.type.DailyMinuteType;
+import com.studymate.domain.onboarding.domain.type.PartnerGenderType;
+import com.studymate.domain.onboarding.entity.Language;
+import com.studymate.domain.onboarding.domain.type.LearningExpectionType;
 import com.studymate.domain.user.domain.type.UserGenderType;
 import com.studymate.domain.user.domain.type.UserIdentityType;
 import jakarta.persistence.*;

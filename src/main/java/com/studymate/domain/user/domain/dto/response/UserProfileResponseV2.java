@@ -1,7 +1,7 @@
 package com.studymate.domain.user.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.studymate.domain.onboard.domain.dto.response.LanguageResponse;
+import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
 import com.studymate.domain.user.entity.User;
 import lombok.Builder;
 

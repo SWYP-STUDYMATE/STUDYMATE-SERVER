@@ -2,7 +2,7 @@ package com.studymate.domain.user.service;
 
 import com.studymate.domain.user.domain.dto.request.*;
 import com.studymate.domain.user.domain.dto.response.*;
-import com.studymate.domain.onboard.domain.dto.response.LanguageResponse;
+import com.studymate.domain.onboarding.domain.dto.response.LanguageResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public interface UserService {
     // 프론트엔드 연동을 위한 추가 메서드들
     UserCompleteProfileResponse getCompleteProfile(UUID userId);
     void updateCompleteProfile(UUID userId, UserCompleteProfileRequest req);
-    OnboardStatusResponse getOnboardingStatus(UUID userId);
+    OnboardingStatusResponse getOnboardingStatus(UUID userId);
     void completeOnboarding(UUID userId, CompleteOnboardingRequest req);
     UserSettingsResponse getUserSettings(UUID userId);
     void updateUserSettings(UUID userId, UserSettingsRequest req);

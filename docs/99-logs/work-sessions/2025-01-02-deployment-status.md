@@ -124,7 +124,7 @@ curl -s -o /dev/null -w "%{http_code}" https://api.languagemate.kr/api/v1/health
 .requestMatchers("/login/oauth2/code/**", "/v1/login/oauth2/code/**", "/api/v1/login/oauth2/code/**").permitAll()
 
 // 온보딩 API들도 양쪽 경로 모두 허용
-.requestMatchers("/v1/onboard/interest/motivations", "/api/v1/onboard/interest/motivations", ...)
+.requestMatchers("/v1/onboarding/interest/motivations", "/api/v1/onboarding/interest/motivations", ...)
 ```
 
 ## 🚀 최종 배포 상태

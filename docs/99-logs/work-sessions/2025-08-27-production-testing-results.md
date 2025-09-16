@@ -38,14 +38,14 @@ Docker 기반 인프라 전환 후 실제 프로덕션 환경에서 모든 시�
 **테스트된 엔드포인트**:
 - `/health` → 200 OK ✅
 - `/api/v1/user/locations` → 200 OK ✅  
-- `/api/v1/onboard/language/languages` → 200 OK ✅
-- `/api/v1/onboard/partner/gender-type` → 200 OK ✅
-- `/api/v1/onboard/interest/motivations` → 200 OK ✅
+- `/api/v1/onboarding/language/languages` → 200 OK ✅
+- `/api/v1/onboarding/partner/gender-type` → 200 OK ✅
+- `/api/v1/onboarding/interest/motivations` → 200 OK ✅
 
 **테스트 방법**:
 ```javascript
 // 브라우저 개발자 도구에서 실행
-const response = await fetch('/api/v1/onboard/interest/motivations');
+const response = await fetch('/api/v1/onboarding/interest/motivations');
 // 결과: { status: 200, ok: true }
 ```
 
@@ -94,9 +94,9 @@ const response = await fetch('/api/v1/onboard/interest/motivations');
 **확인된 엔드포인트 응답**:
 ```json
 {
-  "/api/v1/onboard/interest/motivations": { "status": 200, "ok": true },
+  "/api/v1/onboarding/interest/motivations": { "status": 200, "ok": true },
   "/api/v1/user/locations": { "status": 200, "ok": true },
-  "/api/v1/onboard/language/languages": { "status": 200, "ok": true },
+  "/api/v1/onboarding/language/languages": { "status": 200, "ok": true },
   "/health": { "status": 200, "ok": true }
 }
 ```

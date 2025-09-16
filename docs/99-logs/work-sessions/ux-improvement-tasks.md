@@ -6,22 +6,22 @@
 
 #### 1.1 단계별 저장 시스템 (2-3일)
 **태스크:** OnboardController 단계별 저장 API 구현
-- `POST /api/v1/onboard/steps/{stepNumber}/save` - 각 단계별 임시 저장
-- `GET /api/v1/onboard/steps/current` - 현재 진행 단계 조회
-- `POST /api/v1/onboard/steps/{stepNumber}/skip` - 단계 건너뛰기
+- `POST /api/v1/onboarding/steps/{stepNumber}/save` - 각 단계별 임시 저장
+- `GET /api/v1/onboarding/steps/current` - 현재 진행 단계 조회
+- `POST /api/v1/onboarding/steps/{stepNumber}/skip` - 단계 건너뛰기
 - Redis 기반 임시 데이터 저장소 구현
 - 브라우저 새로고침/재방문 시 이어서 진행 가능
 
 #### 1.2 진행률 표시 UI 백엔드 (1-2일)
 **태스크:** 온보드 진행률 추적 API
-- `GET /api/v1/onboard/progress` - 진행률, 예상 남은 시간, 완료 단계
-- `GET /api/v1/onboard/steps/meta` - 각 단계별 메타정보 (필수/선택, 예상시간)
+- `GET /api/v1/onboarding/progress` - 진행률, 예상 남은 시간, 완료 단계
+- `GET /api/v1/onboarding/steps/meta` - 각 단계별 메타정보 (필수/선택, 예상시간)
 - 단계별 완료 조건 정의 및 검증 로직
 
 #### 1.3 스마트 온보딩 로직 (2-3일)  
 **태스크:** 최소 정보 기반 매칭 체험 기능
 - 필수 정보 40% 완료 시 "체험 매칭" 가능
-- `POST /api/v1/onboard/trial-matching` - 임시 매칭 체험
+- `POST /api/v1/onboarding/trial-matching` - 임시 매칭 체험
 - 온보드 미완료 상태에서도 제한적 기능 사용 가능
 
 ### 2. 실시간 통신 안정성 개선

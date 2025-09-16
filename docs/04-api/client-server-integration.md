@@ -148,10 +148,10 @@ export interface OnboardProgressResponse {
 
 | 엔드포인트 | 메서드 | 요청 타입 | 응답 타입 | 상태 |
 |-----------|--------|----------|----------|------|
-| `/api/v1/onboard/progress` | GET | - | ApiResponse<OnboardProgressResponse> | ✅ |
-| `/api/v1/onboard/native-language` | POST | NativeLanguageRequest | ApiResponse<LanguageResponse> | ✅ |
-| `/api/v1/onboard/language-levels` | POST | LanguageLevelRequest | ApiResponse<void> | ✅ |
-| `/api/v1/onboard/complete` | POST | CompleteOnboardRequest | ApiResponse<OnboardStatusResponse> | ✅ |
+| `/api/v1/onboarding/progress` | GET | - | ApiResponse<OnboardProgressResponse> | ✅ |
+| `/api/v1/onboarding/native-language` | POST | NativeLanguageRequest | ApiResponse<LanguageResponse> | ✅ |
+| `/api/v1/onboarding/language-levels` | POST | LanguageLevelRequest | ApiResponse<void> | ✅ |
+| `/api/v1/onboarding/complete` | POST | CompleteOnboardRequest | ApiResponse<OnboardStatusResponse> | ✅ |
 
 ---
 
