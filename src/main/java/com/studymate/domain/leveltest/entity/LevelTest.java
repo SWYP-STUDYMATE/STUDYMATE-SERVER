@@ -91,9 +91,12 @@ public class LevelTest extends BaseTimeEntity {
     @Column(name = "recommendations", columnDefinition = "TEXT")
     private String recommendations;
 
-    // 음성 테스트 관련 필드 추가
+    // 음성 테스트 관련 필드 추가 -> 노출용
     @Column(name = "audio_file_url")
     private String audioFileUrl;
+//   서버 내부용
+    @Column(name = "audio_file_path")
+    private String audioFilePath;
 
     @Column(name = "transcript_text", columnDefinition = "TEXT")
     private String transcriptText;
@@ -167,8 +170,9 @@ public class LevelTest extends BaseTimeEntity {
         this.isVoiceTest = true;
     }
 
-    public void updateAudioFile(String audioFileUrl) {
+    public void updateAudioFile(String audioFileUrl, String audioFilePath) {
         this.audioFileUrl = audioFileUrl;
+        this.audioFilePath = audioFilePath;
     }
 
     public void updateTranscript(String transcriptText) {

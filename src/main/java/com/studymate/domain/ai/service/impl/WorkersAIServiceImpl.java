@@ -1,28 +1,15 @@
 package com.studymate.domain.ai.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
+import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.domain.ai.service.WorkersAIService;
 import com.studymate.domain.leveltest.domain.dto.response.VoiceAnalysisResponse;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,43 +36,33 @@ public class WorkersAIServiceImpl implements WorkersAIService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("X-Internal-Secret", workersInternalSecret);
 
-            // 오디오 파일을 Base64로 인코딩
             byte[] audioBytes = audioFile.getBytes();
             String audioBase64 = java.util.Base64.getEncoder().encodeToString(audioBytes);
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("audio_base64", audioBase64);
-            requestBody.put("language", "auto");
-            requestBody.put("task", "transcribe");
-            requestBody.put("user_context", Map.of(
+            Map<String, Object> body = new HashMap<>();
+            body.put("audio_base64", audioBase64);
+            body.put("language", "auto");
+            body.put("task", "transcribe");
+            body.put("user_context", Map.of(
                     "filename", audioFile.getOriginalFilename() != null ? audioFile.getOriginalFilename() : "audio.wav",
                     "size", audioBytes.length,
                     "content_type", audioFile.getContentType() != null ? audioFile.getContentType() : "audio/wav"
             ));
 
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+            log.info("[WorkersAI] /transcribe req url={}, size={}", url, audioBytes.length);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
-            );
+            ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), Map.class);
+            log.info("[WorkersAI] /transcribe resp status={}, body={}", resp.getStatusCode(), resp.getBody());
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Map<String, Object> responseBody = response.getBody();
-                Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
-                if (data != null) {
-                    return (String) data.get("transcript");
-                }
-                return (String) responseBody.get("transcript");
+            if (resp.getStatusCode() == HttpStatus.OK && resp.getBody() != null) {
+                Map<String, Object> rb = resp.getBody();
+                Map<String, Object> data = safeGetMap(rb, "data");
+                if (data != null) return String.valueOf(data.getOrDefault("transcript", ""));
+                return String.valueOf(rb.getOrDefault("transcript", ""));
             }
-
-            log.error("Failed to transcribe audio: {}", response.getStatusCode());
             return "";
-
         } catch (Exception e) {
-            log.error("Error transcribing audio: ", e);
+            log.error("[WorkersAI] /transcribe error", e);
             return "";
         }
     }
@@ -94,37 +71,36 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     public VoiceAnalysisResponse evaluateLevelTest(String transcript, String language, Map<String, Object> questions) {
         try {
             String url = workersApiUrl + "/api/v1/internal/level-test";
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("X-Internal-Secret", workersInternalSecret);
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("transcript", transcript);
-            requestBody.put("language", language);
-            requestBody.put("questions", questions);
+            Map<String, Object> body = new HashMap<>();
+            body.put("transcript", transcript);
+            body.put("language", language);
+            body.put("questions", questions);
 
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+            log.info("[WorkersAI] /level-test req url={}, body={}", url, body);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
-            );
+            ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), Map.class);
+            log.info("[WorkersAI] /level-test resp status={}, body={}", resp.getStatusCode(), resp.getBody());
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Map<String, Object> responseBody = response.getBody();
-                Map<String, Object> evaluation = (Map<String, Object>) responseBody.get("evaluation");
+            if (resp.getStatusCode() == HttpStatus.OK && resp.getBody() != null) {
+                Map<String, Object> rb = resp.getBody();
+                Map<String, Object> data = safeGetMap(rb, "data");
+                Map<String, Object> evaluation = null;
+                if (data != null) evaluation = safeGetMap(data, "evaluation");
+                if (evaluation == null) evaluation = safeGetMap(rb, "evaluation");
 
+                if (evaluation == null) {
+                    log.warn("[WorkersAI] evaluation missing. fallback.");
+                    return createDefaultAnalysisResponse(transcript);
+                }
                 return buildVoiceAnalysisResponse(evaluation);
             }
-
-            log.error("Failed to evaluate level test: {}", response.getStatusCode());
             return createDefaultAnalysisResponse(transcript);
-
         } catch (Exception e) {
-            log.error("Error evaluating level test: ", e);
+            log.error("[WorkersAI] /level-test error", e);
             return createDefaultAnalysisResponse(transcript);
         }
     }
@@ -133,51 +109,34 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     public Map<String, Object> generateRealtimeFeedback(String transcript, String context, String userLevel) {
         try {
             String url = workersApiUrl + "/api/v1/internal/conversation-feedback";
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("X-Internal-Secret", workersInternalSecret);
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("transcript", transcript);
-            requestBody.put("context", context);
-            requestBody.put("user_level", userLevel);
-            requestBody.put("user_context", Map.of(
-                    "request_time", System.currentTimeMillis(),
-                    "source", "spring-boot-server"
-            ));
+            Map<String, Object> body = new HashMap<>();
+            body.put("transcript", transcript);
+            body.put("context", context);
+            body.put("user_level", userLevel);
+            body.put("user_context", Map.of("request_time", System.currentTimeMillis(), "source", "spring-boot-server"));
 
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), Map.class);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
-            );
-
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Map<String, Object> responseBody = response.getBody();
-                Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
-                if (data != null) {
-                    return (Map<String, Object>) data.get("feedback");
-                }
-                return (Map<String, Object>) responseBody.get("feedback");
+            if (resp.getStatusCode() == HttpStatus.OK && resp.getBody() != null) {
+                Map<String, Object> rb = resp.getBody();
+                Map<String, Object> data = safeGetMap(rb, "data");
+                if (data != null) return safeGetMap(data, "feedback");
+                return safeGetMap(rb, "feedback");
             }
-
-            return createDefaultFeedback();
-
+            return defaultFeedback();
         } catch (Exception e) {
-            log.error("Error generating realtime feedback: ", e);
-            return createDefaultFeedback();
+            log.error("[WorkersAI] /conversation-feedback error", e);
+            return defaultFeedback();
         }
     }
 
     @Override
     public Map<String, Object> generateLearningRecommendations(String userLevel, Map<String, Object> weaknesses) {
-        Map<String, Object> recommendations = new HashMap<>();
-
-        // 레벨별 추천 콘텐츠
+        Map<String, Object> rec = new HashMap<>();
         List<String> contents = new ArrayList<>();
         List<String> exercises = new ArrayList<>();
 
@@ -196,115 +155,91 @@ public class WorkersAIServiceImpl implements WorkersAIService {
                 exercises.add("Conversation role-play scenarios");
                 exercises.add("Grammar pattern drills");
                 break;
-            case "C1":
-            case "C2":
+            default:
                 contents.add("Advanced literature excerpts");
                 contents.add("Native speaker podcasts");
                 exercises.add("Debate and discussion topics");
                 exercises.add("Professional presentation practice");
-                break;
         }
-
-        recommendations.put("recommendedContents", contents);
-        recommendations.put("practiceExercises", exercises);
-        recommendations.put("estimatedTimePerDay", "30-45 minutes");
-        recommendations.put("focusAreas", weaknesses.keySet());
-
-        return recommendations;
+        rec.put("recommendedContents", contents);
+        rec.put("practiceExercises", exercises);
+        rec.put("estimatedTimePerDay", "30-45 minutes");
+        rec.put("focusAreas", weaknesses != null ? weaknesses.keySet() : Collections.emptySet());
+        return rec;
     }
 
-    private VoiceAnalysisResponse buildVoiceAnalysisResponse(Map<String, Object> evaluation) {
-        VoiceAnalysisResponse.ScoreBreakdown scoreBreakdown = VoiceAnalysisResponse.ScoreBreakdown.builder()
-                .pronunciationScore(getIntValue(evaluation, "pronunciation"))
-                .fluencyScore(getIntValue(evaluation, "fluency"))
-                .grammarScore(getIntValue(evaluation, "grammar"))
-                .vocabularyScore(getIntValue(evaluation, "vocabulary"))
+    // -------- helpers --------
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> safeGetMap(Map<String, Object> m, String k) {
+        if (m == null) return null;
+        Object v = m.get(k);
+        return (v instanceof Map) ? (Map<String, Object>) v : null;
+    }
+
+    private int getIntValue(Map<String, Object> map, String key) {
+        if (map == null) return 0;
+        Object v = map.get(key);
+        if (v == null) return 0;
+        if (v instanceof Number) return ((Number) v).intValue();
+        try { return Integer.parseInt(String.valueOf(v)); } catch (Exception ignored) { return 0; }
+    }
+
+    private VoiceAnalysisResponse buildVoiceAnalysisResponse(Map<String, Object> eval) {
+        VoiceAnalysisResponse.ScoreBreakdown sb = VoiceAnalysisResponse.ScoreBreakdown.builder()
+                .pronunciationScore(getIntValue(eval, "pronunciation"))
+                .fluencyScore(getIntValue(eval, "fluency"))
+                .grammarScore(getIntValue(eval, "grammar"))
+                .vocabularyScore(getIntValue(eval, "vocabulary"))
                 .build();
 
-        List<String> strengths = (List<String>) evaluation.getOrDefault("strengths", new ArrayList<>());
-        List<String> weaknesses = (List<String>) evaluation.getOrDefault("weaknesses", new ArrayList<>());
-        List<String> recommendations = (List<String>) evaluation.getOrDefault("recommendations", new ArrayList<>());
-
         return VoiceAnalysisResponse.builder()
-                .cefrLevel((String) evaluation.getOrDefault("cefrLevel", "B1"))
-                .overallScore(getIntValue(evaluation, "overallScore"))
-                .scoreBreakdown(scoreBreakdown)
-                .strengths(String.join(", ", strengths))
-                .weaknesses(String.join(", ", weaknesses))
-                .recommendations(recommendations)
-                .feedback((String) evaluation.getOrDefault("feedback", "Keep practicing!"))
+                .cefrLevel(String.valueOf(eval.getOrDefault("cefrLevel", "B1")))
+                .overallScore(getIntValue(eval, "overallScore"))
+                .scoreBreakdown(sb)
+                .strengths(String.join(", ", asStringList(eval.get("strengths"))))
+                .weaknesses(String.join(", ", asStringList(eval.get("weaknesses"))))
+                .recommendations(asStringList(eval.get("recommendations")))
+                .feedback(String.valueOf(eval.getOrDefault("feedback", "Keep practicing!")))
                 .analyzedAt(LocalDateTime.now())
                 .build();
     }
 
     private VoiceAnalysisResponse createDefaultAnalysisResponse(String transcript) {
-        // 기본 분석 응답 생성 (Workers AI 호출 실패 시)
-        int wordCount = transcript.split("\\s+").length;
-        int baseScore = Math.min(50 + wordCount / 5, 85);
-
-        VoiceAnalysisResponse.ScoreBreakdown scoreBreakdown = VoiceAnalysisResponse.ScoreBreakdown.builder()
-                .pronunciationScore(baseScore + random(-5, 5))
-                .fluencyScore(baseScore + random(-5, 5))
-                .grammarScore(baseScore + random(-5, 5))
-                .vocabularyScore(baseScore + random(-5, 5))
+        int wc = (transcript == null || transcript.isBlank()) ? 0 : transcript.trim().split("\\s+").length;
+        int base = Math.min(50 + wc / 5, 85);
+        VoiceAnalysisResponse.ScoreBreakdown sb = VoiceAnalysisResponse.ScoreBreakdown.builder()
+                .pronunciationScore(base)
+                .fluencyScore(base)
+                .grammarScore(base)
+                .vocabularyScore(base)
                 .build();
-
         return VoiceAnalysisResponse.builder()
-                .cefrLevel(determineCEFRLevel(baseScore))
-                .overallScore(baseScore)
-                .scoreBreakdown(scoreBreakdown)
+                .overallScore(base)
+                .cefrLevel(base >= 80 ? "C1" : base >= 70 ? "B2" : base >= 60 ? "B1" : base >= 50 ? "A2" : "A1")
+                .scoreBreakdown(sb)
                 .strengths("Clear communication attempt")
                 .weaknesses("Could improve fluency and vocabulary range")
-                .recommendations(Arrays.asList(
-                        "Practice speaking more regularly",
-                        "Expand vocabulary through reading",
-                        "Focus on pronunciation exercises"
-                ))
+                .recommendations(Arrays.asList("Practice speaking regularly", "Expand vocabulary", "Focus on pronunciation"))
                 .feedback("Keep practicing to improve your English skills!")
                 .analyzedAt(LocalDateTime.now())
                 .build();
     }
 
-    private Map<String, Object> createDefaultFeedback() {
-        Map<String, Object> feedback = new HashMap<>();
-        feedback.put("corrections", new ArrayList<>());
-        feedback.put("suggestions", Arrays.asList(
-                "Try to speak more clearly",
-                "Use complete sentences"
-        ));
-        feedback.put("encouragement", "Good effort! Keep practicing!");
-        feedback.put("fluencyScore", 70);
-        return feedback;
+    private List<String> asStringList(Object v) {
+        if (v instanceof List<?> list) {
+            List<String> out = new ArrayList<>();
+            for (Object o : list) out.add(String.valueOf(o));
+            return out;
+        }
+        return new ArrayList<>();
     }
 
-    private String determineCEFRLevel(int score) {
-        if (score >= 90) {
-            return "C2";
-        }
-        if (score >= 80) {
-            return "C1";
-        }
-        if (score >= 70) {
-            return "B2";
-        }
-        if (score >= 60) {
-            return "B1";
-        }
-        if (score >= 50) {
-            return "A2";
-        }
-        return "A1";
-    }
-
-    private int getIntValue(Map<String, Object> map, String key) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
-        }
-        return 0;
-    }
-
-    private int random(int min, int max) {
-        return new Random().nextInt(max - min + 1) + min;
+    private Map<String, Object> defaultFeedback() {
+        Map<String, Object> m = new HashMap<>();
+        m.put("corrections", new ArrayList<>());
+        m.put("suggestions", Arrays.asList("Try to speak more clearly", "Use complete sentences"));
+        m.put("encouragement", "Good effort! Keep practicing!");
+        m.put("fluencyScore", 70);
+        return m;
     }
 }
