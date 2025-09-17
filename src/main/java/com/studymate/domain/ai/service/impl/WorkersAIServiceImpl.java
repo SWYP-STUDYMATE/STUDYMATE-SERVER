@@ -27,6 +27,11 @@ public class WorkersAIServiceImpl implements WorkersAIService {
     @Value("${workers.internal.secret:studymate-internal-secret-2024}")
     private String workersInternalSecret;
 
+    @Value("${scoring.mode:live}")
+    private String scoringMode;
+
+
+
     @Override
     public String transcribeAudio(MultipartFile audioFile) {
         try {
@@ -69,6 +74,10 @@ public class WorkersAIServiceImpl implements WorkersAIService {
 
     @Override
     public VoiceAnalysisResponse evaluateLevelTest(String transcript, String language, Map<String, Object> questions) {
+        if (!"live".equalsIgnoreCase(scoringMode)) {
+            log.warn("[WorkersAI] scoring.mode='{}'", scoringMode);
+            return fixedStub(transcript);
+        }
         try {
             String url = workersApiUrl + "/api/v1/internal/level-test";
             HttpHeaders headers = new HttpHeaders();
@@ -104,6 +113,22 @@ public class WorkersAIServiceImpl implements WorkersAIService {
             return createDefaultAnalysisResponse(transcript);
         }
     }
+
+    private VoiceAnalysisResponse fixedStub(String transcript) {
+        VoiceAnalysisResponse.ScoreBreakdown sb = VoiceAnalysisResponse.ScoreBreakdown.builder()
+                .pronunciationScore(70).fluencyScore(70).grammarScore(70).vocabularyScore(70).build();
+        return VoiceAnalysisResponse.builder()
+                .overallScore(70)
+                .cefrLevel("B1")
+                .scoreBreakdown(sb)
+                .strengths("")
+                .weaknesses("")
+                .recommendations(Arrays.asList())
+                .feedback("Stub scoring (demo).")
+                .analyzedAt(LocalDateTime.now())
+                .build();
+    }
+
 
     @Override
     public Map<String, Object> generateRealtimeFeedback(String transcript, String context, String userLevel) {
@@ -184,25 +209,60 @@ public class WorkersAIServiceImpl implements WorkersAIService {
         try { return Integer.parseInt(String.valueOf(v)); } catch (Exception ignored) { return 0; }
     }
 
+
+    @SuppressWarnings("unchecked")
     private VoiceAnalysisResponse buildVoiceAnalysisResponse(Map<String, Object> eval) {
+        // 1) scores 맵 꺼내기
+        Map<String, Object> scores = safeGetMap(eval, "scores");
+
+        // 2) 점수: scores 우선, 없으면 eval 루트 폴백
+        int pron  = getIntValue(scores != null ? scores : eval, "pronunciation");
+        int flu   = getIntValue(scores != null ? scores : eval, "fluency");
+        int gram  = getIntValue(scores != null ? scores : eval, "grammar");
+        int vocab = getIntValue(scores != null ? scores : eval, "vocabulary");
+
+        // 3) overallScore 계산(없으면 평균)
+        int overall = getIntValue(eval, "overallScore");
+        if (overall == 0) {
+            int cnt = 0, sum = 0;
+            for (int v : new int[]{pron, flu, gram, vocab}) {
+                if (v > 0) { sum += v; cnt++; }
+            }
+            overall = (cnt > 0) ? Math.round(sum / (float) cnt) : 0;
+        }
+
+        // 4) level: estimatedLevel 우선 → cefrLevel 폴백
+        String level = String.valueOf(
+                eval.getOrDefault("estimatedLevel", eval.getOrDefault("cefrLevel", "B1"))
+        );
+
+        // 5) 추천/강점/약점
+        List<String> recs = asStringList(eval.get("recommendations"));
+        if (recs.isEmpty()) recs = asStringList(eval.get("suggestions"));
+        String strengths = String.join(", ", asStringList(eval.get("strengths")));
+        String weaknesses = String.join(", ", asStringList(eval.get("weaknesses")));
+
+        // 6) scoreBreakdown 객체 생성
         VoiceAnalysisResponse.ScoreBreakdown sb = VoiceAnalysisResponse.ScoreBreakdown.builder()
-                .pronunciationScore(getIntValue(eval, "pronunciation"))
-                .fluencyScore(getIntValue(eval, "fluency"))
-                .grammarScore(getIntValue(eval, "grammar"))
-                .vocabularyScore(getIntValue(eval, "vocabulary"))
+                .pronunciationScore(pron)
+                .fluencyScore(flu)
+                .grammarScore(gram)
+                .vocabularyScore(vocab)
                 .build();
 
+        // 7) 최종 DTO
         return VoiceAnalysisResponse.builder()
-                .cefrLevel(String.valueOf(eval.getOrDefault("cefrLevel", "B1")))
-                .overallScore(getIntValue(eval, "overallScore"))
+                .cefrLevel(level)
+                .overallScore(overall)
                 .scoreBreakdown(sb)
-                .strengths(String.join(", ", asStringList(eval.get("strengths"))))
-                .weaknesses(String.join(", ", asStringList(eval.get("weaknesses"))))
-                .recommendations(asStringList(eval.get("recommendations")))
+                .strengths(strengths)
+                .weaknesses(weaknesses)
+                .recommendations(recs)
                 .feedback(String.valueOf(eval.getOrDefault("feedback", "Keep practicing!")))
                 .analyzedAt(LocalDateTime.now())
                 .build();
     }
+
 
     private VoiceAnalysisResponse createDefaultAnalysisResponse(String transcript) {
         int wc = (transcript == null || transcript.isBlank()) ? 0 : transcript.trim().split("\\s+").length;
