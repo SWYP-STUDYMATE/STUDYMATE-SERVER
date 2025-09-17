@@ -5,6 +5,7 @@ import com.studymate.domain.onboarding.domain.dto.request.OnboardingStepRequest;
 import com.studymate.domain.onboarding.domain.dto.response.OnboardingDataResponse;
 import com.studymate.domain.onboarding.domain.dto.response.OnboardingProgressResponse;
 import com.studymate.domain.onboarding.domain.dto.response.CurrentStepResponse;
+import com.studymate.domain.onboarding.domain.type.DayOfWeekType;
 import com.studymate.domain.onboarding.domain.repository.*;
 import com.studymate.domain.onboarding.entity.*;
 import com.studymate.domain.user.domain.dto.response.OnboardingStatusResponse;
@@ -18,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,6 +38,7 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final MotivationRepository motivationRepository;
     private final TopicRepository topicRepository;
     private final LearningStyleRepository learningStyleRepository;
+    private final LearningExpectationRepository learningExpectationRepository;
     private final PartnerPersonalityRepository partnerPersonalityRepository;
     private final GroupSizeRepository groupSizeRepository;
     private final ScheduleRepository scheduleRepository;
@@ -45,6 +50,7 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final OnboardingLearningStyleRepository onboardingLearningStyleRepository;
     private final OnboardingPartnerRepository onboardingPartnerRepository;
     private final OnboardingGroupSizeRepository onboardingGroupSizeRepository;
+    private final OnboardingLearningExpectationRepository onboardingLearningExpectationRepository;
     private final OnboardingScheduleRepository onboardingScheduleRepository;
     
     // Redis 기반 온보딩 상태 관리
@@ -176,11 +182,13 @@ public class OnboardingServiceImpl implements OnboardingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
 
-        // 기존 온보딩 데이터 삭제
-        clearExistingOnboardingData(userId);
-        
+        AggregatedOnboardingData aggregatedData = buildAggregatedOnboardingData(user, request);
+
+        // 기존 온보딩 데이터 삭제 후 재적재 (필요한 영역만 선별)
+        clearExistingOnboardingData(userId, aggregatedData);
+
         // 새로운 온보딩 데이터 저장
-        saveOnboardingData(userId, request);
+        saveOnboardingData(user, aggregatedData);
         
         // 온보딩 완료 처리
         user.setIsOnboardingCompleted(true);
@@ -246,28 +254,565 @@ public class OnboardingServiceImpl implements OnboardingService {
         );
     }
 
-    private void clearExistingOnboardingData(UUID userId) {
-        // 기존 데이터 삭제
-        onboardingLangLevelRepository.deleteByUsrId(userId);
-        onboardingMotivationRepository.deleteByUsrId(userId);
-        onboardingTopicRepository.deleteByUsrId(userId);
-        onboardingLearningStyleRepository.deleteByUsrId(userId);
-        onboardingPartnerRepository.deleteByUsrId(userId);
-        onboardingGroupSizeRepository.deleteByUsrId(userId);
-        onboardingScheduleRepository.deleteByUsrId(userId);
+    private void clearExistingOnboardingData(UUID userId, AggregatedOnboardingData data) {
+        if (data.hasLanguageLevelData()) {
+            onboardingLangLevelRepository.deleteByUsrId(userId);
+        }
+        if (data.hasMotivationData()) {
+            onboardingMotivationRepository.deleteByUsrId(userId);
+        }
+        if (data.hasTopicData()) {
+            onboardingTopicRepository.deleteByUsrId(userId);
+        }
+        if (data.hasLearningStyleData()) {
+            onboardingLearningStyleRepository.deleteByUsrId(userId);
+        }
+        if (data.hasLearningExpectationData()) {
+            onboardingLearningExpectationRepository.deleteByUsrId(userId);
+        }
+        if (data.hasPartnerPersonalityData()) {
+            onboardingPartnerRepository.deleteByUsrId(userId);
+        }
+        if (data.hasGroupSizeData()) {
+            onboardingGroupSizeRepository.deleteByUsrId(userId);
+        }
+        if (data.hasSchedulePersistenceData()) {
+            onboardingScheduleRepository.deleteByUsrId(userId);
+        }
     }
 
-    private void saveOnboardingData(UUID userId, CompleteAllOnboardingRequest request) {
-        // 실제 온보딩 데이터를 각 테이블에 저장하는 로직
-        log.info("Saving onboarding data for user: {} with request: {}", userId, request);
-        
-        // 1. 언어 레벨 데이터 저장 - OnboardingLangLevel 엔티티 구현 후 추가
-        // 2. 관심사 데이터 저장 - OnboardingTopic, OnboardingMotivation 엔티티 구현 후 추가
-        // 3. 파트너 선호도 저장 - OnboardingPartner 엔티티 구현 후 추가
-        // 4. 스케줄 정보 저장 - OnboardingSchedule 엔티티 구현 후 추가
-        
-        // 복합키 구조 처리 완료 - 실제 엔티티 저장 로직은 엔티티 생성 후 구현 예정
+    private void saveOnboardingData(User user, AggregatedOnboardingData data) {
+        UUID userId = user.getUserId();
+        log.info("Persisting onboarding data for user: {}", userId);
+
+        applyBasicProfileData(user, data);
+        persistLanguageData(user, data);
+        persistInterestData(userId, data);
+        persistPartnerPreferenceData(userId, data);
+        persistScheduleData(userId, data);
+
+        userRepository.save(user);
+
         log.debug("Onboarding data save process completed for user: {}", userId);
+    }
+
+    private AggregatedOnboardingData buildAggregatedOnboardingData(User user, CompleteAllOnboardingRequest request) {
+        AggregatedOnboardingData data = new AggregatedOnboardingData();
+
+        if (request != null) {
+            data.mergeFromRequest(request);
+        }
+
+        for (int step = 1; step <= 7; step++) {
+            Map<String, Object> stepData = stateService.getStepData(user.getUserId(), step);
+            if (!stepData.isEmpty()) {
+                data.mergeFromStep(step, stepData);
+            }
+        }
+
+        return data;
+    }
+
+    private void applyBasicProfileData(User user, AggregatedOnboardingData data) {
+        if (hasText(data.getEnglishName())) {
+            user.setEnglishName(data.getEnglishName().trim());
+        }
+        if (hasText(data.getIntro())) {
+            user.setSelfBio(data.getIntro().trim());
+        }
+        if (hasText(data.getProfileImage())) {
+            user.setProfileImage(data.getProfileImage().trim());
+        }
+    }
+
+    private void persistLanguageData(User user, AggregatedOnboardingData data) {
+        if (data.getNativeLanguageId() != null) {
+            Language language = languageRepository.findById(data.getNativeLanguageId())
+                    .orElseThrow(() -> new NotFoundException("LANGUAGE NOT FOUND: " + data.getNativeLanguageId()));
+            user.setNativeLanguage(language);
+        }
+
+        List<CompleteAllOnboardingRequest.LanguageLevelData> targetLanguages = data.getTargetLanguages();
+        if (targetLanguages.isEmpty()) {
+            return;
+        }
+
+        Set<Integer> levelIds = targetLanguages.stream()
+                .flatMap(dto -> Arrays.stream(new Integer[]{dto.getCurrentLevelId(),
+                        dto.getTargetLevelId() != null ? dto.getTargetLevelId() : dto.getCurrentLevelId()}))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<Integer, LangLevelType> levelTypeMap = langLevelTypeRepository.findAllById(levelIds).stream()
+                .collect(Collectors.toMap(LangLevelType::getLangLevelId, lt -> lt));
+
+        List<OnboardingLangLevel> entities = new ArrayList<>();
+        for (CompleteAllOnboardingRequest.LanguageLevelData languageData : targetLanguages) {
+            Integer languageId = languageData.getLanguageId();
+            Integer currentLevelId = languageData.getCurrentLevelId();
+
+            if (languageId == null || currentLevelId == null) {
+                continue;
+            }
+
+            LangLevelType currentLevel = levelTypeMap.get(currentLevelId);
+            if (currentLevel == null) {
+                throw new NotFoundException("LANGUAGE LEVEL TYPE NOT FOUND: " + currentLevelId);
+            }
+
+            Integer targetLevelId = languageData.getTargetLevelId() != null
+                    ? languageData.getTargetLevelId()
+                    : currentLevelId;
+            LangLevelType targetLevel = levelTypeMap.get(targetLevelId);
+            if (targetLevel == null) {
+                throw new NotFoundException("LANGUAGE LEVEL TYPE NOT FOUND: " + targetLevelId);
+            }
+
+            OnboardingLangLevelId id = new OnboardingLangLevelId(user.getUserId(), languageId);
+            OnboardingLangLevel entity = OnboardingLangLevel.builder()
+                    .id(id)
+                    .currentLevel(currentLevel)
+                    .targetLevel(targetLevel)
+                    .langLevelType(currentLevel)
+                    .build();
+            entities.add(entity);
+        }
+
+        if (!entities.isEmpty()) {
+            onboardingLangLevelRepository.saveAll(entities);
+        }
+    }
+
+    private void persistInterestData(UUID userId, AggregatedOnboardingData data) {
+        if (data.hasMotivationData()) {
+            validateEntitiesExist(data.getMotivationIds(), motivationRepository.findAllById(data.getMotivationIds()),
+                    "MOTIVATION");
+            List<OnboardingMotivation> motivations = data.getMotivationIds().stream()
+                    .map(id -> OnboardingMotivation.builder()
+                            .id(new OnboardingMotivationId(userId, id))
+                            .build())
+                    .toList();
+            onboardingMotivationRepository.saveAll(motivations);
+        }
+
+        if (data.hasTopicData()) {
+            validateEntitiesExist(data.getTopicIds(), topicRepository.findAllById(data.getTopicIds()), "TOPIC");
+            List<OnboardingTopic> topics = data.getTopicIds().stream()
+                    .map(id -> OnboardingTopic.builder()
+                            .id(new OnboardingTopicId(userId, id))
+                            .build())
+                    .toList();
+            onboardingTopicRepository.saveAll(topics);
+        }
+
+        if (data.hasLearningStyleData()) {
+            validateEntitiesExist(data.getLearningStyleIds(), learningStyleRepository.findAllById(data.getLearningStyleIds()),
+                    "LEARNING STYLE");
+            List<OnboardingLearningStyle> learningStyles = data.getLearningStyleIds().stream()
+                    .map(id -> OnboardingLearningStyle.builder()
+                            .id(new OnboardingLearningStyleId(userId, id))
+                            .build())
+                    .toList();
+            onboardingLearningStyleRepository.saveAll(learningStyles);
+        }
+
+        if (data.hasLearningExpectationData()) {
+            validateEntitiesExist(data.getLearningExpectationIds(),
+                    learningExpectationRepository.findAllById(data.getLearningExpectationIds()),
+                    "LEARNING EXPECTATION");
+            List<OnboardingLearningExpectation> expectations = data.getLearningExpectationIds().stream()
+                    .map(id -> OnboardingLearningExpectation.builder()
+                            .id(new OnboardingLearningExpectationId(userId, id))
+                            .build())
+                    .toList();
+            onboardingLearningExpectationRepository.saveAll(expectations);
+        }
+    }
+
+    private void persistPartnerPreferenceData(UUID userId, AggregatedOnboardingData data) {
+        if (data.hasPartnerPersonalityData()) {
+            validateEntitiesExist(data.getPartnerPersonalityIds(),
+                    partnerPersonalityRepository.findAllById(data.getPartnerPersonalityIds()),
+                    "PARTNER PERSONALITY");
+            List<OnboardingPartner> partners = data.getPartnerPersonalityIds().stream()
+                    .map(id -> OnboardingPartner.builder()
+                            .id(new OnboardingPartnerId(userId, id))
+                            .build())
+                    .toList();
+            onboardingPartnerRepository.saveAll(partners);
+        }
+
+        if (data.hasGroupSizeData()) {
+            validateEntitiesExist(data.getGroupSizeIds(), groupSizeRepository.findAllById(data.getGroupSizeIds()),
+                    "GROUP SIZE");
+            List<OnboardingGroupSize> groupSizes = data.getGroupSizeIds().stream()
+                    .map(id -> OnboardingGroupSize.builder()
+                            .id(new OnboardingGroupSizeId(userId, id))
+                            .build())
+                    .toList();
+            onboardingGroupSizeRepository.saveAll(groupSizes);
+        }
+    }
+
+    private void persistScheduleData(UUID userId, AggregatedOnboardingData data) {
+        if (!data.hasSchedulePersistenceData()) {
+            return;
+        }
+
+        Set<Integer> scheduleIds = new LinkedHashSet<>(data.getScheduleIds());
+        if (scheduleIds.isEmpty()) {
+            // scheduleSelections may include scheduleId values, try to harvest
+            data.getScheduleSelections().stream()
+                    .map(ScheduleSelection::scheduleId)
+                    .filter(Objects::nonNull)
+                    .forEach(scheduleIds::add);
+        }
+
+        Map<Integer, Schedule> scheduleMap = scheduleRepository.findAllById(scheduleIds).stream()
+                .collect(Collectors.toMap(Schedule::getScheduleId, s -> s));
+
+        List<OnboardingSchedule> schedules = new ArrayList<>();
+
+        for (Integer scheduleId : scheduleIds) {
+            Schedule schedule = scheduleMap.get(scheduleId);
+            if (schedule == null) {
+                throw new NotFoundException("SCHEDULE NOT FOUND: " + scheduleId);
+            }
+            LocalTime classTime = parseStartTime(schedule.getTimeSlot());
+            OnboardingScheduleId id = new OnboardingScheduleId();
+            id.setUserId(userId);
+            id.setScheduleId(scheduleId);
+            id.setDayOfWeek(schedule.getDayOfWeekType());
+            id.setClassTime(classTime);
+
+            schedules.add(OnboardingSchedule.builder()
+                    .id(id)
+                    .build());
+        }
+
+        if (!schedules.isEmpty()) {
+            onboardingScheduleRepository.saveAll(schedules);
+        }
+    }
+
+    private void validateEntitiesExist(Collection<Integer> requestedIds, Collection<?> fetchedEntities, String label) {
+        if (requestedIds == null || requestedIds.isEmpty()) {
+            return;
+        }
+
+        if (fetchedEntities.size() != new HashSet<>(requestedIds).size()) {
+            throw new NotFoundException(label + " NOT FOUND");
+        }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private LocalTime parseStartTime(String timeSlot) {
+        if (timeSlot == null || !timeSlot.contains("-")) {
+            return null;
+        }
+        String start = timeSlot.split("-")[0].trim();
+        try {
+            return LocalTime.parse(start, DateTimeFormatter.ofPattern("HH:mm"));
+        } catch (DateTimeParseException e) {
+            log.warn("Unable to parse time slot '{}' for onboarding schedule", timeSlot, e);
+            return null;
+        }
+    }
+
+    private static class AggregatedOnboardingData {
+        private String englishName;
+        private String intro;
+        private String profileImage;
+        private Integer nativeLanguageId;
+        private final LinkedHashSet<CompleteAllOnboardingRequest.LanguageLevelData> targetLanguages = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> motivationIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> topicIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> learningStyleIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> learningExpectationIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> partnerPersonalityIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> groupSizeIds = new LinkedHashSet<>();
+        private final LinkedHashSet<Integer> scheduleIds = new LinkedHashSet<>();
+        private final List<ScheduleSelection> scheduleSelections = new ArrayList<>();
+
+        void mergeFromRequest(CompleteAllOnboardingRequest request) {
+            if (request.getNativeLanguageId() != null) {
+                this.nativeLanguageId = request.getNativeLanguageId();
+            }
+            if (request.getTargetLanguages() != null) {
+                this.targetLanguages.addAll(request.getTargetLanguages());
+            }
+            addAll(this.motivationIds, request.getMotivationIds());
+            addAll(this.topicIds, request.getTopicIds());
+            addAll(this.learningStyleIds, request.getLearningStyleIds());
+            addAll(this.learningExpectationIds, request.getLearningExpectationIds());
+            addAll(this.partnerPersonalityIds, request.getPartnerPersonalityIds());
+            addAll(this.groupSizeIds, request.getGroupSizeIds());
+            addAll(this.scheduleIds, request.getScheduleIds());
+        }
+
+        void mergeFromStep(int stepNumber, Map<String, Object> stepData) {
+            switch (stepNumber) {
+                case 1 -> mergeStep1(stepData);
+                case 2 -> mergeStep2(stepData);
+                case 3 -> mergeStep3(stepData);
+                case 4 -> mergeStep4(stepData);
+                default -> {
+                }
+            }
+        }
+
+        private void mergeStep1(Map<String, Object> stepData) {
+            this.englishName = firstNonBlank(this.englishName, asString(stepData.get("englishName")));
+            this.intro = firstNonBlank(this.intro, asString(stepData.get("intro")));
+            this.profileImage = firstNonBlank(this.profileImage, asString(stepData.get("profileImage")));
+        }
+
+        private void mergeStep2(Map<String, Object> stepData) {
+            if (this.nativeLanguageId == null) {
+                this.nativeLanguageId = toInteger(stepData.get("nativeLanguageId"));
+            }
+            if (this.nativeLanguageId == null) {
+                this.nativeLanguageId = toInteger(stepData.get("languageId"));
+            }
+            addLanguageLevels(stepData.get("targetLanguages"));
+            addLanguageLevels(stepData.get("languages"));
+        }
+
+        private void mergeStep3(Map<String, Object> stepData) {
+            addIntegers(this.motivationIds, stepData, "motivationIds", "selectedMotivationIds", "motivations");
+            addIntegers(this.topicIds, stepData, "topicIds", "selectedTopicIds", "topics");
+            addIntegers(this.learningStyleIds, stepData, "learningStyleIds", "selectedLearningStyleIds", "learningStyles");
+            addIntegers(this.learningExpectationIds, stepData, "learningExpectationIds",
+                    "selectedLearningExpectationIds", "learningExpectations");
+        }
+
+        private void mergeStep4(Map<String, Object> stepData) {
+            addIntegers(this.partnerPersonalityIds, stepData, "partnerPersonalityIds", "personalPartnerIds",
+                    "selectedPartnerPersonalityIds");
+            addIntegers(this.groupSizeIds, stepData, "groupSizeIds", "selectedGroupSizeIds");
+            addIntegers(this.scheduleIds, stepData, "scheduleIds", "selectedScheduleIds");
+            addScheduleSelections(stepData.get("schedules"));
+        }
+
+        private void addLanguageLevels(Object raw) {
+            if (!(raw instanceof List<?> list)) {
+                return;
+            }
+            for (Object element : list) {
+                if (element instanceof Map<?, ?> map) {
+                    Integer languageId = toInteger(map.getOrDefault("languageId", map.get("id")));
+                    Integer currentLevelId = toInteger(map.getOrDefault("currentLevelId", map.get("levelId")));
+                    Integer targetLevelId = toInteger(map.getOrDefault("targetLevelId", map.get("desiredLevelId")));
+                    if (languageId != null && currentLevelId != null) {
+                        this.targetLanguages.add(new CompleteAllOnboardingRequest.LanguageLevelData(
+                                languageId,
+                                currentLevelId,
+                                targetLevelId != null ? targetLevelId : currentLevelId
+                        ));
+                    }
+                }
+            }
+        }
+
+        private void addIntegers(LinkedHashSet<Integer> target, Map<String, Object> stepData, String... keys) {
+            for (String key : keys) {
+                Object value = stepData.get(key);
+                addAll(target, toIntegerList(value));
+            }
+        }
+
+        private void addScheduleSelections(Object raw) {
+            if (!(raw instanceof List<?> list)) {
+                return;
+            }
+            for (Object element : list) {
+                if (element instanceof Map<?, ?> map) {
+                    Integer scheduleId = toInteger(map.get("scheduleId"));
+                    DayOfWeekType dayOfWeek = toDayOfWeek(map.get("dayOfWeek"));
+                    LocalTime classTime = toLocalTime(map.get("classTime"));
+                    if (scheduleId != null) {
+                        this.scheduleIds.add(scheduleId);
+                    }
+                    if (dayOfWeek != null && classTime != null) {
+                        this.scheduleSelections.add(new ScheduleSelection(scheduleId, dayOfWeek, classTime));
+                    }
+                }
+            }
+        }
+
+        List<CompleteAllOnboardingRequest.LanguageLevelData> getTargetLanguages() {
+            return new ArrayList<>(targetLanguages);
+        }
+
+        List<Integer> getMotivationIds() {
+            return new ArrayList<>(motivationIds);
+        }
+
+        List<Integer> getTopicIds() {
+            return new ArrayList<>(topicIds);
+        }
+
+        List<Integer> getLearningStyleIds() {
+            return new ArrayList<>(learningStyleIds);
+        }
+
+        List<Integer> getLearningExpectationIds() {
+            return new ArrayList<>(learningExpectationIds);
+        }
+
+        List<Integer> getPartnerPersonalityIds() {
+            return new ArrayList<>(partnerPersonalityIds);
+        }
+
+        List<Integer> getGroupSizeIds() {
+            return new ArrayList<>(groupSizeIds);
+        }
+
+        List<Integer> getScheduleIds() {
+            return new ArrayList<>(scheduleIds);
+        }
+
+        List<ScheduleSelection> getScheduleSelections() {
+            return scheduleSelections;
+        }
+
+        String getEnglishName() {
+            return englishName;
+        }
+
+        String getIntro() {
+            return intro;
+        }
+
+        String getProfileImage() {
+            return profileImage;
+        }
+
+        Integer getNativeLanguageId() {
+            return nativeLanguageId;
+        }
+
+        boolean hasLanguageLevelData() {
+            return !targetLanguages.isEmpty();
+        }
+
+        boolean hasMotivationData() {
+            return !motivationIds.isEmpty();
+        }
+
+        boolean hasTopicData() {
+            return !topicIds.isEmpty();
+        }
+
+        boolean hasLearningStyleData() {
+            return !learningStyleIds.isEmpty();
+        }
+
+        boolean hasLearningExpectationData() {
+            return !learningExpectationIds.isEmpty();
+        }
+
+        boolean hasPartnerPersonalityData() {
+            return !partnerPersonalityIds.isEmpty();
+        }
+
+        boolean hasGroupSizeData() {
+            return !groupSizeIds.isEmpty();
+        }
+
+        boolean hasSchedulePersistenceData() {
+            return !scheduleIds.isEmpty();
+        }
+
+        private void addAll(LinkedHashSet<Integer> target, Collection<Integer> values) {
+            if (values == null) {
+                return;
+            }
+            for (Integer value : values) {
+                if (value != null) {
+                    target.add(value);
+                }
+            }
+        }
+
+        private String firstNonBlank(String current, String candidate) {
+            if (hasText(current)) {
+                return current;
+            }
+            return hasText(candidate) ? candidate : current;
+        }
+
+        private String asString(Object value) {
+            return value != null ? value.toString() : null;
+        }
+
+        private Integer toInteger(Object value) {
+            if (value instanceof Number number) {
+                return number.intValue();
+            }
+            if (value instanceof String string) {
+                try {
+                    return Integer.parseInt(string.trim());
+                } catch (NumberFormatException ignored) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        private List<Integer> toIntegerList(Object value) {
+            if (value instanceof List<?> list) {
+                List<Integer> result = new ArrayList<>();
+                for (Object element : list) {
+                    if (element instanceof Map<?, ?> map) {
+                        Integer idValue = toInteger(map.get("id"));
+                        if (idValue == null) {
+                            idValue = toInteger(map.get("value"));
+                        }
+                        if (idValue != null) {
+                            result.add(idValue);
+                        }
+                    } else {
+                        Integer asInt = toInteger(element);
+                        if (asInt != null) {
+                            result.add(asInt);
+                        }
+                    }
+                }
+                return result;
+            }
+
+            Integer single = toInteger(value);
+            return single != null ? Collections.singletonList(single) : Collections.emptyList();
+        }
+
+        private DayOfWeekType toDayOfWeek(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return DayOfWeekType.valueOf(value.toString().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+
+        private LocalTime toLocalTime(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return LocalTime.parse(value.toString());
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
+    }
+
+    private record ScheduleSelection(Integer scheduleId, DayOfWeekType dayOfWeek, LocalTime classTime) {
     }
     
     // === 새로운 UX 개선 메서드들 ===
