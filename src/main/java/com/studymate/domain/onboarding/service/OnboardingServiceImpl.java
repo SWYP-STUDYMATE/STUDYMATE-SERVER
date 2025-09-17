@@ -604,9 +604,13 @@ public class OnboardingServiceImpl implements OnboardingService {
             }
             for (Object element : list) {
                 if (element instanceof Map<?, ?> map) {
-                    Integer languageId = toInteger(map.getOrDefault("languageId", map.get("id")));
-                    Integer currentLevelId = toInteger(map.getOrDefault("currentLevelId", map.get("levelId")));
-                    Integer targetLevelId = toInteger(map.getOrDefault("targetLevelId", map.get("desiredLevelId")));
+                    Object languageValue = map.containsKey("languageId") ? map.get("languageId") : map.get("id");
+                    Object currentLevelValue = map.containsKey("currentLevelId") ? map.get("currentLevelId") : map.get("levelId");
+                    Object targetLevelValue = map.containsKey("targetLevelId") ? map.get("targetLevelId") : map.get("desiredLevelId");
+
+                    Integer languageId = toInteger(languageValue);
+                    Integer currentLevelId = toInteger(currentLevelValue);
+                    Integer targetLevelId = toInteger(targetLevelValue);
                     if (languageId != null && currentLevelId != null) {
                         this.targetLanguages.add(new CompleteAllOnboardingRequest.TargetLanguageData(
                                 languageId,
@@ -740,10 +744,14 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
 
         private String firstNonBlank(String current, String candidate) {
-            if (hasText(current)) {
+            if (hasTextInternal(current)) {
                 return current;
             }
-            return hasText(candidate) ? candidate : current;
+            return hasTextInternal(candidate) ? candidate : current;
+        }
+
+        private boolean hasTextInternal(String value) {
+            return value != null && !value.trim().isEmpty();
         }
 
         private String asString(Object value) {
