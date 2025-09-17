@@ -332,7 +332,7 @@ public class OnboardingServiceImpl implements OnboardingService {
             user.setNativeLanguage(language);
         }
 
-        List<CompleteAllOnboardingRequest.LanguageLevelData> targetLanguages = data.getTargetLanguages();
+        List<CompleteAllOnboardingRequest.TargetLanguageData> targetLanguages = data.getTargetLanguages();
         if (targetLanguages.isEmpty()) {
             return;
         }
@@ -347,7 +347,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                 .collect(Collectors.toMap(LangLevelType::getLangLevelId, lt -> lt));
 
         List<OnboardingLangLevel> entities = new ArrayList<>();
-        for (CompleteAllOnboardingRequest.LanguageLevelData languageData : targetLanguages) {
+        for (CompleteAllOnboardingRequest.TargetLanguageData languageData : targetLanguages) {
             Integer languageId = languageData.getLanguageId();
             Integer currentLevelId = languageData.getCurrentLevelId();
 
@@ -527,7 +527,7 @@ public class OnboardingServiceImpl implements OnboardingService {
         private String intro;
         private String profileImage;
         private Integer nativeLanguageId;
-        private final LinkedHashSet<CompleteAllOnboardingRequest.LanguageLevelData> targetLanguages = new LinkedHashSet<>();
+        private final LinkedHashSet<CompleteAllOnboardingRequest.TargetLanguageData> targetLanguages = new LinkedHashSet<>();
         private final LinkedHashSet<Integer> motivationIds = new LinkedHashSet<>();
         private final LinkedHashSet<Integer> topicIds = new LinkedHashSet<>();
         private final LinkedHashSet<Integer> learningStyleIds = new LinkedHashSet<>();
@@ -607,7 +607,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                     Integer currentLevelId = toInteger(map.getOrDefault("currentLevelId", map.get("levelId")));
                     Integer targetLevelId = toInteger(map.getOrDefault("targetLevelId", map.get("desiredLevelId")));
                     if (languageId != null && currentLevelId != null) {
-                        this.targetLanguages.add(new CompleteAllOnboardingRequest.LanguageLevelData(
+                        this.targetLanguages.add(new CompleteAllOnboardingRequest.TargetLanguageData(
                                 languageId,
                                 currentLevelId,
                                 targetLevelId != null ? targetLevelId : currentLevelId
@@ -643,7 +643,7 @@ public class OnboardingServiceImpl implements OnboardingService {
             }
         }
 
-        List<CompleteAllOnboardingRequest.LanguageLevelData> getTargetLanguages() {
+        List<CompleteAllOnboardingRequest.TargetLanguageData> getTargetLanguages() {
             return new ArrayList<>(targetLanguages);
         }
 
