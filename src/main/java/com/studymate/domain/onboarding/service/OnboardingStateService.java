@@ -2,6 +2,7 @@ package com.studymate.domain.onboarding.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.studymate.domain.user.domain.dto.response.OnboardingStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -116,7 +119,9 @@ public class OnboardingStateService {
             progress.put("progressPercentage", progressPercentage);
             progress.put("lastUpdatedAt", LocalDateTime.now().toString());
             progress.put("estimatedMinutesRemaining", calculateRemainingTime(completedCount));
-            
+            progress.put("totalSteps", TOTAL_ONBOARDING_STEPS);
+            progress.put("completed", completedCount >= TOTAL_ONBOARDING_STEPS);
+
             String jsonProgress = objectMapper.writeValueAsString(progress);
             redisTemplate.opsForValue().set(progressKey, jsonProgress, DEFAULT_TTL);
             
@@ -282,28 +287,47 @@ public class OnboardingStateService {
     /**
      * 온보딩 상태 조회
      */
-    public com.studymate.domain.onboarding.dto.response.OnboardingStatusResponse getOnboardingStatus(UUID userId) {
+    public OnboardingStatusResponse getOnboardingStatus(UUID userId) {
         Optional<Map<String, Object>> progressData = getProgressData(userId);
-        
+
         if (progressData.isPresent()) {
             Map<String, Object> data = progressData.get();
-            Integer currentStep = (Integer) data.get("currentStep");
-            Double progressPercentage = (Double) data.get("progressPercentage");
-            
-            return com.studymate.domain.onboarding.dto.response.OnboardingStatusResponse.builder()
+            Integer currentStep = (Integer) data.getOrDefault("currentStep", 1);
+            Double progressPercentage = (Double) data.getOrDefault("progressPercentage", 0.0);
+            boolean completed = currentStep >= TOTAL_ONBOARDING_STEPS;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Boolean> completedStepMap = (Map<String, Boolean>) data.get("completedSteps");
+
+            return OnboardingStatusResponse.builder()
                     .currentStep(currentStep)
                     .totalSteps(TOTAL_ONBOARDING_STEPS)
                     .progressPercentage(progressPercentage)
-                    .completed(currentStep >= TOTAL_ONBOARDING_STEPS)
-                    .build();
+                    .isCompleted(completed)
+                    .onboardingCompleted(completed)
+                    .nextStep(completed ? TOTAL_ONBOARDING_STEPS : Math.min(currentStep + 1, TOTAL_ONBOARDING_STEPS))
+                    .build()
+                    .withCompletedStepsFromMap(completedStepMap);
         }
-        
+
         // 초기 상태
-        return com.studymate.domain.onboarding.dto.response.OnboardingStatusResponse.builder()
-                .currentStep(1)
-                .totalSteps(TOTAL_ONBOARDING_STEPS)
-                .progressPercentage(0.0)
-                .completed(false)
+        int currentStep = getCurrentStep(userId);
+        int totalSteps = TOTAL_ONBOARDING_STEPS;
+        boolean completed = isOnboardingCompleted(userId) || currentStep >= totalSteps;
+        double progressPercentage = totalSteps > 0
+                ? Math.min(Math.max((currentStep / (double) totalSteps) * 100.0, 0.0), 100.0)
+                : 0.0;
+
+        return OnboardingStatusResponse.builder()
+                .currentStep(currentStep)
+                .totalSteps(totalSteps)
+                .progressPercentage(progressPercentage)
+                .isCompleted(completed)
+                .onboardingCompleted(completed)
+                .nextStep(completed ? totalSteps : Math.min(currentStep + 1, totalSteps))
+                .completedSteps(IntStream.rangeClosed(1, Math.min(currentStep, totalSteps))
+                        .boxed()
+                        .collect(Collectors.toList()))
                 .build();
     }
     
@@ -355,6 +379,8 @@ public class OnboardingStateService {
         initialProgress.put("completedSteps", new HashMap<String, Boolean>());
         initialProgress.put("startedAt", LocalDateTime.now().toString());
         initialProgress.put("estimatedMinutesRemaining", 25); // 초기 예상 시간
+        initialProgress.put("totalSteps", TOTAL_ONBOARDING_STEPS);
+        initialProgress.put("completed", false);
         
         // Redis에 저장
         String progressKey = buildProgressKey(userId);

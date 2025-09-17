@@ -210,11 +210,25 @@ public class OnboardingServiceImpl implements OnboardingService {
         Optional<Map<String, Object>> progressData = stateService.getProgressData(userId);
         if (progressData.isPresent()) {
             Map<String, Object> progress = progressData.get();
+            double progressPercentage = ((Number) progress.getOrDefault("progressPercentage", 0.0)).doubleValue();
+            int currentStep = ((Number) progress.getOrDefault("currentStep", 1)).intValue();
+            int totalSteps = ((Number) progress.getOrDefault("totalSteps", 5)).intValue();
+            boolean completed = Boolean.TRUE.equals(progress.get("completed"))
+                    || progressPercentage >= 100.0
+                    || currentStep >= totalSteps;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Boolean> completedStepMap = (Map<String, Boolean>) progress.get("completedSteps");
+
             return OnboardingStatusResponse.builder()
-                    .isCompleted((Double) progress.get("progressPercentage") >= 100.0)
-                    .progressPercentage((Double) progress.get("progressPercentage"))
-                    .currentStep((Integer) progress.get("currentStep"))
-                    .build();
+                    .progressPercentage(progressPercentage)
+                    .currentStep(currentStep)
+                    .totalSteps(totalSteps)
+                    .isCompleted(completed)
+                    .onboardingCompleted(completed)
+                    .nextStep(completed ? totalSteps : Math.min(currentStep + 1, totalSteps))
+                    .build()
+                    .withCompletedStepsFromMap(completedStepMap);
         }
 
         // 기존 DB 기반 진행률 체크 (fallback)

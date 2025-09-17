@@ -1,9 +1,9 @@
 package com.studymate.domain.onboarding.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studymate.domain.onboarding.dto.response.OnboardingStatusResponse;
-import com.studymate.domain.onboarding.exception.OnboardingBusinessException;
 import com.studymate.common.exception.ErrorCode;
+import com.studymate.domain.onboarding.exception.OnboardingBusinessException;
+import com.studymate.domain.user.domain.dto.response.OnboardingStatusResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ class OnboardingStateServiceTest {
         onboardingStateService.saveStepData(userId, stepNumber, stepData);
 
         // Then
-        String expectedKey = "onboard:" + userId.toString() + ":step:" + stepNumber;
+        String expectedKey = "onboarding:" + userId.toString() + ":step:" + stepNumber;
         verify(valueOperations).set(expectedKey, expectedJson, DEFAULT_TTL);
         verify(objectMapper).writeValueAsString(stepData);
     }
@@ -75,7 +75,7 @@ class OnboardingStateServiceTest {
     void getStepData_Success() throws Exception {
         // Given
         Integer stepNumber = 2;
-        String expectedKey = "onboard:" + userId.toString() + ":step:" + stepNumber;
+        String expectedKey = "onboarding:" + userId.toString() + ":step:" + stepNumber;
         String storedJson = "{\"language\":\"KOREAN\",\"level\":\"BEGINNER\"}";
         
         Map<String, Object> expectedData = new HashMap<>();
@@ -100,7 +100,7 @@ class OnboardingStateServiceTest {
     void getStepData_NotFound_ReturnsEmptyMap() throws Exception {
         // Given
         Integer stepNumber = 3;
-        String expectedKey = "onboard:" + userId.toString() + ":step:" + stepNumber;
+        String expectedKey = "onboarding:" + userId.toString() + ":step:" + stepNumber;
         
         when(valueOperations.get(expectedKey)).thenReturn(null);
 
@@ -123,7 +123,7 @@ class OnboardingStateServiceTest {
         onboardingStateService.setCurrentStep(userId, currentStep);
 
         // Then
-        String expectedKey = "onboard:" + userId.toString() + ":current_step";
+        String expectedKey = "onboarding:" + userId.toString() + ":current_step";
         verify(valueOperations).set(expectedKey, currentStep.toString(), DEFAULT_TTL);
     }
 
@@ -132,7 +132,7 @@ class OnboardingStateServiceTest {
     void getCurrentStep_Success() {
         // Given
         Integer expectedStep = 3;
-        String expectedKey = "onboard:" + userId.toString() + ":current_step";
+        String expectedKey = "onboarding:" + userId.toString() + ":current_step";
         
         when(valueOperations.get(expectedKey)).thenReturn(expectedStep.toString());
 
@@ -148,7 +148,7 @@ class OnboardingStateServiceTest {
     @DisplayName("현재 단계 미설정 시 1 반환")
     void getCurrentStep_NotSet_ReturnsOne() {
         // Given
-        String expectedKey = "onboard:" + userId.toString() + ":current_step";
+        String expectedKey = "onboarding:" + userId.toString() + ":current_step";
         when(valueOperations.get(expectedKey)).thenReturn(null);
 
         // When
@@ -169,7 +169,7 @@ class OnboardingStateServiceTest {
         onboardingStateService.skipStep(userId, stepNumber);
 
         // Then
-        String expectedKey = "onboard:" + userId.toString() + ":step:" + stepNumber;
+        String expectedKey = "onboarding:" + userId.toString() + ":step:" + stepNumber;
         String expectedValue = "{\"skipped\":true}";
         verify(valueOperations).set(expectedKey, expectedValue, DEFAULT_TTL);
     }
@@ -178,7 +178,7 @@ class OnboardingStateServiceTest {
     @DisplayName("온보딩 상태 조회 성공")
     void getOnboardStatus_Success() {
         // Given
-        String currentStepKey = "onboard:" + userId.toString() + ":current_step";
+        String currentStepKey = "onboarding:" + userId.toString() + ":current_step";
         when(valueOperations.get(currentStepKey)).thenReturn("3");
 
         // When
@@ -196,7 +196,7 @@ class OnboardingStateServiceTest {
     @DisplayName("온보딩 완료 상태 조회")
     void getOnboardStatus_Completed() {
         // Given
-        String currentStepKey = "onboard:" + userId.toString() + ":current_step";
+        String currentStepKey = "onboarding:" + userId.toString() + ":current_step";
         when(valueOperations.get(currentStepKey)).thenReturn("8");
 
         // When
@@ -214,7 +214,7 @@ class OnboardingStateServiceTest {
     @DisplayName("온보딩 데이터 삭제")
     void clearOnboardData_Success() {
         // Given
-        String pattern = "onboard:" + userId.toString() + ":*";
+        String pattern = "onboarding:" + userId.toString() + ":*";
 
         // When
         onboardingStateService.clearOnboardingData(userId);
@@ -230,7 +230,7 @@ class OnboardingStateServiceTest {
         onboardingStateService.completeOnboarding(userId);
 
         // Then
-        String completedKey = "onboard:" + userId.toString() + ":completed";
+        String completedKey = "onboarding:" + userId.toString() + ":completed";
         verify(valueOperations).set(completedKey, "true", DEFAULT_TTL);
     }
 
@@ -238,7 +238,7 @@ class OnboardingStateServiceTest {
     @DisplayName("온보딩 완료 여부 확인 - 완료됨")
     void isOnboardCompleted_True() {
         // Given
-        String completedKey = "onboard:" + userId.toString() + ":completed";
+        String completedKey = "onboarding:" + userId.toString() + ":completed";
         when(valueOperations.get(completedKey)).thenReturn("true");
 
         // When
@@ -253,7 +253,7 @@ class OnboardingStateServiceTest {
     @DisplayName("온보딩 완료 여부 확인 - 미완료")
     void isOnboardCompleted_False() {
         // Given
-        String completedKey = "onboard:" + userId.toString() + ":completed";
+        String completedKey = "onboarding:" + userId.toString() + ":completed";
         when(valueOperations.get(completedKey)).thenReturn(null);
 
         // When

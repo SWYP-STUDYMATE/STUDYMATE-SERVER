@@ -1,7 +1,7 @@
 package com.studymate.domain.onboarding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studymate.domain.onboarding.dto.response.OnboardingStatusResponse;
+import com.studymate.domain.user.domain.dto.response.OnboardingStatusResponse;
 import com.studymate.domain.onboarding.service.OnboardingStateService;
 import com.studymate.domain.user.util.JwtAuthenticationFilter;
 import com.studymate.auth.jwt.JwtUtils;
@@ -139,7 +139,9 @@ class OnboardingControllerTest {
                 .currentStep(3)
                 .totalSteps(8)
                 .progressPercentage(37.5)
-                .completed(false)
+                .isCompleted(false)
+                .onboardingCompleted(false)
+                .nextStep(4)
                 .build();
         
         when(onboardingStateService.getOnboardingStatus(userId)).thenReturn(statusResponse);
@@ -152,7 +154,7 @@ class OnboardingControllerTest {
                 .andExpect(jsonPath("$.data.currentStep").value(3))
                 .andExpect(jsonPath("$.data.totalSteps").value(8))
                 .andExpect(jsonPath("$.data.progressPercentage").value(37.5))
-                .andExpect(jsonPath("$.data.completed").value(false));
+                .andExpect(jsonPath("$.data.isCompleted").value(false));
 
         verify(onboardingStateService).getOnboardingStatus(userId);
     }
@@ -206,7 +208,9 @@ class OnboardingControllerTest {
                         .currentStep(4)
                         .totalSteps(8)
                         .progressPercentage(50.0)
-                        .completed(false)
+                        .isCompleted(false)
+                        .onboardingCompleted(false)
+                        .nextStep(5)
                         .build()
         );
 
