@@ -472,3 +472,11 @@ logging:
 - [ ] WebSocket 연결 테스트
 - [ ] 파일 업로드 테스트
 - [ ] 에러 처리 테스트
+
+#### WebRTC 활성 룸 조회 흐름
+1. **프런트 → Spring**: `GET /api/v1/webrtc/rooms/active`
+2. **Spring → Workers**: `GET /api/v1/room/active` 로 활성 룸 목록을 요청하여 메타데이터를 수집
+3. **Spring → DB**: 메타데이터에 포함된 `sessionId` 기반으로 세션 정보를 조회
+4. **응답**: 룸 요약 + 세션 요약(대기 인원 수 포함)을 결합한 payload를 프런트에 반환합니다.
+
+이 흐름을 통해 세션 주제, 예약 시간, 호스트 정보, 대기 인원까지 활성 룸 카드에 일관되게 노출됩니다.

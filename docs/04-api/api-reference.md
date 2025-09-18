@@ -1512,3 +1512,41 @@ stompClient.subscribe('/topic/webrtc/{roomId}/participant-updates', function(mes
 ```
 
 > Spring은 위 요청을 수신하면 `PATCH /api/v1/internal/webrtc/rooms/{roomId}/metadata`를 Workers에 호출하여 메타데이터를 병합하고, 활성 룸 캐시를 갱신합니다.
+
+### WebRTC 활성 룸 조회 (신규)
+**GET** `/api/v1/webrtc/rooms/active`
+
+- 설명: Workers에 생성된 활성 WebRTC 룸 정보를 세션 요약과 함께 반환
+- 응답 데이터는 각 룸에 대해 `session` 객체(제목, 일정, 언어, 호스트 이름 등)를 포함합니다.
+
+#### 응답 예시
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "roomId": "room-123",
+      "roomType": "video",
+      "status": "active",
+      "currentParticipants": 2,
+      "maxParticipants": 4,
+      "metadata": {
+        "sessionId": 456,
+        "title": "Grammar Workshop",
+        "scheduledAt": "2025-01-15T10:00:00"
+      },
+      "session": {
+        "sessionId": 456,
+        "title": "Grammar Workshop",
+        "description": "중급 문법 집중 세션",
+        "scheduledAt": "2025-01-15T10:00:00",
+        "durationMinutes": 45,
+        "languageCode": "en",
+        "sessionStatus": "SCHEDULED",
+        "hostName": "Jane",
+        "waitlistCount": 3
+      }
+    }
+  ]
+}
+```

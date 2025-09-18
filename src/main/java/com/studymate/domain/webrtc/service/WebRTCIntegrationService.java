@@ -1,8 +1,11 @@
 package com.studymate.domain.webrtc.service;
 
 import com.studymate.domain.session.domain.repository.SessionRepository;
+import com.studymate.domain.session.domain.repository.SessionBookingRepository;
 import com.studymate.domain.session.entity.Session;
 import com.studymate.domain.session.type.SessionType;
+import com.studymate.domain.session.type.BookingStatus;
+import com.studymate.domain.webrtc.dto.response.ActiveRoomSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,15 +13,20 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +35,7 @@ public class WebRTCIntegrationService {
 
     private final RestTemplate workersRestTemplate;
     private final SessionRepository sessionRepository;
+    private final SessionBookingRepository sessionBookingRepository;
 
     @Value("${workers.api.url:https://workers.languagemate.kr}")
     private String workersApiUrl;
@@ -101,6 +110,75 @@ public class WebRTCIntegrationService {
         updateRoomMetadata(roomId, metadata);
     }
 
+    public List<ActiveRoomSummaryResponse> getActiveRoomsWithSession() {
+        try {
+            String url = workersApiUrl + "/api/v1/room/active";
+
+            ResponseEntity<Map<String, Object>> response = workersRestTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<>() {}
+            );
+
+            Map<String, Object> body = response.getBody();
+            if (body == null) {
+                return Collections.emptyList();
+            }
+
+            Object data = body.get("data");
+            if (!(data instanceof List<?> rooms)) {
+                return Collections.emptyList();
+            }
+
+            List<ActiveRoomSummaryResponse> summaries = new ArrayList<>();
+
+            for (Object item : rooms) {
+                if (!(item instanceof Map<?, ?> roomMap)) {
+                    continue;
+                }
+
+                Map<String, Object> metadata = extractMetadata(roomMap);
+                Session session = extractSession(metadata);
+
+                long waitlistCount = getWaitlistCount(session);
+                metadata.put("waitlistCount", waitlistCount);
+
+                ActiveRoomSummaryResponse.SessionSummary sessionSummary = null;
+                if (session != null) {
+                    sessionSummary = ActiveRoomSummaryResponse.SessionSummary.builder()
+                            .sessionId(session.getSessionId())
+                            .title(session.getTitle())
+                            .description(session.getDescription())
+                            .scheduledAt(session.getScheduledAt())
+                            .durationMinutes(session.getDurationMinutes())
+                            .languageCode(session.getLanguageCode())
+                            .sessionStatus(session.getStatus() != null ? session.getStatus().name() : null)
+                            .hostName(session.getHostUser() != null ? session.getHostUser().getEnglishName() : null)
+                            .waitlistCount((int) Math.min(Integer.MAX_VALUE, waitlistCount))
+                            .build();
+                }
+
+                ActiveRoomSummaryResponse summary = ActiveRoomSummaryResponse.builder()
+                        .roomId(asString(roomMap.get("roomId")))
+                        .roomType(asString(roomMap.get("roomType")))
+                        .status(asString(roomMap.get("status")))
+                        .currentParticipants(asInteger(roomMap.get("currentParticipants")))
+                        .maxParticipants(asInteger(roomMap.get("maxParticipants")))
+                        .metadata(metadata)
+                        .session(sessionSummary)
+                        .build();
+
+                summaries.add(summary);
+            }
+
+            return summaries;
+        } catch (RestClientException ex) {
+            log.error("활성 WebRTC 룸 정보 조회 실패 - error: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     private Map<String, Object> buildMetadata(Session session) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("title", session.getTitle());
@@ -125,9 +203,36 @@ public class WebRTCIntegrationService {
             metadata.put("guestName", session.getGuestUser().getEnglishName());
         }
 
+        metadata.put("waitlistCount", getWaitlistCount(session));
         Optional.ofNullable(session.getMeetingUrl()).ifPresent(url -> metadata.put("meetingUrl", url));
 
         return metadata;
+    }
+
+    private Map<String, Object> extractMetadata(Map<?, ?> roomMap) {
+        Object metadataObj = roomMap.get("metadata");
+        Map<String, Object> result = new HashMap<>();
+        if (metadataObj instanceof Map<?, ?> metadata) {
+            metadata.forEach((key, value) -> result.put(String.valueOf(key), value));
+        }
+        return result;
+    }
+
+    private Session extractSession(Map<String, Object> metadata) {
+        Object sessionIdObj = metadata.get("sessionId");
+        Long sessionId = parseLong(sessionIdObj);
+        if (sessionId == null) {
+            return null;
+        }
+        return sessionRepository.findById(sessionId).orElse(null);
+    }
+
+    private long getWaitlistCount(Session session) {
+        if (session == null || session.getSessionId() == null) {
+            return 0L;
+        }
+        Long count = sessionBookingRepository.countBySessionIdAndStatus(session.getSessionId(), BookingStatus.WAITLISTED);
+        return count != null ? count : 0L;
     }
 
     private String mapSessionType(SessionType sessionType) {
@@ -140,5 +245,31 @@ public class WebRTCIntegrationService {
             case AUDIO -> "audio";
             default -> sessionType.name().toLowerCase();
         };
+    }
+
+    private String asString(Object value) {
+        return value != null ? String.valueOf(value) : null;
+    }
+
+    private Integer asInteger(Object value) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        try {
+            return value != null ? Integer.parseInt(value.toString()) : null;
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    private Long parseLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        try {
+            return value != null ? Long.parseLong(value.toString()) : null;
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

@@ -5,11 +5,13 @@ import com.studymate.domain.session.domain.repository.SessionRepository;
 import com.studymate.domain.session.entity.Session;
 import com.studymate.exception.NotFoundException;
 import com.studymate.domain.webrtc.dto.request.WebRTCRoomSyncRequest;
+import com.studymate.domain.webrtc.dto.response.ActiveRoomSummaryResponse;
 import com.studymate.domain.webrtc.service.WebRTCIntegrationService;
 import com.studymate.domain.user.util.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,12 @@ public class WebRTCController {
 
     private final WebRTCIntegrationService webRTCIntegrationService;
     private final SessionRepository sessionRepository;
+
+    @GetMapping("/rooms/active")
+    public ApiResponse<java.util.List<ActiveRoomSummaryResponse>> getActiveRooms() {
+        java.util.List<ActiveRoomSummaryResponse> summaries = webRTCIntegrationService.getActiveRoomsWithSession();
+        return ApiResponse.success(summaries, "활성 WebRTC 룸 정보를 조회했습니다.");
+    }
 
     /**
      * 세션 정보를 기반으로 WebRTC 룸 메타데이터를 동기화합니다.
