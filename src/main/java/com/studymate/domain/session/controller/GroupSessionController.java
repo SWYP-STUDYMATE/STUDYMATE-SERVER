@@ -6,6 +6,7 @@ import com.studymate.domain.session.domain.dto.response.GroupSessionResponse;
 import com.studymate.domain.session.domain.dto.response.GroupSessionListResponse;
 import com.studymate.domain.session.service.GroupSessionService;
 import com.studymate.common.dto.ApiResponse;
+import com.studymate.common.dto.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -103,7 +104,7 @@ public class GroupSessionController {
     
     @Operation(summary = "이용 가능한 세션 목록", description = "참가 가능한 공개 그룹 세션 목록을 조회합니다")
     @GetMapping("/available")
-    public ResponseEntity<ApiResponse<Page<GroupSessionListResponse>>> getAvailableSessions(
+    public ResponseEntity<ApiResponse<PageResponse<GroupSessionListResponse>>> getAvailableSessions(
             Pageable pageable,
             @RequestParam(required = false) String language,
             @RequestParam(required = false) String level,
@@ -111,7 +112,7 @@ public class GroupSessionController {
             @RequestParam(required = false) List<String> tags) {
         Page<GroupSessionListResponse> response = groupSessionService.getAvailableSessions(
                 pageable, language, level, category, tags);
-        return ResponseEntity.ok(ApiResponse.success(response, "이용 가능한 세션 목록을 조회했습니다"));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(response), "이용 가능한 세션 목록을 조회했습니다"));
     }
     
     @Operation(summary = "내 세션 목록", description = "사용자가 참가한 세션 목록을 조회합니다")

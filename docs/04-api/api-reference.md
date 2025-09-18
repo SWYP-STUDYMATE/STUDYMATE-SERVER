@@ -1,7 +1,7 @@
 # 📚 STUDYMATE API 레퍼런스
 
 ## 📅 문서 정보
-- **최종 업데이트**: 2025-01-02 (API 경로 일관성 개선)
+- **최종 업데이트**: 2025-09-18 (페이징 응답 구조 안정화)
 - **작성자**: Backend Development Team
 - **목적**: STUDYMATE REST API 엔드포인트 및 사용법 가이드
 - **API 버전**: v1
@@ -61,6 +61,44 @@ Access token이 만료되면 refresh token을 사용하여 새로운 토큰을 �
     "code": "ERROR_CODE",
     "message": "Error message"
   }
+}
+```
+
+### 페이징 응답 구조 (2025-09-18)
+Spring Data의 `PageImpl` 직렬화 불안정을 해소하기 위해 모든 페이징 API는 `PageResponse<T>` 구조를 반환합니다.
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": [ /* 도메인 데이터 배열 */ ],
+    "pagination": {
+      "page": 0,
+      "size": 20,
+      "totalElements": 125,
+      "totalPages": 7,
+      "numberOfElements": 20,
+      "first": true,
+      "last": false,
+      "hasNext": true,
+      "hasPrevious": false,
+      "empty": false
+    },
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false,
+      "orders": [
+        {
+          "property": "createdAt",
+          "direction": "DESC",
+          "ignoreCase": false,
+          "nullHandling": "NATIVE"
+        }
+      ]
+    }
+  },
+  "message": "..."
 }
 ```
 

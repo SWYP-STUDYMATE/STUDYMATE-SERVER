@@ -1,5 +1,6 @@
 package com.studymate.domain.leveltest.controller;
 
+import com.studymate.common.dto.PageResponse;
 import com.studymate.domain.leveltest.domain.dto.request.StartLevelTestRequest;
 import com.studymate.domain.leveltest.domain.dto.request.StartVoiceTestRequest;
 import com.studymate.domain.leveltest.domain.dto.request.SubmitAnswerRequest;
@@ -69,12 +70,12 @@ public class LevelTestController {
     }
 
     @GetMapping("/my-tests")
-    public ResponseEntity<Page<LevelTestResponse>> getUserLevelTests(
+    public ResponseEntity<PageResponse<LevelTestResponse>> getUserLevelTests(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<LevelTestResponse> response = levelTestService.getUserLevelTests(userId, pageable);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(PageResponse.of(response));
     }
 
     @GetMapping("/summary")

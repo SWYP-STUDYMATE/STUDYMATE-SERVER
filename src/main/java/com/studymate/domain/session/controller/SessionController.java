@@ -1,6 +1,7 @@
 package com.studymate.domain.session.controller;
 
 import com.studymate.common.dto.ApiResponse;
+import com.studymate.common.dto.PageResponse;
 import com.studymate.domain.session.domain.dto.request.BookSessionRequest;
 import com.studymate.domain.session.domain.dto.request.CreateSessionRequest;
 import com.studymate.domain.session.domain.dto.response.CalendarResponse;
@@ -43,41 +44,41 @@ public class SessionController {
     }
 
     @GetMapping("/my-sessions")
-    public ApiResponse<Page<SessionResponse>> getUserSessions(
+    public ApiResponse<PageResponse<SessionResponse>> getUserSessions(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<SessionResponse> response = sessionService.getUserSessions(userId, pageable);
-        return ApiResponse.success(response, "내 세션 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "내 세션 목록을 조회했습니다.");
     }
 
     @GetMapping("/public")
-    public ApiResponse<Page<SessionResponse>> getPublicSessions(Pageable pageable) {
+    public ApiResponse<PageResponse<SessionResponse>> getPublicSessions(Pageable pageable) {
         Page<SessionResponse> response = sessionService.getPublicSessions(pageable);
-        return ApiResponse.success(response, "공개 세션 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "공개 세션 목록을 조회했습니다.");
     }
 
     @GetMapping("/language/{languageCode}")
-    public ApiResponse<Page<SessionResponse>> getSessionsByLanguage(
+    public ApiResponse<PageResponse<SessionResponse>> getSessionsByLanguage(
             @PathVariable String languageCode, Pageable pageable) {
         Page<SessionResponse> response = sessionService.getSessionsByLanguage(languageCode, pageable);
-        return ApiResponse.success(response, "언어별 세션 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "언어별 세션 목록을 조회했습니다.");
     }
 
     @GetMapping("/type/{sessionType}")
-    public ApiResponse<Page<SessionResponse>> getSessionsByType(
+    public ApiResponse<PageResponse<SessionResponse>> getSessionsByType(
             @PathVariable SessionType sessionType, Pageable pageable) {
         Page<SessionResponse> response = sessionService.getSessionsByType(sessionType, pageable);
-        return ApiResponse.success(response, "유형별 세션 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "유형별 세션 목록을 조회했습니다.");
     }
 
     @GetMapping("/available")
-    public ApiResponse<Page<SessionResponse>> getAvailableSessionsForUser(
+    public ApiResponse<PageResponse<SessionResponse>> getAvailableSessionsForUser(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<SessionResponse> response = sessionService.getAvailableSessionsForUser(userId, pageable);
-        return ApiResponse.success(response, "참가 가능한 세션 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "참가 가능한 세션 목록을 조회했습니다.");
     }
 
     @PostMapping("/book")
@@ -100,12 +101,12 @@ public class SessionController {
     }
 
     @GetMapping("/my-bookings")
-    public ApiResponse<Page<SessionBookingResponse>> getUserBookings(
+    public ApiResponse<PageResponse<SessionBookingResponse>> getUserBookings(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<SessionBookingResponse> response = sessionService.getUserBookings(userId, pageable);
-        return ApiResponse.success(response, "내 예약 목록을 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "내 예약 목록을 조회했습니다.");
     }
 
     @GetMapping("/calendar")

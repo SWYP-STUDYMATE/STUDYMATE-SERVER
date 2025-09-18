@@ -6,6 +6,7 @@ import com.studymate.domain.matching.domain.dto.request.RecordFeedbackRequest;
 import com.studymate.domain.matching.domain.dto.response.*;
 import com.studymate.domain.matching.service.MatchingService;
 import com.studymate.domain.user.util.CustomUserDetails;
+import com.studymate.common.dto.PageResponse;
 import com.studymate.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +30,7 @@ public class MatchingController {
     private final MatchingService matchingService;
 
     @GetMapping("/partners")
-    public Page<RecommendedPartnerResponse> getRecommendedPartners(
+    public PageResponse<RecommendedPartnerResponse> getRecommendedPartners(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable,
             @RequestParam(required = false) String nativeLanguage,
@@ -39,7 +40,9 @@ public class MatchingController {
             @RequestParam(required = false) Integer maxAge
     ) {
         UUID userId = principal.getUuid();
-        return matchingService.getRecommendedPartners(userId, pageable, nativeLanguage, targetLanguage, languageLevel, minAge, maxAge);
+        Page<RecommendedPartnerResponse> partners = matchingService.getRecommendedPartners(
+                userId, pageable, nativeLanguage, targetLanguage, languageLevel, minAge, maxAge);
+        return PageResponse.of(partners);
     }
 
     @PostMapping("/request")
@@ -51,17 +54,17 @@ public class MatchingController {
     }
 
     @GetMapping("/requests/sent")
-    public Page<SentMatchingRequestResponse> getSentMatchingRequests(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                    Pageable pageable) {
+    public PageResponse<SentMatchingRequestResponse> getSentMatchingRequests(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                            Pageable pageable) {
         UUID userId = principal.getUuid();
-        return matchingService.getSentMatchingRequests(userId, pageable);
+        return PageResponse.of(matchingService.getSentMatchingRequests(userId, pageable));
     }
 
     @GetMapping("/requests/received")
-    public Page<ReceivedMatchingRequestResponse> getReceivedMatchingRequests(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                           Pageable pageable) {
+    public PageResponse<ReceivedMatchingRequestResponse> getReceivedMatchingRequests(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                                   Pageable pageable) {
         UUID userId = principal.getUuid();
-        return matchingService.getReceivedMatchingRequests(userId, pageable);
+        return PageResponse.of(matchingService.getReceivedMatchingRequests(userId, pageable));
     }
 
     @PostMapping("/accept/{requestId}")
@@ -81,10 +84,10 @@ public class MatchingController {
     }
 
     @GetMapping("/matches")
-    public Page<MatchedPartnerResponse> getMatchedPartners(@AuthenticationPrincipal CustomUserDetails principal,
-                                                          Pageable pageable) {
+    public PageResponse<MatchedPartnerResponse> getMatchedPartners(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                  Pageable pageable) {
         UUID userId = principal.getUuid();
-        return matchingService.getMatchedPartners(userId, pageable);
+        return PageResponse.of(matchingService.getMatchedPartners(userId, pageable));
     }
 
     @DeleteMapping("/matches/{matchId}")
@@ -104,31 +107,31 @@ public class MatchingController {
 
     @Operation(summary = "고급 필터를 사용한 파트너 추천", description = "다양한 필터 조건을 사용하여 최적화된 파트너를 추천합니다.")
     @PostMapping("/partners/advanced")
-    public ResponseEntity<Page<RecommendedPartnerResponse>> getRecommendedPartnersAdvanced(
+    public ResponseEntity<PageResponse<RecommendedPartnerResponse>> getRecommendedPartnersAdvanced(
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestBody AdvancedMatchingFilterRequest filters,
             Pageable pageable) {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> partners = matchingService.getRecommendedPartnersAdvanced(userId, filters, pageable);
-        return ResponseEntity.ok(partners);
+        return ResponseEntity.ok(PageResponse.of(partners));
     }
 
     @Operation(summary = "온라인 파트너 추천", description = "현재 온라인 상태인 사용자들 중에서 파트너를 추천합니다.")
     @PostMapping("/partners/online")
-    public ResponseEntity<Page<RecommendedPartnerResponse>> getOnlinePartners(
+    public ResponseEntity<PageResponse<RecommendedPartnerResponse>> getOnlinePartners(
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestBody(required = false) AdvancedMatchingFilterRequest filters,
             Pageable pageable) {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> partners = matchingService.getOnlinePartners(userId, filters, pageable);
-        return ResponseEntity.ok(partners);
+        return ResponseEntity.ok(PageResponse.of(partners));
     }
 
     @Operation(summary = "즉석 매칭", description = "현재 온라인이고 매칭을 원하는 사용자들과 즉시 매칭합니다.")
     @GetMapping("/partners/instant")
-    public ResponseEntity<Page<RecommendedPartnerResponse>> getInstantMatching(
+    public ResponseEntity<PageResponse<RecommendedPartnerResponse>> getInstantMatching(
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestParam(required = false) String nativeLanguage,
             @RequestParam(required = false) String city,
@@ -147,31 +150,31 @@ public class MatchingController {
                 .build();
         
         Page<RecommendedPartnerResponse> partners = matchingService.getOnlinePartners(userId, filters, pageable);
-        return ResponseEntity.ok(partners);
+        return ResponseEntity.ok(PageResponse.of(partners));
     }
 
     // === AI 기반 스마트 매칭 ===
     
     @Operation(summary = "AI 스마트 매칭", description = "사용자 행동 패턴과 선호도를 학습하여 최적화된 파트너를 추천합니다.")
     @GetMapping("/smart-recommendations")
-    public ResponseEntity<ApiResponse<Page<RecommendedPartnerResponse>>> getSmartRecommendations(
+    public ResponseEntity<ApiResponse<PageResponse<RecommendedPartnerResponse>>> getSmartRecommendations(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> recommendations = matchingService.getSmartRecommendations(userId, pageable);
-        return ResponseEntity.ok(ApiResponse.success(recommendations, "AI 기반 스마트 매칭 추천을 성공적으로 조회했습니다."));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(recommendations), "AI 기반 스마트 매칭 추천을 성공적으로 조회했습니다."));
     }
 
     @Operation(summary = "실시간 매칭", description = "현재 온라인인 사용자들 중에서 즉시 매칭 가능한 파트너를 찾습니다.")
     @GetMapping("/real-time")
-    public ResponseEntity<ApiResponse<Page<RecommendedPartnerResponse>>> getRealTimeMatches(
+    public ResponseEntity<ApiResponse<PageResponse<RecommendedPartnerResponse>>> getRealTimeMatches(
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestParam(defaultValue = "ANY") String sessionType) {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> realTimeMatches = matchingService.getRealTimeMatches(userId, sessionType);
-        return ResponseEntity.ok(ApiResponse.success(realTimeMatches, "실시간 매칭 파트너를 성공적으로 조회했습니다."));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(realTimeMatches), "실시간 매칭 파트너를 성공적으로 조회했습니다."));
     }
 
     // === 매칭 피드백 시스템 ===
@@ -236,7 +239,7 @@ public class MatchingController {
     
     @Operation(summary = "스케줄 기반 매칭", description = "특정 시간대/요일 기반으로 파트너를 매칭합니다.")
     @GetMapping("/schedule-based")
-    public ResponseEntity<ApiResponse<Page<RecommendedPartnerResponse>>> getScheduleBasedMatches(
+    public ResponseEntity<ApiResponse<PageResponse<RecommendedPartnerResponse>>> getScheduleBasedMatches(
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestParam String dayOfWeek,
             @RequestParam String timeSlot,
@@ -244,20 +247,20 @@ public class MatchingController {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> scheduleMatches = matchingService.getScheduleBasedMatches(userId, dayOfWeek, timeSlot, pageable);
-        return ResponseEntity.ok(ApiResponse.success(scheduleMatches, "스케줄 기반 매칭 파트너를 성공적으로 조회했습니다."));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(scheduleMatches), "스케줄 기반 매칭 파트너를 성공적으로 조회했습니다."));
     }
 
     // === 언어 교환 매칭 ===
     
     @Operation(summary = "언어 교환 매칭", description = "서로의 언어를 배울 수 있는 파트너를 매칭합니다.")
     @GetMapping("/language-exchange")
-    public ResponseEntity<ApiResponse<Page<RecommendedPartnerResponse>>> getLanguageExchangePartners(
+    public ResponseEntity<ApiResponse<PageResponse<RecommendedPartnerResponse>>> getLanguageExchangePartners(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         
         UUID userId = principal.getUuid();
         Page<RecommendedPartnerResponse> languageExchangePartners = matchingService.getLanguageExchangePartners(userId, pageable);
-        return ResponseEntity.ok(ApiResponse.success(languageExchangePartners, "언어 교환 파트너를 성공적으로 조회했습니다."));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(languageExchangePartners), "언어 교환 파트너를 성공적으로 조회했습니다."));
     }
 
     // === 매칭 대기열 관리 ===

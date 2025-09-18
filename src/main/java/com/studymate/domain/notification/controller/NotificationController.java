@@ -3,6 +3,7 @@ package com.studymate.domain.notification.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.common.dto.ApiResponse;
+import com.studymate.common.dto.PageResponse;
 import com.studymate.domain.notification.domain.dto.request.CreateNotificationRequest;
 import com.studymate.domain.notification.domain.dto.request.UpdateNotificationPreferenceRequest;
 import com.studymate.domain.notification.domain.dto.response.NotificationListResponse;
@@ -122,12 +123,12 @@ public class NotificationController {
     }
 
     @GetMapping("/my-notifications")
-    public ApiResponse<Page<NotificationResponse>> getMyNotifications(
+    public ApiResponse<PageResponse<NotificationResponse>> getMyNotifications(
             @AuthenticationPrincipal CustomUserDetails principal,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<NotificationResponse> response = notificationService.getUserNotifications(userId, pageable);
-        return ApiResponse.success(response, "내 알림 목록을 성공적으로 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "내 알림 목록을 성공적으로 조회했습니다.");
     }
 
     @GetMapping("/unread")
@@ -139,14 +140,14 @@ public class NotificationController {
     }
 
     @GetMapping("/category/{category}")
-    public ApiResponse<Page<NotificationResponse>> getNotificationsByCategory(
+    public ApiResponse<PageResponse<NotificationResponse>> getNotificationsByCategory(
             @AuthenticationPrincipal CustomUserDetails principal,
             @PathVariable String category,
             Pageable pageable) {
         UUID userId = principal.getUuid();
         Page<NotificationResponse> response = notificationService.getNotificationsByCategory(
                 userId, category, pageable);
-        return ApiResponse.success(response, "카테고리별 알림 목록을 성공적으로 조회했습니다.");
+        return ApiResponse.success(PageResponse.of(response), "카테고리별 알림 목록을 성공적으로 조회했습니다.");
     }
 
     @GetMapping("/{notificationId}")
