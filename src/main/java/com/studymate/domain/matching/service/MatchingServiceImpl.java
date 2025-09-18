@@ -6,6 +6,30 @@ import com.studymate.domain.matching.domain.repository.*;
 import com.studymate.domain.matching.repository.MatchingRequestRepository;
 import com.studymate.domain.matching.repository.UserMatchRepository;
 import com.studymate.domain.matching.entity.*;
+import com.studymate.domain.session.domain.repository.SessionRepository;
+import com.studymate.domain.session.type.SessionStatus;
+import com.studymate.domain.onboarding.domain.repository.MotivationRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLangLevelRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLearningExpectationRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLearningStyleRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingMotivationRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingPartnerRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingTopicRepository;
+import com.studymate.domain.onboarding.domain.repository.PartnerPersonalityRepository;
+import com.studymate.domain.onboarding.domain.repository.TopicRepository;
+import com.studymate.domain.onboarding.domain.repository.LearningStyleRepository;
+import com.studymate.domain.onboarding.domain.repository.LearningExpectationRepository;
+import com.studymate.domain.onboarding.entity.OnboardingLangLevel;
+import com.studymate.domain.onboarding.entity.OnboardingLearningExpectation;
+import com.studymate.domain.onboarding.entity.OnboardingLearningStyle;
+import com.studymate.domain.onboarding.entity.OnboardingMotivation;
+import com.studymate.domain.onboarding.entity.OnboardingPartner;
+import com.studymate.domain.onboarding.entity.OnboardingTopic;
+import com.studymate.domain.onboarding.entity.PartnerPersonality;
+import com.studymate.domain.onboarding.entity.Topic;
+import com.studymate.domain.onboarding.entity.Motivation;
+import com.studymate.domain.onboarding.entity.LearningStyle;
+import com.studymate.domain.onboarding.entity.LearningExpectation;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.service.UserStatusService;
@@ -16,6 +40,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,6 +58,18 @@ public class MatchingServiceImpl implements MatchingService {
     private final UserStatusService userStatusService;
     private final MatchingQueueRepository matchingQueueRepository;
     private final MatchingFeedbackRepository matchingFeedbackRepository;
+    private final SessionRepository sessionRepository;
+    private final OnboardingLangLevelRepository onboardingLangLevelRepository;
+    private final OnboardingMotivationRepository onboardingMotivationRepository;
+    private final OnboardingTopicRepository onboardingTopicRepository;
+    private final OnboardingLearningStyleRepository onboardingLearningStyleRepository;
+    private final OnboardingLearningExpectationRepository onboardingLearningExpectationRepository;
+    private final OnboardingPartnerRepository onboardingPartnerRepository;
+    private final MotivationRepository motivationRepository;
+    private final TopicRepository topicRepository;
+    private final LearningStyleRepository learningStyleRepository;
+    private final LearningExpectationRepository learningExpectationRepository;
+    private final PartnerPersonalityRepository partnerPersonalityRepository;
 
     @Override
     public Page<RecommendedPartnerResponse> getRecommendedPartners(UUID userId, Pageable pageable,
@@ -254,6 +291,11 @@ public class MatchingServiceImpl implements MatchingService {
         List<UserMatch> matches = userMatchRepository.findActiveMatchesByUser(user);
         // 수동 페이징
         int start = (int) pageable.getOffset();
+
+        if (start >= matches.size()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, matches.size());
+        }
+
         int end = Math.min((start + pageable.getPageSize()), matches.size());
         List<UserMatch> pageContent = matches.subList(start, end);
         Page<UserMatch> pagedMatches = new PageImpl<>(pageContent, pageable, matches.size());
@@ -844,52 +886,129 @@ public class MatchingServiceImpl implements MatchingService {
     // === Helper Methods for Onboarding Data ===
 
     private List<RecommendedPartnerResponse.TargetLanguageInfo> getTargetLanguagesFromOnboarding(UUID userId) {
-        // 온보딩 데이터에서 학습 언어 목록을 가져오는 로직
-        // 현재는 기본값 반환
-        List<RecommendedPartnerResponse.TargetLanguageInfo> targetLanguages = new ArrayList<>();
-        
-        RecommendedPartnerResponse.TargetLanguageInfo english = new RecommendedPartnerResponse.TargetLanguageInfo();
-        english.setLanguageName("English");
-        english.setCurrentLevel("Intermediate");
-        english.setTargetLevel("Advanced");
-        targetLanguages.add(english);
-        
-        RecommendedPartnerResponse.TargetLanguageInfo japanese = new RecommendedPartnerResponse.TargetLanguageInfo();
-        japanese.setLanguageName("Japanese");
-        japanese.setCurrentLevel("Beginner");
-        japanese.setTargetLevel("Intermediate");
-        targetLanguages.add(japanese);
-        
-        return targetLanguages;
+        List<OnboardingLangLevel> languageLevels = onboardingLangLevelRepository.findByUsrId(userId);
+
+        if (languageLevels == null || languageLevels.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return languageLevels.stream()
+                .map(level -> {
+                    RecommendedPartnerResponse.TargetLanguageInfo info = new RecommendedPartnerResponse.TargetLanguageInfo();
+                    info.setLanguageName(level.getLanguage() != null ? level.getLanguage().getName() : null);
+                    info.setCurrentLevel(level.getCurrentLevel() != null ? level.getCurrentLevel().getName() : null);
+                    info.setTargetLevel(level.getTargetLevel() != null ? level.getTargetLevel().getName() : null);
+                    return info;
+                })
+                .filter(info -> info.getLanguageName() != null)
+                .toList();
     }
 
     private List<String> getInterestsFromOnboarding(UUID userId) {
-        // 온보딩 데이터에서 관심사 목록을 가져오는 로직
-        // 현재는 기본값 반환
-        return Arrays.asList("Travel", "Business", "Daily conversation", "Culture");
+        LinkedHashSet<String> interests = new LinkedHashSet<>();
+
+        List<Integer> motivationIds = onboardingMotivationRepository.findByUsrId(userId).stream()
+                .map(OnboardingMotivation::getMotivationId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (!motivationIds.isEmpty()) {
+            motivationRepository.findAllById(motivationIds).stream()
+                    .map(Motivation::getName)
+                    .filter(StringUtils::hasText)
+                    .forEach(interests::add);
+        }
+
+        List<Integer> topicIds = onboardingTopicRepository.findByUsrId(userId).stream()
+                .map(OnboardingTopic::getTopicId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (!topicIds.isEmpty()) {
+            topicRepository.findAllById(topicIds).stream()
+                    .map(Topic::getName)
+                    .filter(StringUtils::hasText)
+                    .forEach(interests::add);
+        }
+
+        List<Integer> learningStyleIds = onboardingLearningStyleRepository.findByUsrId(userId).stream()
+                .map(OnboardingLearningStyle::getLearningStyleId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (!learningStyleIds.isEmpty()) {
+            learningStyleRepository.findAllById(learningStyleIds).stream()
+                    .map(LearningStyle::getName)
+                    .filter(StringUtils::hasText)
+                    .forEach(interests::add);
+        }
+
+        List<Integer> expectationIds = onboardingLearningExpectationRepository.findByUsrId(userId).stream()
+                .map(expectation -> expectation.getId().getLearningExpectationId())
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (!expectationIds.isEmpty()) {
+            learningExpectationRepository.findAllById(expectationIds).stream()
+                    .map(LearningExpectation::getLearningExpectationName)
+                    .filter(StringUtils::hasText)
+                    .forEach(interests::add);
+        }
+
+        return new ArrayList<>(interests);
     }
 
     private List<String> getPersonalitiesFromOnboarding(UUID userId) {
-        // 온보딩 데이터에서 선호 파트너 성격 목록을 가져오는 로직
-        // 현재는 기본값 반환
-        return Arrays.asList("Friendly", "Patient", "Outgoing");
+        List<Integer> personalityIds = onboardingPartnerRepository.findByUsrId(userId).stream()
+                .map(OnboardingPartner::getPartnerPersonalityId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (personalityIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return partnerPersonalityRepository.findAllById(personalityIds).stream()
+                .map(PartnerPersonality::getName)
+                .filter(StringUtils::hasText)
+                .toList();
     }
 
     private String getFavoriteTopicsFromOnboarding(UUID userId) {
-        // 온보딩 데이터에서 선호 주제를 가져오는 로직
-        // 현재는 기본값 반환
-        return "Daily conversation, Business, Travel";
+        List<Integer> topicIds = onboardingTopicRepository.findByUsrId(userId).stream()
+                .map(OnboardingTopic::getTopicId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (topicIds.isEmpty()) {
+            return null;
+        }
+
+        List<String> topicNames = topicRepository.findAllById(topicIds).stream()
+                .map(Topic::getName)
+                .filter(StringUtils::hasText)
+                .toList();
+
+        if (topicNames.isEmpty()) {
+            return null;
+        }
+
+        return String.join(", ", topicNames);
     }
 
     private int getTotalSessionsCompleted(UUID userId, UUID partnerId) {
-        // 세션 이력에서 완료된 세션 수를 가져오는 로직
-        // 현재는 기본값 반환
         if (partnerId != null) {
-            // 특정 파트너와의 세션 수
-            return 5; // 임시값
-        } else {
-            // 전체 세션 수
-            return 25; // 임시값
+            Long pairCompleted = sessionRepository.countCompletedSessionsBetweenUsers(
+                    userId,
+                    partnerId,
+                    SessionStatus.COMPLETED
+            );
+            return pairCompleted != null ? pairCompleted.intValue() : 0;
         }
+
+        Long completed = sessionRepository.countCompletedSessionsByUserId(userId, SessionStatus.COMPLETED);
+        return completed != null ? completed.intValue() : 0;
     }
 }

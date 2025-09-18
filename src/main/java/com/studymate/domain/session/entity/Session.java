@@ -106,7 +106,7 @@ public class Session extends BaseTimeEntity {
                   String languageCode, String skillFocus, String levelRequirement,
                   LocalDateTime scheduledAt, Integer durationMinutes, Integer maxParticipants,
                   Boolean isRecurring, String recurrencePattern, LocalDateTime recurrenceEndDate,
-                  Boolean isPublic, String tags, String preparationNotes) {
+                  Boolean isPublic, String tags, String preparationNotes, String meetingUrl) {
         this.hostUser = hostUser;
         this.title = title;
         this.description = description;
@@ -125,6 +125,7 @@ public class Session extends BaseTimeEntity {
         this.preparationNotes = preparationNotes;
         this.status = SessionStatus.SCHEDULED;
         this.currentParticipants = 0;
+        this.meetingUrl = meetingUrl;
     }
 
     public void addParticipant(User user) {

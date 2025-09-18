@@ -89,6 +89,13 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Query("SELECT COUNT(s) FROM Session s WHERE (s.hostUser.userId = :userId OR s.guestUser.userId = :userId) AND s.status = :status")
     Long countCompletedSessionsByUserId(@Param("userId") UUID userId, @Param("status") SessionStatus status);
 
+    // 특정 사용자와 파트너 간 완료된 세션 수 조회
+    @Query("SELECT COUNT(s) FROM Session s WHERE ((s.hostUser.userId = :userId AND s.guestUser.userId = :partnerId) " +
+           "OR (s.hostUser.userId = :partnerId AND s.guestUser.userId = :userId)) AND s.status = :status")
+    Long countCompletedSessionsBetweenUsers(@Param("userId") UUID userId,
+                                            @Param("partnerId") UUID partnerId,
+                                            @Param("status") SessionStatus status);
+
     // 이번 주 세션 조회
     @Query("SELECT s FROM Session s WHERE (s.hostUser.userId = :userId OR s.guestUser.userId = :userId) " +
            "AND s.scheduledAt BETWEEN :weekStart AND :weekEnd ORDER BY s.scheduledAt ASC")

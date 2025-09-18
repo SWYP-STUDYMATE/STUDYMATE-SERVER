@@ -12,6 +12,7 @@ import com.studymate.domain.session.type.SessionStatus;
 import com.studymate.domain.session.type.SessionType;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.domain.user.entity.User;
+import com.studymate.domain.webrtc.service.WebRTCIntegrationService;
 import com.studymate.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,17 +34,27 @@ public class SessionServiceImpl implements SessionService {
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final SessionBookingRepository sessionBookingRepository;
+    private final WebRTCIntegrationService webRTCIntegrationService;
 
     @Override
     public SessionResponse createSession(UUID userId, CreateSessionRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
 
+        SessionType sessionType = request.getSessionType();
+        if (request.getWebRtcRoomType() != null) {
+            if ("video".equalsIgnoreCase(request.getWebRtcRoomType())) {
+                sessionType = SessionType.VIDEO;
+            } else if ("audio".equalsIgnoreCase(request.getWebRtcRoomType())) {
+                sessionType = SessionType.AUDIO;
+            }
+        }
+
         Session session = Session.builder()
                 .hostUser(user)
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .sessionType(request.getSessionType())
+                .sessionType(sessionType)
                 .languageCode(request.getLanguageCode())
                 .skillFocus(request.getSkillFocus())
                 .levelRequirement(request.getLevelRequirement())
@@ -56,9 +67,14 @@ public class SessionServiceImpl implements SessionService {
                 .isPublic(request.getIsPublic())
                 .tags(request.getTags())
                 .preparationNotes(request.getPreparationNotes())
+                .meetingUrl(request.getWebRtcRoomId())
                 .build();
 
         Session savedSession = sessionRepository.save(session);
+
+        if (request.getWebRtcRoomId() != null && !request.getWebRtcRoomId().isBlank()) {
+            webRTCIntegrationService.syncRoomOnCreation(request.getWebRtcRoomId(), savedSession);
+        }
         
         // 반복 세션인 경우 추가 세션들 생성
         if (request.getIsRecurring() && request.getRecurrencePattern() != null) {

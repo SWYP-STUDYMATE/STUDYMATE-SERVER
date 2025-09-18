@@ -204,6 +204,51 @@ public ResponseEntity<SessionDto> createSession(@RequestBody CreateSessionReques
 }
 ```
 
+### 3. WebRTC 메타데이터 동기화
+
+실시간 방 정보에 세션 주제/예약 데이터를 반영하기 위해 Spring → Workers 간 동기화 API를 제공합니다.
+
+1. **클라이언트 → Spring**
+
+```http
+POST /api/v1/webrtc/rooms/{roomId}/sync
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "sessionId": 123
+}
+```
+
+- 요청자는 세션 호스트여야 합니다.
+- Spring은 세션 정보를 조회하고 `meetingUrl`에 roomId를 저장합니다.
+- 세션 메타데이터(제목, 일정, 언어, 태그, 호스트 정보 등)를 수집해 Workers에 전달합니다.
+
+2. **Spring → Workers (Internal)**
+
+```
+PATCH /api/v1/internal/webrtc/rooms/{roomId}/metadata
+Headers:
+  Content-Type: application/json
+  X-Internal-Secret: <workers.internal.secret>
+
+Body:
+{
+  "sessionId": 123,
+  "title": "Grammar Focus",
+  "scheduledAt": "2025-01-15T10:00:00",
+  "durationMinutes": 45,
+  "language": "en",
+  "sessionStatus": "SCHEDULED",
+  "hostName": "Jane",
+  "hostUserId": "...",
+  "sessionType": "video"
+}
+```
+
+- Durable Object가 메타데이터를 병합하고 KV 캐시/활성 룸 리스트를 갱신합니다.
+- 프런트엔드는 `GET /api/v1/room/active`로 확장된 정보를 조회할 수 있습니다.
+
 ---
 
 ## 📁 파일 업로드 시스템

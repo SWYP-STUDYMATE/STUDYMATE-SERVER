@@ -52,4 +52,8 @@ public class CreateSessionRequest {
     private String tags;
     
     private String preparationNotes;
+
+    private String webRtcRoomId;
+
+    private String webRtcRoomType; // audio, video
 }

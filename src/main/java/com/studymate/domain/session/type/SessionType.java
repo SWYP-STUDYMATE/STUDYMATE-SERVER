@@ -6,5 +6,7 @@ public enum SessionType {
     WORKSHOP,        // 워크샵
     CONVERSATION,    // 대화 세션
     STUDY_GROUP,     // 스터디 그룹
-    PRACTICE        // 연습 세션
+    PRACTICE,        // 연습 세션
+    VIDEO,          // 화상 실시간 세션
+    AUDIO           // 음성 실시간 세션
 }

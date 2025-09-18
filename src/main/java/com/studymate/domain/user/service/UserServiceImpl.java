@@ -14,6 +14,7 @@ import com.studymate.domain.user.entity.User;
 import com.studymate.domain.onboarding.domain.repository.OnboardingTopicRepository;
 import com.studymate.domain.onboarding.domain.repository.OnboardingPartnerRepository;
 import com.studymate.domain.onboarding.domain.repository.OnboardingScheduleRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLangLevelRepository;
 import com.studymate.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final OnboardingTopicRepository onboardingTopicRepository;
     private final OnboardingPartnerRepository onboardingPartnerRepository;
     private final OnboardingScheduleRepository onboardingScheduleRepository;
+    private final OnboardingLangLevelRepository onboardingLangLevelRepository;
 
     @Value("${cloud.ncp.storage.bucket-name}")
     private String bucketName;
@@ -297,6 +299,38 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
     
+
+    @Override
+    public UserLanguageInfoResponse getUserLanguageInfo(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
+
+        UserLanguageInfoResponse.LanguageInfo nativeLanguage = null;
+        if (user.getNativeLanguage() != null) {
+            nativeLanguage = UserLanguageInfoResponse.LanguageInfo.builder()
+                    .languageId(user.getNativeLanguage().getLanguageId())
+                    .languageName(user.getNativeLanguage().getLanguageName())
+                    .build();
+        }
+
+        List<UserLanguageInfoResponse.TargetLanguageInfo> targetLanguages = onboardingLangLevelRepository.findByUsrId(userId)
+                .stream()
+                .map(level -> UserLanguageInfoResponse.TargetLanguageInfo.builder()
+                        .languageId(level.getLanguage() != null ? level.getLanguage().getLanguageId() : null)
+                        .languageName(level.getLanguage() != null ? level.getLanguage().getLanguageName() : null)
+                        .currentLevelId(level.getCurrentLevel() != null ? level.getCurrentLevel().getLangLevelId() : null)
+                        .currentLevelName(level.getCurrentLevel() != null ? level.getCurrentLevel().getLangLevelName() : null)
+                        .targetLevelId(level.getTargetLevel() != null ? level.getTargetLevel().getLangLevelId() : null)
+                        .targetLevelName(level.getTargetLevel() != null ? level.getTargetLevel().getLangLevelName() : null)
+                        .build())
+                .toList();
+
+        return UserLanguageInfoResponse.builder()
+                .nativeLanguage(nativeLanguage)
+                .targetLanguages(targetLanguages)
+                .build();
+    }
+
     @Override
     public UserSettingsResponse getUserSettings(UUID userId) {
         User user = userRepository.findById(userId)

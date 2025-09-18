@@ -4,10 +4,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.domain.matching.domain.dto.request.AdvancedMatchingFilterRequest;
 import com.studymate.domain.matching.domain.dto.request.MatchingRequestDto;
 import com.studymate.domain.matching.entity.MatchingRequest;
+import com.studymate.domain.matching.entity.UserMatch;
 import com.studymate.domain.matching.repository.MatchingRequestRepository;
 import com.studymate.domain.user.entity.User;
 import com.studymate.domain.user.domain.repository.UserRepository;
 import com.studymate.auth.jwt.JwtUtils;
+import com.studymate.domain.onboarding.domain.repository.LanguageRepository;
+import com.studymate.domain.onboarding.domain.repository.LangLevelTypeRepository;
+import com.studymate.domain.onboarding.domain.repository.MotivationRepository;
+import com.studymate.domain.onboarding.domain.repository.TopicRepository;
+import com.studymate.domain.onboarding.domain.repository.LearningStyleRepository;
+import com.studymate.domain.onboarding.domain.repository.LearningExpectationRepository;
+import com.studymate.domain.onboarding.domain.repository.PartnerPersonalityRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLangLevelRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingMotivationRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingTopicRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLearningStyleRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingLearningExpectationRepository;
+import com.studymate.domain.onboarding.domain.repository.OnboardingPartnerRepository;
+import com.studymate.domain.onboarding.entity.Language;
+import com.studymate.domain.onboarding.entity.LangLevelType;
+import com.studymate.domain.onboarding.entity.Motivation;
+import com.studymate.domain.onboarding.entity.Topic;
+import com.studymate.domain.onboarding.entity.LearningStyle;
+import com.studymate.domain.onboarding.entity.LearningExpectation;
+import com.studymate.domain.onboarding.entity.PartnerPersonality;
+import com.studymate.domain.onboarding.entity.OnboardingLangLevel;
+import com.studymate.domain.onboarding.entity.OnboardingLangLevelId;
+import com.studymate.domain.onboarding.entity.OnboardingMotivation;
+import com.studymate.domain.onboarding.entity.OnboardingMotivationId;
+import com.studymate.domain.onboarding.entity.OnboardingTopic;
+import com.studymate.domain.onboarding.entity.OnboardingTopicId;
+import com.studymate.domain.onboarding.entity.OnboardingLearningStyle;
+import com.studymate.domain.onboarding.entity.OnboardingLearningStyleId;
+import com.studymate.domain.onboarding.entity.OnboardingLearningExpectation;
+import com.studymate.domain.onboarding.entity.OnboardingLearningExpectationId;
+import com.studymate.domain.onboarding.entity.OnboardingPartner;
+import com.studymate.domain.onboarding.entity.OnboardingPartnerId;
+import com.studymate.domain.matching.repository.UserMatchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +54,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureWebMvc
@@ -48,6 +84,48 @@ class MatchingIntegrationTest {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private LanguageRepository languageRepository;
+
+    @Autowired
+    private LangLevelTypeRepository langLevelTypeRepository;
+
+    @Autowired
+    private MotivationRepository motivationRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
+
+    @Autowired
+    private LearningStyleRepository learningStyleRepository;
+
+    @Autowired
+    private LearningExpectationRepository learningExpectationRepository;
+
+    @Autowired
+    private PartnerPersonalityRepository partnerPersonalityRepository;
+
+    @Autowired
+    private OnboardingLangLevelRepository onboardingLangLevelRepository;
+
+    @Autowired
+    private OnboardingMotivationRepository onboardingMotivationRepository;
+
+    @Autowired
+    private OnboardingTopicRepository onboardingTopicRepository;
+
+    @Autowired
+    private OnboardingLearningStyleRepository onboardingLearningStyleRepository;
+
+    @Autowired
+    private OnboardingLearningExpectationRepository onboardingLearningExpectationRepository;
+
+    @Autowired
+    private OnboardingPartnerRepository onboardingPartnerRepository;
+
+    @Autowired
+    private UserMatchRepository userMatchRepository;
+
     private User testUser1;
     private User testUser2;
     private String accessToken1;
@@ -58,6 +136,7 @@ class MatchingIntegrationTest {
         testUser1 = User.builder()
                 .userId(UUID.randomUUID())
                 .name("테스트사용자1")
+                .englishName("Tester One")
                 .email("test1@example.com")
                 .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
@@ -66,6 +145,7 @@ class MatchingIntegrationTest {
         testUser2 = User.builder()
                 .userId(UUID.randomUUID())
                 .name("테스트사용자2")
+                .englishName("Tester Two")
                 .email("test2@example.com")
                 .userIdentity("NAVER")
                 .isOnboardingCompleted(true)
@@ -124,6 +204,20 @@ class MatchingIntegrationTest {
                 .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    @DisplayName("추천 파트너 응답에 온보딩 언어 및 관심사가 포함된다")
+    void getRecommendedPartners_ShouldIncludeOnboardingAttributes() throws Exception {
+        setupOnboardingDataFor(testUser2);
+
+        mockMvc.perform(get("/api/v1/matching/partners")
+                .header("Authorization", "Bearer " + accessToken1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].targetLanguages", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$.content[0].targetLanguages[0].languageName").value("English"))
+                .andExpect(jsonPath("$.content[0].interests", hasItem("Business Goals")))
+                .andExpect(jsonPath("$.content[0].partnerPersonalities", hasItem("Friendly Mentor")));
     }
 
     @Test
@@ -214,5 +308,121 @@ class MatchingIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isNotFound());
+    }
+
+    private void setupOnboardingDataFor(User user) {
+        Language nativeLanguage = languageRepository.save(
+                Language.builder()
+                        .languageName("Korean")
+                        .code("ko-" + UUID.randomUUID().toString().substring(0, 6))
+                        .build()
+        );
+
+        Language targetLanguage = languageRepository.save(
+                Language.builder()
+                        .languageName("English")
+                        .code("en-" + UUID.randomUUID().toString().substring(0, 6))
+                        .build()
+        );
+
+        user.setNativeLanguage(nativeLanguage);
+        userRepository.save(user);
+
+        LangLevelType currentLevel = langLevelTypeRepository.save(
+                LangLevelType.builder()
+                        .langLevelName("Intermediate")
+                        .description("B1")
+                        .category("CEFR")
+                        .build()
+        );
+
+        LangLevelType targetLevel = langLevelTypeRepository.save(
+                LangLevelType.builder()
+                        .langLevelName("Advanced")
+                        .description("C1")
+                        .category("CEFR")
+                        .build()
+        );
+
+        onboardingLangLevelRepository.save(
+                OnboardingLangLevel.builder()
+                        .id(new OnboardingLangLevelId(user.getUserId(), targetLanguage.getLanguageId()))
+                        .currentLevel(currentLevel)
+                        .targetLevel(targetLevel)
+                        .langLevelType(currentLevel)
+                        .build()
+        );
+
+        Motivation motivation = motivationRepository.save(
+                Motivation.builder()
+                        .motivationName("Business Goals")
+                        .description("Improve business conversations")
+                        .build()
+        );
+
+        onboardingMotivationRepository.save(
+                OnboardingMotivation.builder()
+                        .id(new OnboardingMotivationId(user.getUserId(), motivation.getMotivationId()))
+                        .build()
+        );
+
+        Topic topic = topicRepository.save(
+                Topic.builder()
+                        .topicName("Travel & Culture")
+                        .description("Talk about different cultures")
+                        .build()
+        );
+
+        onboardingTopicRepository.save(
+                OnboardingTopic.builder()
+                        .id(new OnboardingTopicId(user.getUserId(), topic.getTopicId()))
+                        .topicName(topic.getTopicName())
+                        .build()
+        );
+
+        LearningStyle learningStyle = learningStyleRepository.save(
+                LearningStyle.builder()
+                        .learningStyleName("Interactive Sessions")
+                        .description("Prefers conversation based learning")
+                        .build()
+        );
+
+        onboardingLearningStyleRepository.save(
+                OnboardingLearningStyle.builder()
+                        .id(new OnboardingLearningStyleId(user.getUserId(), learningStyle.getLearningStyleId()))
+                        .build()
+        );
+
+        LearningExpectation expectation = learningExpectationRepository.save(
+                new LearningExpectation(null, "Presentation Skills")
+        );
+
+        onboardingLearningExpectationRepository.save(
+                OnboardingLearningExpectation.builder()
+                        .id(new OnboardingLearningExpectationId(user.getUserId(), expectation.getLearningExpectationId()))
+                        .build()
+        );
+
+        PartnerPersonality partnerPersonality = partnerPersonalityRepository.save(
+                PartnerPersonality.builder()
+                        .partnerPersonality("Friendly Mentor")
+                        .description("Encouraging and patient partner")
+                        .build()
+        );
+
+        onboardingPartnerRepository.save(
+                OnboardingPartner.builder()
+                        .id(new OnboardingPartnerId(user.getUserId(), partnerPersonality.getPartnerPersonalityId()))
+                        .build()
+        );
+
+        userMatchRepository.save(
+                UserMatch.builder()
+                        .user1(testUser1)
+                        .user2(user)
+                        .matchedAt(LocalDateTime.now())
+                        .isActive(true)
+                        .build()
+        );
     }
 }

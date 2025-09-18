@@ -163,6 +163,13 @@ public class UserController {
         return ApiResponse.success("온보딩이 완료되었습니다.");
     }
     
+    @GetMapping("/language-info")
+    public ApiResponse<UserLanguageInfoResponse> getUserLanguageInfo(@AuthenticationPrincipal CustomUserDetails principal) {
+        UUID userId = principal.getUuid();
+        UserLanguageInfoResponse response = userService.getUserLanguageInfo(userId);
+        return ApiResponse.success(response);
+    }
+
     @GetMapping("/settings")
     public ApiResponse<UserSettingsResponse> getUserSettings(@AuthenticationPrincipal CustomUserDetails principal) {
         UUID userId = principal.getUuid();
