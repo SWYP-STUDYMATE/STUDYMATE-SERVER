@@ -5,6 +5,7 @@ import com.studymate.domain.notification.domain.dto.request.UpdateNotificationPr
 import com.studymate.domain.notification.domain.dto.response.NotificationPreferenceResponse;
 import com.studymate.domain.notification.domain.dto.response.NotificationResponse;
 import com.studymate.domain.notification.domain.dto.response.NotificationStatsResponse;
+import com.studymate.domain.notification.type.NotificationStatus;
 import com.studymate.domain.notification.type.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,9 @@ public interface NotificationService {
     
     // 알림 조회
     Page<NotificationResponse> getUserNotifications(UUID userId, Pageable pageable);
+
+    Page<NotificationResponse> getUserNotifications(UUID userId, Pageable pageable,
+                                                   String category, NotificationStatus statusFilter);
     
     List<NotificationResponse> getUnreadNotifications(UUID userId);
     

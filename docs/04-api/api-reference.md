@@ -1274,21 +1274,56 @@ multipart/form-data
   "data": {
     "notifications": [
       {
-        "id": "notif-uuid-123",
-        "type": "SESSION_REMINDER",
+        "id": 42,
+        "type": "session_reminder",
+        "category": "session",
         "title": "세션 시작 알림",
         "message": "John과의 영어 회화 세션이 10분 후 시작됩니다.",
         "isRead": false,
-        "createdAt": "2025-08-27T13:50:00Z"
+        "status": "UNREAD",
+        "priority": 2,
+        "clickUrl": "/sessions/abcd-1234",
+        "data": {
+          "sessionId": "abcd-1234"
+        },
+        "createdAt": "2025-08-27T13:50:00",
+        "readAt": null
       }
     ],
-    "unreadCount": 5
+    "unreadCount": 5,
+    "pagination": {
+      "page": 1,
+      "size": 20,
+      "totalPages": 3,
+      "totalElements": 54,
+      "hasNext": true
+    }
   }
 }
 ```
 
 ### 알림 읽음 처리
-**PUT** `/api/v1/notifications/{notificationId}/read`
+**PATCH** `/api/v1/notifications/{notificationId}/read`
+
+> 참고: 기존 `POST /api/v1/notifications/{notificationId}/read` 엔드포인트도 하위 호환을 위해 유지됩니다.
+
+### 전체 알림 읽음 처리
+**PATCH** `/api/v1/notifications/read-all`
+
+### 알림 일괄 삭제
+**DELETE** `/api/v1/notifications/batch`
+
+#### 요청 바디
+```json
+{
+  "notificationIds": [12, 13, 14]
+}
+```
+
+### 알림 설정 조회/수정
+**GET** `/api/v1/notifications/settings`
+
+**PATCH** `/api/v1/notifications/settings`
 
 ---
 

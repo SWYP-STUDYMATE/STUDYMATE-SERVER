@@ -22,6 +22,16 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // 사용자별 알림 조회 (페이지네이션)
     Page<Notification> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
+    @Query("SELECT n FROM Notification n " +
+           "WHERE n.user.userId = :userId " +
+           "AND (:category IS NULL OR UPPER(n.category) = UPPER(:category)) " +
+           "AND (:status IS NULL OR n.status = :status) " +
+           "ORDER BY n.createdAt DESC")
+    Page<Notification> findByUserIdWithFilters(@Param("userId") UUID userId,
+                                              @Param("category") String category,
+                                              @Param("status") NotificationStatus status,
+                                              Pageable pageable);
+
     // 사용자의 읽지 않은 알림 조회
     List<Notification> findByUserAndStatusOrderByCreatedAtDesc(User user, NotificationStatus status);
 

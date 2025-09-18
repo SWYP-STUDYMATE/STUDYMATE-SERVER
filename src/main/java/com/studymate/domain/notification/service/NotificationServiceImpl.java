@@ -1,5 +1,7 @@
 package com.studymate.domain.notification.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studymate.domain.notification.domain.dto.request.CreateNotificationRequest;
 import com.studymate.domain.notification.domain.dto.request.UpdateNotificationPreferenceRequest;
 import com.studymate.domain.notification.domain.dto.response.NotificationPreferenceResponse;
@@ -35,6 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationPreferenceRepository preferenceRepository;
     private final UserRepository userRepository;
     private final NotificationWebSocketService webSocketService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public NotificationResponse createNotification(CreateNotificationRequest request) {
@@ -99,10 +102,29 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getUserNotifications(UUID userId, Pageable pageable) {
+        return getUserNotifications(userId, pageable, null, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getUserNotifications(UUID userId, Pageable pageable,
+                                                           String category, NotificationStatus statusFilter) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("NOT FOUND USER"));
 
-        Page<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+        Page<Notification> notifications;
+        if (category == null && statusFilter == null) {
+            notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+        } else {
+            String normalizedCategory = category != null ? category.toUpperCase() : null;
+            notifications = notificationRepository.findByUserIdWithFilters(
+                    userId,
+                    normalizedCategory,
+                    statusFilter,
+                    pageable
+            );
+        }
+
         return notifications.map(this::convertToNotificationResponse);
     }
 
@@ -541,8 +563,13 @@ public class NotificationServiceImpl implements NotificationService {
         if (data == null || data.isEmpty()) {
             return null;
         }
-        // 실제 구현에서는 ObjectMapper 사용
-        return data.toString();
+
+        try {
+            return objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to serialize notification action data: {}", e.getMessage());
+            return null;
+        }
     }
 
     private NotificationResponse convertToNotificationResponse(Notification notification) {
