@@ -38,7 +38,18 @@ public class OnboardingInterestServiceImpl implements OnboardingInterestService 
     @Override
     @Transactional
     public void saveMotivation(UUID userId,MotivationRequest req){
-        List<Integer> motivationIds = req.motivationIds();
+        List<Integer> motivationIds = Optional.ofNullable(req.motivationIds())
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        onboardingMotivationRepository.deleteByUsrId(userId);
+
+        if (motivationIds.isEmpty()) {
+            return;
+        }
+
         List<OnboardingMotivation> onboardMotivations = motivationIds.stream()
                 .map(motivationId -> OnboardingMotivation.builder()
                         .id(new OnboardingMotivationId(userId, motivationId))
@@ -51,7 +62,18 @@ public class OnboardingInterestServiceImpl implements OnboardingInterestService 
     @Override
     @Transactional
     public void saveTopic(UUID userId,TopicRequest req){
-        List<Integer> topicIds = req.topicIds();
+        List<Integer> topicIds = Optional.ofNullable(req.topicIds())
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        onboardingTopicRepository.deleteByUsrId(userId);
+
+        if (topicIds.isEmpty()) {
+            return;
+        }
+
         List<OnboardingTopic> onboardTopics = topicIds.stream()
                 .map(topicId -> OnboardingTopic.builder()
                         .id(new OnboardingTopicId(userId, topicId))
@@ -64,7 +86,18 @@ public class OnboardingInterestServiceImpl implements OnboardingInterestService 
     @Override
     @Transactional
     public void saveLearningStyle(UUID userId,LearningStyleRequest req) {
-        List<Integer> learningStyleIds = req.learningStyleIds();
+        List<Integer> learningStyleIds = Optional.ofNullable(req.learningStyleIds())
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        onboardingLearningStyleRepository.deleteByUsrId(userId);
+
+        if (learningStyleIds.isEmpty()) {
+            return;
+        }
+
         List<OnboardingLearningStyle> onboardLearningStyles = learningStyleIds.stream()
                 .map(learningStyleId -> OnboardingLearningStyle.builder()
                         .id(new OnboardingLearningStyleId(userId, learningStyleId))
@@ -76,15 +109,24 @@ public class OnboardingInterestServiceImpl implements OnboardingInterestService 
     @Override
     @Transactional
     public void saveLearningExpectation(UUID userId, LearningExceptionRequest req) {
+        List<Integer> expectationIds = Optional.ofNullable(req.learningExpectationIds())
+                .orElseGet(Collections::emptyList);
+
+        onboardingLearningExpectationRepository.deleteByUsrId(userId);
+
+        if (expectationIds.isEmpty()) {
+            return;
+        }
+
         // LearningExpectation ID들 검증
-        Set<Integer> learningExpectationIds = new HashSet<>(req.learningExpectationIds());
+        Set<Integer> learningExpectationIds = new HashSet<>(expectationIds);
         Map<Integer, LearningExpectation> learningExpectationMap = learningExpectationRepository
                 .findAllById(learningExpectationIds)
                 .stream()
                 .collect(Collectors.toMap(LearningExpectation::getLearningExpectationId, Function.identity()));
         
         // OnboardingLearningExpectation 엔티티들 생성 및 저장
-        List<OnboardingLearningExpectation> onboardLearningExpectations = req.learningExpectationIds().stream()
+        List<OnboardingLearningExpectation> onboardLearningExpectations = learningExpectationIds.stream()
                 .map(expectationId -> {
                     LearningExpectation learningExpectation = learningExpectationMap.get(expectationId);
                     if (learningExpectation == null) {
