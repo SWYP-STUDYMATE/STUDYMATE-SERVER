@@ -1489,3 +1489,26 @@ stompClient.subscribe('/topic/webrtc/{roomId}/participant-updates', function(mes
 ### 문제 신고
 - GitHub Issues: [STUDYMATE-SERVER Issues](https://github.com/SWYP-STUDYMATE/STUDYMATE-SERVER/issues)
 - Email: dev@studymate.kr
+
+### WebRTC 룸 메타데이터 동기화 (신규)
+**POST** `/api/v1/webrtc/rooms/{roomId}/sync`
+
+- 목적: WebRTC 방에 세션 주제, 일정, 언어, 호스트 정보를 반영
+- 인증: Bearer JWT (세션 호스트만 호출 가능)
+
+#### 요청 바디
+```json
+{
+  "sessionId": 456
+}
+```
+
+#### 응답
+```json
+{
+  "success": true,
+  "message": "WebRTC 룸 메타데이터를 동기화했습니다."
+}
+```
+
+> Spring은 위 요청을 수신하면 `PATCH /api/v1/internal/webrtc/rooms/{roomId}/metadata`를 Workers에 호출하여 메타데이터를 병합하고, 활성 룸 캐시를 갱신합니다.

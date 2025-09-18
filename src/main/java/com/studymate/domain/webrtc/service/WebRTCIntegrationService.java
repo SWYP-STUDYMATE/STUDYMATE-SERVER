@@ -1,5 +1,6 @@
 package com.studymate.domain.webrtc.service;
 
+import com.studymate.domain.session.domain.repository.SessionRepository;
 import com.studymate.domain.session.entity.Session;
 import com.studymate.domain.session.type.SessionType;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class WebRTCIntegrationService {
 
     private final RestTemplate workersRestTemplate;
+    private final SessionRepository sessionRepository;
 
     @Value("${workers.api.url:https://workers.languagemate.kr}")
     private String workersApiUrl;

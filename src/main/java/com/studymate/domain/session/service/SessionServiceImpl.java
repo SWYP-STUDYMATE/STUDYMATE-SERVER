@@ -325,6 +325,7 @@ public class SessionServiceImpl implements SessionService {
                         .isPublic(originalSession.getIsPublic())
                         .tags(originalSession.getTags())
                         .preparationNotes(originalSession.getPreparationNotes())
+                        .meetingUrl(originalSession.getMeetingUrl())
                         .build();
                 
                 sessionRepository.save(recurringSession);

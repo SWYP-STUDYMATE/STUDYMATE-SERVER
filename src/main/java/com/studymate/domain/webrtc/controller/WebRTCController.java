@@ -1,7 +1,7 @@
 package com.studymate.domain.webrtc.controller;
 
 import com.studymate.common.dto.ApiResponse;
-import com.studymate.domain.session.repository.SessionRepository;
+import com.studymate.domain.session.domain.repository.SessionRepository;
 import com.studymate.domain.session.entity.Session;
 import com.studymate.exception.NotFoundException;
 import com.studymate.domain.webrtc.dto.request.WebRTCRoomSyncRequest;
